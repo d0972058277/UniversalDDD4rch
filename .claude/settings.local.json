@@ -31,7 +31,8 @@
       "Bash(dotnet run:*)",
       "Bash(.specify/scripts/powershell/check-implementation-prerequisites.ps1 -Json)",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\\Functional\")",
-      "Bash(dotnet add reference:*)"
+      "Bash(dotnet add reference:*)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\\Architecture.Core.Benchmarks\" /s)"
     ],
     "deny": [],
     "ask": []
