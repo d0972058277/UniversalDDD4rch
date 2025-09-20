@@ -1,48 +1,61 @@
-# Tasks: Architecture.Core - DDD Abstractions and Functional Types
+# Tasks: Architecture.Core - DDD Abstractions and Functional Types (TypeScript)
 
 **Input**: Design documents from `/specs/001-architecture-core-ddd/`
-**Prerequisites**: plan.md ✅, research.md ✅, data-model.md ✅, contracts/ ✅
+**Prerequisites**: plan.md ✅, research-typescript.md ✅, data-model-typescript.md ✅, contracts-typescript/ ✅, quickstart-typescript.md ✅
 
 ## Execution Flow (main)
 ```
 1. Load plan.md from feature directory ✅
-   → Tech stack: C# .NET 8 LTS, pure BCL, xUnit testing
+   → Tech stack: TypeScript 5.9+ with Node.js 22 LTS, pure Node.js standard library
    → Structure: Single project DDD architecture
 2. Load design documents ✅:
-   → data-model.md: 8 core types identified
-   → contracts/: 1 contract file with all type definitions
-   → research.md: Technical decisions for BCL implementation
+   → data-model-typescript.md: 8 core types identified for TypeScript
+   → contracts-typescript/: TypeScript contract definitions with interfaces and classes
+   → research-typescript.md: Technical decisions for zero-dependency implementation
+   → quickstart-typescript.md: Complete order domain example with Express.js integration
 3. Generate tasks by category ✅:
-   → Setup: Project structure, dependencies, analyzers
+   → Setup: Project structure, TypeScript configuration, testing framework
    → Tests: Contract tests, monadic law tests, integration tests
    → Core: Functional types, DDD abstractions, repositories
-   → Integration: Test infrastructure, performance benchmarks
-   → Polish: Documentation, examples, validation
+   → Integration: Examples, Express.js middleware, performance benchmarks
+   → Polish: Documentation, validation, cross-language consistency
 4. Apply task rules ✅:
    → Different files = [P] for parallel execution
    → TDD approach: Tests before implementation
    → Dependency order: Functional types → Base classes → Aggregates
-5. Tasks numbered T001-T042 ✅
+5. Tasks numbered T001-T087 ✅
 6. Dependencies and parallel execution defined ✅
 ```
+
+## Summary
+Implementation tasks for Architecture.Core TypeScript Node.js library providing DDD abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional programming types (Result, Maybe, Error) with zero external runtime dependencies.
+
+**Technology Stack**:
+- TypeScript 5.9+ with Node.js 22 LTS
+- Pure Node.js standard library (core)
+- Jest for testing
+- Optional integrations: Express.js, TypeORM, class-validator
+
+**Project Structure**: Single DDD core library with layered architecture
 
 ## Format: `[ID] [P?] Description`
 - **[P]**: Can run in parallel (different files, no dependencies)
 - All paths use absolute file paths from repository root
 
-## Path Conventions (DDD Architecture - Single Project)
-- **Source**: `src/Architecture.Core/`
-- **Tests**: `tests/Architecture.Core.Tests/`
-- **Examples**: `examples/QuickstartExample/`
-- **Benchmarks**: `benchmarks/Architecture.Core.Benchmarks/`
+## Path Conventions (DDD Architecture - TypeScript Single Project)
+- **Source**: `typescript-nodejs/src/`
+- **Tests**: `typescript-nodejs/tests/`
+- **Examples**: `typescript-nodejs/examples/`
+- **Benchmarks**: `typescript-nodejs/benchmarks/`
 
 ## Phase 3.1: Setup
 
-- [x] **T001** Create .NET 8 project structure for Architecture.Core at `csharp-dotnet/src/Architecture.Core/Architecture.Core.csproj`
-- [x] **T002** Create test project structure at `csharp-dotnet/tests/Architecture.Core.Tests/Architecture.Core.Tests.csproj` with xUnit dependencies
-- [x] **T003** [P] Configure EditorConfig, Directory.Build.props for warnings-as-errors and C# 12 features
-- [x] **T004** [P] Create benchmark project at `csharp-dotnet/benchmarks/Architecture.Core.Benchmarks/Architecture.Core.Benchmarks.csproj` with BenchmarkDotNet
-- [x] **T005** [P] Create example project at `csharp-dotnet/examples/QuickstartExample/QuickstartExample.csproj` referencing Architecture.Core
+- [ ] **T001** Create TypeScript Node.js project structure with DDD architecture at `typescript-nodejs/`
+- [ ] **T002** Initialize package.json with TypeScript 5.9+, Node.js 22 LTS, and zero runtime dependencies at `typescript-nodejs/package.json`
+- [ ] **T003** [P] Configure TypeScript compiler with strict settings in `typescript-nodejs/tsconfig.json`
+- [ ] **T004** [P] Configure Jest testing framework with TypeScript support in `typescript-nodejs/jest.config.js`
+- [ ] **T005** [P] Configure ESLint and Prettier for code quality in `typescript-nodejs/.eslintrc.js` and `typescript-nodejs/.prettierrc`
+- [ ] **T006** [P] Create npm scripts for build, test, lint, and format in `typescript-nodejs/package.json`
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
@@ -50,148 +63,264 @@
 **Test structure: Given-When-Then blocks with explicit comments**
 
 ### Functional Types Contract Tests
-- [x] **T006** [P] Result struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultTests.cs`
-- [x] **T007** [P] Result<T> struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultOfTTests.cs`
-- [x] **T008** [P] Error struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ErrorTests.cs`
-- [x] **T009** [P] Maybe<T> struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/MaybeTests.cs`
-
-### Monadic Laws Tests
-- [x] **T010** [P] Result monadic laws tests (Left Identity, Right Identity, Associativity) in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultMonadicLawsTests.cs`
-- [x] **T011** [P] Maybe monadic laws tests (Left Identity, Right Identity, Associativity) in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/MaybeMonadicLawsTests.cs`
+- [ ] **T007** [P] Error contract tests in `typescript-nodejs/tests/contract/error-contract.test.ts`
+- [ ] **T008** [P] Result contract tests in `typescript-nodejs/tests/contract/result-contract.test.ts`
+- [ ] **T009** [P] Maybe contract tests in `typescript-nodejs/tests/contract/maybe-contract.test.ts`
 
 ### DDD Abstractions Contract Tests
-- [x] **T012** [P] ValueObject equality contract tests in `tests/Architecture.Core.Tests/Domain/ValueObjectTests.cs`
-- [x] **T013** [P] Entity<TId> identity equality tests in `tests/Architecture.Core.Tests/Domain/EntityTests.cs`
-- [x] **T014** [P] AggregateRoot<TId> event collection tests in `tests/Architecture.Core.Tests/Domain/AggregateRootTests.cs`
-- [x] **T015** [P] DomainEventBase metadata handling tests in `tests/Architecture.Core.Tests/Domain/DomainEventBaseTests.cs`
-- [x] **T016** [P] IRepository<TAggregate,TId> interface contract tests in `tests/Architecture.Core.Tests/Domain/RepositoryTests.cs`
+- [ ] **T010** [P] ValueObject contract tests in `typescript-nodejs/tests/contract/value-object-contract.test.ts`
+- [ ] **T011** [P] Entity contract tests in `typescript-nodejs/tests/contract/entity-contract.test.ts`
+- [ ] **T012** [P] AggregateRoot contract tests in `typescript-nodejs/tests/contract/aggregate-root-contract.test.ts`
+- [ ] **T013** [P] DomainEventBase contract tests in `typescript-nodejs/tests/contract/domain-event-contract.test.ts`
+- [ ] **T014** [P] Repository contract tests in `typescript-nodejs/tests/contract/repository-contract.test.ts`
 
-### Integration Scenario Tests
-- [x] **T017** [P] Order domain quickstart scenario test in `tests/Architecture.Core.Tests/Integration/QuickstartScenarioTests.cs`
-- [x] **T018** [P] ValueObject multi-field equality scenarios in `tests/Architecture.Core.Tests/Integration/ValueObjectEqualityScenarios.cs`
-- [x] **T019** [P] Aggregate event correlation chain tests in `tests/Architecture.Core.Tests/Integration/EventCorrelationTests.cs`
+### Monadic Laws Contract Tests
+- [ ] **T015** [P] Result monadic laws tests (left identity, right identity, associativity) in `typescript-nodejs/tests/contract/result-monadic-laws.test.ts`
+- [ ] **T016** [P] Maybe monadic laws tests (left identity, right identity, associativity) in `typescript-nodejs/tests/contract/maybe-monadic-laws.test.ts`
+
+### Performance Contract Tests
+- [ ] **T017** [P] ValueObject equality performance contract tests in `typescript-nodejs/tests/contract/performance-contracts.test.ts`
+- [ ] **T018** [P] Repository async operations performance tests in `typescript-nodejs/tests/contract/performance-contracts.test.ts`
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-**DDD Implementation Order: Functional Types → Domain Base Classes → Repository Interfaces**
+**DDD Layer Implementation Order: Domain → Application → Infrastructure → Presentation**
 
-### Functional Types Implementation
-- [x] **T020** [P] Error struct implementation in `src/Architecture.Core/Functional/Error.cs`
-- [x] **T021** [P] ErrorCategory enum in `src/Architecture.Core/Functional/ErrorCategory.cs`
-- [x] **T022** Result struct implementation in `src/Architecture.Core/Functional/Result.cs` (depends on T020)
-- [x] **T023** Result<T> struct implementation in `src/Architecture.Core/Functional/ResultOfT.cs` (depends on T020, T022)
-- [x] **T024** [P] Maybe<T> struct implementation in `src/Architecture.Core/Functional/Maybe.cs`
+### Core Functional Types Implementation
+- [ ] **T019** [P] ErrorCategory enum in `typescript-nodejs/src/functional/error-category.ts`
+- [ ] **T020** [P] IError interface in `typescript-nodejs/src/functional/interfaces/i-error.ts`
+- [ ] **T021** [P] Error class implementation in `typescript-nodejs/src/functional/error.ts`
+- [ ] **T022** [P] IResult interfaces in `typescript-nodejs/src/functional/interfaces/i-result.ts`
+- [ ] **T023** [P] Result base class implementation in `typescript-nodejs/src/functional/result.ts`
+- [ ] **T024** [P] Result<T> generic class implementation in `typescript-nodejs/src/functional/result-of-t.ts`
+- [ ] **T025** [P] SuccessResult and FailureResult implementations in `typescript-nodejs/src/functional/result-implementations.ts`
+- [ ] **T026** [P] IMaybe interface in `typescript-nodejs/src/functional/interfaces/i-maybe.ts`
+- [ ] **T027** [P] Maybe<T> base class implementation in `typescript-nodejs/src/functional/maybe.ts`
+- [ ] **T028** [P] SomeMaybe and NoneMaybe implementations in `typescript-nodejs/src/functional/maybe-implementations.ts`
 
-### Domain Base Classes Implementation
-- [x] **T025** [P] IDomainEvent interface in `src/Architecture.Core/Domain/Events/IDomainEvent.cs`
-- [x] **T026** DomainEventBase abstract class in `src/Architecture.Core/Domain/Events/DomainEventBase.cs` (depends on T025)
-- [x] **T027** [P] IEntity<TId> interface in `src/Architecture.Core/Domain/Entities/IEntity.cs`
-- [x] **T028** Entity<TId> abstract class in `src/Architecture.Core/Domain/Entities/Entity.cs` (depends on T027)
-- [x] **T029** ValueObject abstract class in `src/Architecture.Core/Domain/ValueObjects/ValueObject.cs`
-- [x] **T030** [P] IAggregateRoot<TId> interface in `src/Architecture.Core/Domain/Aggregates/IAggregateRoot.cs`
-- [x] **T031** AggregateRoot<TId> abstract class in `src/Architecture.Core/Domain/Aggregates/AggregateRoot.cs` (depends on T028, T030, T025)
+### Type Guards and Utilities
+- [ ] **T029** [P] Type guard functions (isSuccess, isFailure, isSome, isNone) in `typescript-nodejs/src/functional/type-guards.ts`
+- [ ] **T030** [P] Functional types barrel export in `typescript-nodejs/src/functional/index.ts`
 
-### Repository Interfaces Implementation
-- [x] **T032** [P] IRepository<TAggregate,TId> interface in `src/Architecture.Core/Domain/Repositories/IRepository.cs` (depends on T030, T022, T024)
+### DDD Base Classes Implementation
+- [ ] **T031** [P] IEntity interface in `typescript-nodejs/src/domain/interfaces/i-entity.ts`
+- [ ] **T032** [P] ValueObject abstract base class in `typescript-nodejs/src/domain/value-object.ts`
+- [ ] **T033** [P] Entity<TId> abstract base class in `typescript-nodejs/src/domain/entity.ts`
+- [ ] **T034** [P] IAggregateRoot interface in `typescript-nodejs/src/domain/interfaces/i-aggregate-root.ts`
+- [ ] **T035** [P] IDomainEvent interface in `typescript-nodejs/src/domain/interfaces/i-domain-event.ts`
+- [ ] **T036** [P] DomainEventBase abstract class in `typescript-nodejs/src/domain/domain-event-base.ts`
+- [ ] **T037** AggregateRoot<TId> abstract base class in `typescript-nodejs/src/domain/aggregate-root.ts`
 
-## Phase 3.4: Integration & Infrastructure
+### Repository Abstractions
+- [ ] **T038** [P] IRepository interface in `typescript-nodejs/src/domain/interfaces/i-repository.ts`
+- [ ] **T039** [P] RepositoryBase abstract class in `typescript-nodejs/src/infrastructure/repository-base.ts`
 
-### Test Infrastructure
-- [x] **T033** [P] Test data builders in `tests/Architecture.Core.Tests/Builders/TestDataBuilders.cs`
-- [x] **T034** [P] Custom assertion extensions in `tests/Architecture.Core.Tests/Extensions/AssertionExtensions.cs`
+### Module Exports and Barrel Files
+- [ ] **T040** [P] Domain layer barrel export in `typescript-nodejs/src/domain/index.ts`
+- [ ] **T041** [P] Infrastructure layer barrel export in `typescript-nodejs/src/infrastructure/index.ts`
+- [ ] **T042** Main library barrel export in `typescript-nodejs/src/index.ts`
 
-### Example Implementation
-- [x] **T035** Order domain example implementation in `examples/QuickstartExample/Domain/` (Money, CustomerId, Order, Events)
-- [x] **T036** Order repository example in `examples/QuickstartExample/Repositories/IOrderRepository.cs`
-- [x] **T037** Quickstart program demonstrating all scenarios in `examples/QuickstartExample/Program.cs`
+## Phase 3.4: Integration Examples and Quickstart Validation
 
-## Phase 3.5: Performance & Polish
+### Order Domain Example Implementation
+- [ ] **T043** [P] Money value object example in `typescript-nodejs/examples/domain/value-objects/money.ts`
+- [ ] **T044** [P] OrderStatus value object example in `typescript-nodejs/examples/domain/value-objects/order-status.ts`
+- [ ] **T045** [P] OrderItem entity example in `typescript-nodejs/examples/domain/entities/order-item.ts`
+- [ ] **T046** Order aggregate root example in `typescript-nodejs/examples/domain/entities/order.ts`
+- [ ] **T047** [P] Order domain events examples in `typescript-nodejs/examples/domain/events/order-events.ts`
+- [ ] **T048** [P] OrderService domain service example in `typescript-nodejs/examples/domain/services/order-service.ts`
+
+### Application Layer Examples
+- [ ] **T049** [P] IOrderRepository interface in `typescript-nodejs/examples/application/interfaces/order-repository.ts`
+- [ ] **T050** [P] CreateOrderCommand interface in `typescript-nodejs/examples/application/commands/create-order-command.ts`
+- [ ] **T051** OrderCommandHandler implementation in `typescript-nodejs/examples/application/handlers/order-command-handler.ts`
+
+### Infrastructure Examples
+- [ ] **T052** InMemoryOrderRepository implementation in `typescript-nodejs/examples/infrastructure/repositories/in-memory-order-repository.ts`
+
+### Express.js Integration Examples
+- [ ] **T053** [P] Result middleware for Express.js in `typescript-nodejs/examples/presentation/middleware/result-middleware.ts`
+- [ ] **T054** OrderController with Result handling in `typescript-nodejs/examples/presentation/controllers/order-controller.ts`
+- [ ] **T055** Express.js application setup in `typescript-nodejs/examples/presentation/app.ts`
+
+## Phase 3.5: Integration Tests
+
+### Functional Types Integration Tests
+- [ ] **T056** [P] Error chaining and categorization tests in `typescript-nodejs/tests/integration/error-integration.test.ts`
+- [ ] **T057** [P] Result chaining and combinators tests in `typescript-nodejs/tests/integration/result-integration.test.ts`
+- [ ] **T058** [P] Maybe operations and conversions tests in `typescript-nodejs/tests/integration/maybe-integration.test.ts`
+
+### DDD Components Integration Tests
+- [ ] **T059** [P] ValueObject equality scenarios tests in `typescript-nodejs/tests/integration/value-object-scenarios.test.ts`
+- [ ] **T060** [P] Entity identity and invariants tests in `typescript-nodejs/tests/integration/entity-scenarios.test.ts`
+- [ ] **T061** [P] AggregateRoot event collection tests in `typescript-nodejs/tests/integration/aggregate-scenarios.test.ts`
+- [ ] **T062** [P] Repository async patterns tests in `typescript-nodejs/tests/integration/repository-scenarios.test.ts`
+
+### End-to-End Workflow Tests
+- [ ] **T063** Complete order lifecycle workflow test in `typescript-nodejs/tests/integration/order-workflow.test.ts`
+- [ ] **T064** [P] Quickstart example validation tests in `typescript-nodejs/tests/integration/quickstart-validation.test.ts`
+
+## Phase 3.6: Performance and Benchmarks
 
 ### Performance Benchmarks
-- [x] **T038** [P] ValueObject equality performance benchmarks in `benchmarks/Architecture.Core.Benchmarks/ValueObjectEqualityBenchmarks.cs`
-- [x] **T039** [P] Result/Maybe allocation benchmarks in `benchmarks/Architecture.Core.Benchmarks/FunctionalTypesAllocationBenchmarks.cs`
+- [ ] **T065** [P] ValueObject equality performance benchmarks in `typescript-nodejs/benchmarks/value-object-performance.bench.ts`
+- [ ] **T066** [P] Result/Maybe memory allocation benchmarks in `typescript-nodejs/benchmarks/functional-types-performance.bench.ts`
+- [ ] **T067** [P] AggregateRoot event collection benchmarks in `typescript-nodejs/benchmarks/aggregate-performance.bench.ts`
+- [ ] **T068** [P] Repository async operations benchmarks in `typescript-nodejs/benchmarks/repository-performance.bench.ts`
 
-### Documentation & Validation
-- [x] **T040** [P] XML documentation comments for all public APIs
-- [x] **T041** [P] README.md with usage examples and getting started guide
-- [x] **T042** Run all tests, verify 100% pass rate, and validate quickstart example execution
+### Memory and GC Analysis
+- [ ] **T069** [P] Memory leak detection tests in `typescript-nodejs/tests/performance/memory-tests.test.ts`
+- [ ] **T070** [P] Hash code stability performance tests in `typescript-nodejs/tests/performance/hash-performance.test.ts`
+
+## Phase 3.7: Polish and Documentation
+
+### Unit Tests for Complex Scenarios
+- [ ] **T071** [P] ValueObject multi-field equality unit tests in `typescript-nodejs/tests/unit/value-object-edge-cases.test.ts`
+- [ ] **T072** [P] Entity invariant enforcement unit tests in `typescript-nodejs/tests/unit/entity-invariants.test.ts`
+- [ ] **T073** [P] AggregateRoot version control unit tests in `typescript-nodejs/tests/unit/aggregate-versioning.test.ts`
+- [ ] **T074** [P] DomainEvent metadata handling unit tests in `typescript-nodejs/tests/unit/domain-event-metadata.test.ts`
+- [ ] **T075** [P] Repository cancellation handling unit tests in `typescript-nodejs/tests/unit/repository-cancellation.test.ts`
+
+### Type Safety and Compilation Tests
+- [ ] **T076** [P] TypeScript strict mode compilation tests in `typescript-nodejs/tests/unit/type-safety.test.ts`
+- [ ] **T077** [P] Generic constraints validation tests in `typescript-nodejs/tests/unit/generic-constraints.test.ts`
+
+### Build and Packaging
+- [ ] **T078** Production build configuration and optimization in `typescript-nodejs/build.config.js`
+- [ ] **T079** [P] Package.json preparation for npm publishing in `typescript-nodejs/package.json`
+- [ ] **T080** [P] TypeScript declaration files generation and validation in `typescript-nodejs/tsconfig.build.json`
+
+### Documentation and Examples
+- [ ] **T081** [P] API documentation generation from TSDoc comments in `typescript-nodejs/docs/`
+- [ ] **T082** [P] README.md with installation and usage examples in `typescript-nodejs/README.md`
+- [ ] **T083** [P] Migration guide from C# implementation in `typescript-nodejs/docs/migration-guide.md`
+
+### Final Validation
+- [ ] **T084** Run all tests and ensure 100% pass rate across all test categories
+- [ ] **T085** Cross-language consistency validation with C# implementation
+- [ ] **T086** Performance benchmarks validation against targets
+- [ ] **T087** Code coverage report generation and 100% domain logic coverage verification
 
 ## Dependencies
 
-### Critical Path Dependencies
-1. **Setup** (T001-T005) → **Tests** (T006-T019)
-2. **Error/ErrorCategory** (T020-T021) → **Result Types** (T022-T023)
-3. **Base Interfaces** (T025, T027, T030) → **Abstract Classes** (T026, T028, T031)
-4. **Domain Types** (T025-T031) → **Repository Interface** (T032)
-5. **Core Implementation** (T020-T032) → **Examples** (T035-T037)
-6. **All Implementation** → **Performance & Polish** (T038-T042)
+### Phase Dependencies
+- Setup (T001-T006) before all other phases
+- Contract Tests (T007-T018) before Core Implementation (T019-T042)
+- Core Implementation before Integration Examples (T043-T055)
+- Core Implementation before Integration Tests (T056-T064)
+- All Implementation before Performance (T065-T070)
+- All Implementation before Polish (T071-T087)
 
-### Parallel Execution Groups
-```
-Group 1 - Setup: T003, T004, T005
-Group 2 - Contract Tests: T006, T007, T008, T009
-Group 3 - Monadic Laws: T010, T011
-Group 4 - Domain Tests: T012, T013, T014, T015, T016
-Group 5 - Integration Tests: T017, T018, T019
-Group 6 - Independent Types: T020, T021, T024, T025, T027, T029, T030
-Group 7 - Test Infrastructure: T033, T034
-Group 8 - Performance: T038, T039
-Group 9 - Documentation: T040, T041
-```
+### Critical Path Dependencies
+1. **Functional Types Foundation**: T019-T030 → All other implementation tasks
+2. **Domain Base Classes**: T031-T037 → Examples and Integration tests
+3. **Repository Abstractions**: T038-T039 → Repository examples and tests
+4. **Core Implementation Complete**: T019-T042 → Integration examples T043-T055
+5. **Examples Working**: T043-T055 → Integration tests T056-T064
+
+### Specific Task Dependencies
+- T021 (Error) → T023-T025 (Result implementation)
+- T023-T025 (Result) → T027-T028 (Maybe implementation)
+- T032 (ValueObject) → T033 (Entity) → T037 (AggregateRoot)
+- T035-T036 (Domain Events) → T037 (AggregateRoot)
+- T037 (AggregateRoot) → T038-T039 (Repository)
+- T040-T042 (Exports) → T043-T055 (Examples)
 
 ## Parallel Execution Examples
 
-### Launch Contract Tests Together (After T005):
-```bash
-# All contract tests can run in parallel - different files
-Task: "Result struct contract tests in tests/Architecture.Core.Tests/Functional/ResultTests.cs"
-Task: "Result<T> struct contract tests in tests/Architecture.Core.Tests/Functional/ResultOfTTests.cs"
-Task: "Error struct contract tests in tests/Architecture.Core.Tests/Functional/ErrorTests.cs"
-Task: "Maybe<T> struct contract tests in tests/Architecture.Core.Tests/Functional/MaybeTests.cs"
+### Contract Tests (Phase 3.2)
+```typescript
+// These can all run in parallel - different test files
+Task: "Error contract tests in typescript-nodejs/tests/contract/error-contract.test.ts"
+Task: "Result contract tests in typescript-nodejs/tests/contract/result-contract.test.ts"
+Task: "Maybe contract tests in typescript-nodejs/tests/contract/maybe-contract.test.ts"
+Task: "ValueObject contract tests in typescript-nodejs/tests/contract/value-object-contract.test.ts"
 ```
 
-### Launch Independent Type Implementations (After T019):
-```bash
-# Independent types - no cross-dependencies
-Task: "Error struct implementation in src/Architecture.Core/Functional/Error.cs"
-Task: "ErrorCategory enum in src/Architecture.Core/Functional/ErrorCategory.cs"
-Task: "Maybe<T> struct implementation in src/Architecture.Core/Functional/Maybe.cs"
-Task: "IDomainEvent interface in src/Architecture.Core/Domain/Events/IDomainEvent.cs"
-Task: "IEntity<TId> interface in src/Architecture.Core/Domain/Entities/IEntity.cs"
+### Core Implementation (Phase 3.3)
+```typescript
+// Functional types can be implemented in parallel
+Task: "ErrorCategory enum in typescript-nodejs/src/functional/error-category.ts"
+Task: "IError interface in typescript-nodejs/src/functional/interfaces/i-error.ts"
+Task: "IResult interfaces in typescript-nodejs/src/functional/interfaces/i-result.ts"
+Task: "IMaybe interface in typescript-nodejs/src/functional/interfaces/i-maybe.ts"
 ```
+
+### Examples (Phase 3.4)
+```typescript
+// Value objects can be implemented in parallel
+Task: "Money value object example in typescript-nodejs/examples/domain/value-objects/money.ts"
+Task: "OrderStatus value object example in typescript-nodejs/examples/domain/value-objects/order-status.ts"
+Task: "Order domain events examples in typescript-nodejs/examples/domain/events/order-events.ts"
+```
+
+## Task Generation Rules Applied
+
+### From Contracts (contracts-typescript/core-types-contract.ts)
+- Each interface/class → Contract test task [P]
+- Each abstract method → Implementation task
+- Each type guard → Utility implementation task [P]
+
+### From Data Model (data-model-typescript.md)
+- Each core type → Implementation task [P]
+- Each relationship → Integration task
+- Each validation rule → Unit test task [P]
+
+### From Quickstart (quickstart-typescript.md)
+- Each code example → Example implementation task [P]
+- Each usage scenario → Integration test task [P]
+- Each workflow → End-to-end test task
+
+### TDD Ordering
+- All contract tests before any implementation
+- Unit tests for edge cases after implementation
+- Integration tests after all components complete
 
 ## Key Implementation Notes
 
 ### Constitutional Compliance
-- **TDD Mandatory**: All tests (T006-T019) MUST be written and failing before implementation (T020-T032)
+- **TDD Mandatory**: All tests (T007-T018) MUST be written and failing before implementation (T019-T042)
 - **Given-When-Then**: All test methods must include explicit comment blocks for each section
 - **Monadic Laws**: Result and Maybe types must pass Left Identity, Right Identity, and Associativity tests
-- **Pure BCL**: Zero external runtime dependencies in core library
+- **Pure Node.js**: Zero external runtime dependencies in core library
 
 ### Performance Requirements
-- **Struct-based**: Result, Maybe, and Error must be readonly structs to avoid allocations
-- **Equality Optimization**: ValueObject equality must use component enumeration with caching
-- **Async Patterns**: Repository interface must follow .NET async best practices with ConfigureAwait(false)
+- **Class-based Optimization**: Result, Maybe, and Error optimized for memory efficiency
+- **Equality Optimization**: ValueObject equality must use component enumeration with hash code caching
+- **Async Patterns**: Repository interface must follow Node.js async best practices with AbortSignal
 
 ### Multi-Language Consistency
-- **API Contracts**: Maintain identical behavioral contracts across language implementations
+- **API Contracts**: Maintain identical behavioral contracts with C# implementation
 - **Error Categories**: Use consistent error categorization (Domain, Validation, Infrastructure, Concurrency, Security)
-- **Naming Conventions**: Follow C# conventions while maintaining architectural alignment
+- **Naming Conventions**: Follow TypeScript conventions while maintaining architectural alignment
 
-## Task Validation Checklist
-*All requirements verified during task generation*
+## Validation Checklist ✅
 
-- [x] All contract types have corresponding test tasks (T006-T016)
-- [x] All domain entities have implementation tasks (T025-T032)
-- [x] All tests come before implementation (T006-T019 → T020-T032)
-- [x] Parallel tasks are truly independent (different files, no shared state)
-- [x] Each task specifies exact absolute file path
+- [x] All contract interfaces have corresponding test tasks
+- [x] All data model entities have implementation tasks
+- [x] All contract tests come before implementation tasks
+- [x] Parallel tasks are truly independent (different files)
+- [x] Each task specifies exact file path
 - [x] No task modifies same file as another [P] task
-- [x] Monadic laws explicitly tested (T010-T011)
-- [x] Integration scenarios cover quickstart examples (T017-T019)
-- [x] Performance benchmarks included (T038-T039)
+- [x] TDD principle maintained (tests before implementation)
+- [x] Dependencies properly mapped
+- [x] Critical path identified
+- [x] Performance and polish phases included
+- [x] Express.js integration examples included
+- [x] Quickstart scenario validation included
+- [x] Cross-language consistency verification included
+
+## Notes
+
+- **[P] tasks** = Different files, no dependencies, can run in parallel
+- **Tests must fail first** - Write failing tests before any implementation
+- **Commit after each task** - Atomic commits for better tracking
+- **Zero runtime dependencies** - Core library uses only Node.js standard library
+- **Type safety** - Leverage TypeScript's strict mode for compile-time guarantees
+- **Constitutional compliance** - All tasks align with DDD, CQRS, TDD, and functional programming principles
+- **Cross-language consistency** - Maintain API compatibility with C# implementation
 
 ---
 
-**Total Tasks**: 42
-**Estimated Effort**: 15-20 development days
-**Critical Path**: T001 → T006-T019 → T020-T021 → T022-T023 → T025-T031 → T032 → T035-T037 → T042
+**Total Tasks**: 87
+**Estimated Effort**: 25-30 development days
+**Critical Path**: T001 → T007-T018 → T019-T030 → T031-T037 → T038-T042 → T043-T055 → T084-T087
