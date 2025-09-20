@@ -75,23 +75,23 @@
 **DDD Implementation Order: Functional Types → Domain Base Classes → Repository Interfaces**
 
 ### Functional Types Implementation
-- [ ] **T020** [P] Error struct implementation in `src/Architecture.Core/Functional/Error.cs`
-- [ ] **T021** [P] ErrorCategory enum in `src/Architecture.Core/Functional/ErrorCategory.cs`
-- [ ] **T022** Result struct implementation in `src/Architecture.Core/Functional/Result.cs` (depends on T020)
-- [ ] **T023** Result<T> struct implementation in `src/Architecture.Core/Functional/ResultOfT.cs` (depends on T020, T022)
-- [ ] **T024** [P] Maybe<T> struct implementation in `src/Architecture.Core/Functional/Maybe.cs`
+- [x] **T020** [P] Error struct implementation in `src/Architecture.Core/Functional/Error.cs`
+- [x] **T021** [P] ErrorCategory enum in `src/Architecture.Core/Functional/ErrorCategory.cs`
+- [x] **T022** Result struct implementation in `src/Architecture.Core/Functional/Result.cs` (depends on T020)
+- [x] **T023** Result<T> struct implementation in `src/Architecture.Core/Functional/ResultOfT.cs` (depends on T020, T022)
+- [x] **T024** [P] Maybe<T> struct implementation in `src/Architecture.Core/Functional/Maybe.cs`
 
 ### Domain Base Classes Implementation
-- [ ] **T025** [P] IDomainEvent interface in `src/Architecture.Core/Domain/Events/IDomainEvent.cs`
-- [ ] **T026** DomainEventBase abstract class in `src/Architecture.Core/Domain/Events/DomainEventBase.cs` (depends on T025)
-- [ ] **T027** [P] IEntity<TId> interface in `src/Architecture.Core/Domain/Entities/IEntity.cs`
-- [ ] **T028** Entity<TId> abstract class in `src/Architecture.Core/Domain/Entities/Entity.cs` (depends on T027)
-- [ ] **T029** ValueObject abstract class in `src/Architecture.Core/Domain/ValueObjects/ValueObject.cs`
-- [ ] **T030** [P] IAggregateRoot<TId> interface in `src/Architecture.Core/Domain/Aggregates/IAggregateRoot.cs`
-- [ ] **T031** AggregateRoot<TId> abstract class in `src/Architecture.Core/Domain/Aggregates/AggregateRoot.cs` (depends on T028, T030, T025)
+- [x] **T025** [P] IDomainEvent interface in `src/Architecture.Core/Domain/Events/IDomainEvent.cs`
+- [x] **T026** DomainEventBase abstract class in `src/Architecture.Core/Domain/Events/DomainEventBase.cs` (depends on T025)
+- [x] **T027** [P] IEntity<TId> interface in `src/Architecture.Core/Domain/Entities/IEntity.cs`
+- [x] **T028** Entity<TId> abstract class in `src/Architecture.Core/Domain/Entities/Entity.cs` (depends on T027)
+- [x] **T029** ValueObject abstract class in `src/Architecture.Core/Domain/ValueObjects/ValueObject.cs`
+- [x] **T030** [P] IAggregateRoot<TId> interface in `src/Architecture.Core/Domain/Aggregates/IAggregateRoot.cs`
+- [x] **T031** AggregateRoot<TId> abstract class in `src/Architecture.Core/Domain/Aggregates/AggregateRoot.cs` (depends on T028, T030, T025)
 
 ### Repository Interfaces Implementation
-- [ ] **T032** [P] IRepository<TAggregate,TId> interface in `src/Architecture.Core/Domain/Repositories/IRepository.cs` (depends on T030, T022, T024)
+- [x] **T032** [P] IRepository<TAggregate,TId> interface in `src/Architecture.Core/Domain/Repositories/IRepository.cs` (depends on T030, T022, T024)
 
 ## Phase 3.4: Integration & Infrastructure
 

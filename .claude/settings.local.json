@@ -5,7 +5,15 @@
       "Bash(powershell:*)",
       "WebSearch",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\")",
-      "Bash(dotnet build)"
+      "Bash(dotnet build)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\\contracts\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\" /s)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\tests\\Architecture.Core.Tests\" /s)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet new sln:*)",
+      "Bash(dotnet sln add:*)",
+      "Bash(dotnet sln:*)"
     ],
     "deny": [],
     "ask": []
