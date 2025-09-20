@@ -1,50 +1,79 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: [TEMPLATE] → 1.0.0
+- New constitution created with DDD+CQRS principles
+- Added sections: Domain-Driven Design Architecture, Functional Programming Principles, Test-Driven Development, Multi-Language Support, Error Handling Strategy
+- Templates requiring updates: ⚠ pending validation of all .specify/templates/*.md files
+- Follow-up TODOs: Validate template consistency across all dependent artifacts
+-->
+
+# Universal DDD Architecture Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Domain-Driven Design Architecture
+All implementations MUST follow Explicit Architecture principles combining DDD, Hexagonal, Onion, Clean, and CQRS patterns. The architecture MUST clearly separate:
+- Domain Layer (entities, value objects, domain services, domain events)
+- Application Layer (use cases, application services, command/query handlers)
+- Infrastructure Layer (repositories, external services, persistence)
+- Presentation Layer (controllers, DTOs, serializers)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Each bounded context MUST be independently deployable and maintainable across all supported languages.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Command Query Responsibility Segregation (CQRS)
+All data operations MUST be clearly separated into Commands (write operations) and Queries (read operations). Commands MUST NOT return data except for success/failure indicators. Queries MUST be read-only and MUST NOT modify system state. Event sourcing MAY be implemented where business value justifies the complexity.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### III. Test-Driven Development (NON-NEGOTIABLE)
+TDD is MANDATORY for all implementations. Tests MUST be written before implementation code. All tests MUST pass before any task can be marked as complete. Test naming MUST follow the pattern: `Should_ExpectedBehavior_When_StateUnderTest`. Test structure MUST include Given-When-Then blocks with explicit comments marking each section.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### IV. Functional Programming Principles
+All implementations MUST use Result, Error, and Maybe monads for error handling and null safety. Exceptions MUST only be thrown for truly exceptional circumstances that cannot be handled through normal program flow. Languages without exceptions MUST use the most idiomatic error handling mechanism available (e.g., Go's error return values, Rust's Result type).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### V. Multi-Language Implementation Consistency
+All architectural patterns MUST be consistently implemented across supported languages: C# .NET, Java Spring, Python Django, Go, and Node.js Express (TypeScript). Each implementation MUST maintain the same domain model structure, use case interfaces, and behavioral contracts while leveraging language-specific idioms and best practices.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Multi-Language Support Standards
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Each language implementation MUST provide:
+- Identical domain model representations using language-appropriate constructs
+- Consistent API contracts across all bounded contexts
+- Language-specific monadic error handling (Result<T>, Option<T>, Either<L,R>)
+- Framework-specific dependency injection and configuration
+- Idiomatic testing frameworks while maintaining Given-When-Then structure
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Technology stack requirements:
+- C#: .NET Core/5+, Entity Framework, MediatR, FluentValidation
+- Java: Spring Boot, Spring Data JPA, Spring Security, JUnit 5
+- Python: Django 4+, Django REST Framework, pytest, factory_boy
+- Go: Standard library + chi/gin, GORM, testify
+- TypeScript: Express.js, TypeORM, Jest, class-validator
+
+## Development Workflow
+
+All development MUST follow this sequence:
+1. Write failing tests following TDD principles
+2. Implement minimum code to make tests pass
+3. Refactor while maintaining test coverage
+4. Verify all tests pass across all language implementations
+5. Update documentation and architectural decision records
+
+Code reviews MUST verify:
+- TDD compliance (tests written first)
+- Architectural pattern adherence
+- Functional programming principle usage
+- Cross-language consistency
+- Complete test coverage with no failing tests
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices and guidelines. All implementations MUST comply with these principles regardless of language-specific conventions that may conflict.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments require:
+- Documentation of proposed changes with architectural impact analysis
+- Cross-language implementation feasibility assessment
+- Migration plan for existing code
+- Approval from project maintainers
+
+Compliance verification is MANDATORY for all pull requests. Any violation of these principles MUST be resolved before code integration.
+
+**Version**: 1.0.0 | **Ratified**: 2025-09-20 | **Last Amended**: 2025-09-20

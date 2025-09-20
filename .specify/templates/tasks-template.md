@@ -36,11 +36,11 @@
 - **[P]**: Can run in parallel (different files, no dependencies)
 - Include exact file paths in descriptions
 
-## Path Conventions
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+## Path Conventions (DDD Architecture)
+- **Single project**: `src/domain/`, `src/application/`, `src/infrastructure/`, `src/presentation/`
+- **Web app**: `backend/src/[layer]/`, `frontend/src/[layer]/`
+- **Mobile**: `api/src/[layer]/`, `ios/[Layer]/` or `android/[layer]/`
+- All paths follow DDD layer structure - adjust language-specific casing based on conventions
 
 ## Phase 3.1: Setup
 - [ ] T001 Create project structure per implementation plan
@@ -49,38 +49,47 @@
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
+**Test naming: Should_ExpectedBehavior_When_StateUnderTest**
+**Test structure: Given-When-Then blocks with explicit comments**
 - [ ] T004 [P] Contract test POST /api/users in tests/contract/test_users_post.py
 - [ ] T005 [P] Contract test GET /api/users/{id} in tests/contract/test_users_get.py
 - [ ] T006 [P] Integration test user registration in tests/integration/test_registration.py
 - [ ] T007 [P] Integration test auth flow in tests/integration/test_auth.py
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T008 [P] User model in src/models/user.py
-- [ ] T009 [P] UserService CRUD in src/services/user_service.py
-- [ ] T010 [P] CLI --create-user in src/cli/user_commands.py
-- [ ] T011 POST /api/users endpoint
-- [ ] T012 GET /api/users/{id} endpoint
-- [ ] T013 Input validation
-- [ ] T014 Error handling and logging
+**DDD Layer Implementation Order: Domain → Application → Infrastructure → Presentation**
+- [ ] T008 [P] User entity in src/domain/entities/user.py (with Result/Error monads)
+- [ ] T009 [P] User repository interface in src/domain/repositories/user_repository.py
+- [ ] T010 [P] Create user command in src/application/commands/create_user_command.py
+- [ ] T011 [P] Get user query in src/application/queries/get_user_query.py
+- [ ] T012 [P] User command handler in src/application/handlers/user_command_handler.py
+- [ ] T013 [P] User query handler in src/application/handlers/user_query_handler.py
+- [ ] T014 User repository implementation in src/infrastructure/repositories/user_repository_impl.py
+- [ ] T015 POST /api/users controller in src/presentation/controllers/user_controller.py
+- [ ] T016 GET /api/users/{id} controller in src/presentation/controllers/user_controller.py
 
 ## Phase 3.4: Integration
-- [ ] T015 Connect UserService to DB
-- [ ] T016 Auth middleware
-- [ ] T017 Request/response logging
-- [ ] T018 CORS and security headers
+- [ ] T017 Database configuration and migrations
+- [ ] T018 Dependency injection configuration
+- [ ] T019 Authentication middleware
+- [ ] T020 CORS and security headers configuration
+- [ ] T021 Request/response logging middleware
 
 ## Phase 3.5: Polish
-- [ ] T019 [P] Unit tests for validation in tests/unit/test_validation.py
-- [ ] T020 Performance tests (<200ms)
-- [ ] T021 [P] Update docs/api.md
-- [ ] T022 Remove duplication
-- [ ] T023 Run manual-testing.md
+- [ ] T022 [P] Unit tests for domain entities in tests/unit/domain/test_entities.py
+- [ ] T023 [P] Unit tests for application handlers in tests/unit/application/test_handlers.py
+- [ ] T024 Performance tests (<200ms) with load testing
+- [ ] T025 [P] Update API documentation
+- [ ] T026 Code review and refactoring for DDD compliance
+- [ ] T027 Run all tests and verify 100% pass rate
 
 ## Dependencies
-- Tests (T004-T007) before implementation (T008-T014)
-- T008 blocks T009, T015
-- T016 blocks T018
-- Implementation before polish (T019-T023)
+- Tests (T004-T007) before implementation (T008-T016)
+- Domain layer (T008-T009) before Application layer (T010-T013)
+- Application layer before Infrastructure layer (T014)
+- Infrastructure layer before Presentation layer (T015-T016)
+- Implementation before Integration (T017-T021)
+- Integration before Polish (T022-T027)
 
 ## Parallel Example
 ```

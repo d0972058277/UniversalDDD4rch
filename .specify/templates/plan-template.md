@@ -47,7 +47,30 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Domain-Driven Design Architecture**:
+- [ ] Clear separation of Domain, Application, Infrastructure, and Presentation layers
+- [ ] Domain layer contains only business logic (entities, value objects, domain services)
+- [ ] Infrastructure dependencies point inward (dependency inversion)
+
+**CQRS Implementation**:
+- [ ] Commands and Queries clearly separated
+- [ ] Commands do not return data (except success/failure)
+- [ ] Queries are read-only and stateless
+
+**Test-Driven Development**:
+- [ ] All tests written before implementation
+- [ ] Test naming follows Should_ExpectedBehavior_When_StateUnderTest pattern
+- [ ] Given-When-Then structure with explicit comment blocks
+
+**Functional Programming Principles**:
+- [ ] Result/Error/Maybe monads used for error handling
+- [ ] Exceptions only for unrecoverable errors
+- [ ] Language-appropriate error handling patterns
+
+**Multi-Language Consistency**:
+- [ ] Same domain model structure across all language implementations
+- [ ] Consistent API contracts and behavioral contracts
+- [ ] Framework-specific but architecturally aligned implementation
 
 ## Project Structure
 
@@ -64,39 +87,58 @@ specs/[###-feature]/
 
 ### Source Code (repository root)
 ```
-# Option 1: Single project (DEFAULT)
+# Option 1: Single project (DEFAULT) - DDD Architecture
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+├── domain/              # Business logic layer
+│   ├── entities/
+│   ├── value-objects/
+│   ├── services/
+│   └── events/
+├── application/         # Use cases and application services
+│   ├── commands/
+│   ├── queries/
+│   ├── handlers/
+│   └── dtos/
+├── infrastructure/     # External concerns
+│   ├── repositories/
+│   ├── messaging/
+│   └── persistence/
+└── presentation/       # Controllers and APIs
+    ├── controllers/
+    ├── middleware/
+    └── serializers/
 
 tests/
-├── contract/
-├── integration/
-└── unit/
+├── unit/              # Domain and application layer tests
+├── integration/       # Infrastructure integration tests
+└── contract/          # API contract tests
 
 # Option 2: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
+│   ├── domain/          # Business logic layer
+│   ├── application/     # Use cases and application services
+│   ├── infrastructure/  # External concerns
+│   └── presentation/    # API controllers
 └── tests/
 
 frontend/
 ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
+│   ├── domain/         # Client-side domain models
+│   ├── application/    # Client-side use cases
+│   ├── infrastructure/ # HTTP clients, localStorage
+│   └── presentation/   # Components, pages
 └── tests/
 
 # Option 3: Mobile + API (when "iOS/Android" detected)
 api/
-└── [same as backend above]
+└── [same DDD structure as backend above]
 
 ios/ or android/
-└── [platform-specific structure]
+├── Domain/             # Platform-specific domain layer
+├── Application/        # Platform-specific use cases
+├── Infrastructure/     # Platform APIs, networking
+└── Presentation/       # Views, ViewModels
 ```
 
 **Structure Decision**: [DEFAULT to Option 1 unless Technical Context indicates web/mobile app]
@@ -208,4 +250,4 @@ ios/ or android/
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v1.0.0 - See `.specify/memory/constitution.md`*
