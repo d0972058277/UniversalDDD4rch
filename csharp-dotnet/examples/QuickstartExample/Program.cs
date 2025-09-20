@@ -134,17 +134,17 @@ class Program
         var order = new Order(new CustomerId("CUST-001"), new Money(100m, "USD"));
 
         var result = await ProcessOrderAsync(order).ConfigureAwait(false);
-        result.Match(
-            onSuccess: orderId => Console.WriteLine($"Order {orderId} processed successfully"),
-            onFailure: error => Console.WriteLine($"Processing failed: {error.Message}")
+        result.Match<object?>(
+            onSuccess: orderId => { Console.WriteLine($"Order {orderId} processed successfully"); return null; },
+            onFailure: error => { Console.WriteLine($"Processing failed: {error.Message}"); return null; }
         );
 
         // Test with invalid order
         var invalidOrder = new Order(new CustomerId("CUST-002"), new Money(-10m, "USD"));
         var invalidResult = await ProcessOrderAsync(invalidOrder).ConfigureAwait(false);
-        invalidResult.Match(
-            onSuccess: orderId => Console.WriteLine($"Invalid order {orderId} processed"),
-            onFailure: error => Console.WriteLine($"Expected validation failure: {error.Code} - {error.Message}")
+        invalidResult.Match<object?>(
+            onSuccess: orderId => { Console.WriteLine($"Invalid order {orderId} processed"); return null; },
+            onFailure: error => { Console.WriteLine($"Expected validation failure: {error.Code} - {error.Message}"); return null; }
         );
     }
 
@@ -175,9 +175,13 @@ class Program
 
             return Result<string>.Ok(order.Id);
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             return Error.Infrastructure("Order.ProcessingFailed", ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return Error.Validation("Order.ProcessingFailed", ex.Message);
         }
     }
 

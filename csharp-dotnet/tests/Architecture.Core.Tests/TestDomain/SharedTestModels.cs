@@ -63,6 +63,7 @@ public class Order : AggregateRoot<string>
     public Money TotalAmount { get; private set; }
     public OrderStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    private readonly string? _correlationId;
 
     private Order() : base(string.Empty)
     {
@@ -79,6 +80,7 @@ public class Order : AggregateRoot<string>
         TotalAmount = totalAmount;
         Status = OrderStatus.Pending;
         CreatedAt = DateTime.UtcNow;
+        _correlationId = correlationId;
 
         AddEvent(new OrderCreatedEvent(Id, CustomerId, TotalAmount.Amount, correlationId));
     }
@@ -91,7 +93,7 @@ public class Order : AggregateRoot<string>
         var previousStatus = Status;
         Status = OrderStatus.Confirmed;
 
-        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString()));
+        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString(), _correlationId));
         return Result.Ok();
     }
 
@@ -103,7 +105,7 @@ public class Order : AggregateRoot<string>
         var previousStatus = Status;
         Status = OrderStatus.Cancelled;
 
-        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString()));
+        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString(), _correlationId));
         return Result.Ok();
     }
 
@@ -115,7 +117,7 @@ public class Order : AggregateRoot<string>
         var previousStatus = Status;
         Status = OrderStatus.Shipped;
 
-        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString()));
+        AddEvent(new OrderStatusChangedEvent(Id, previousStatus.ToString(), Status.ToString(), _correlationId));
         return Result.Ok();
     }
 }

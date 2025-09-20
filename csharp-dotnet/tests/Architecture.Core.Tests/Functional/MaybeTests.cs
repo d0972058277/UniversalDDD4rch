@@ -212,7 +212,7 @@ public class MaybeTests
         string? nullValue = null;
 
         // When
-        Maybe<string> maybe = nullValue;
+        Maybe<string> maybe = nullValue!;
 
         // Then
         maybe.HasValue.Should().BeFalse();
@@ -320,7 +320,7 @@ public class MaybeTests
     public void Should_CreateNone_When_SomeCalledWithNull(string? nullValue)
     {
         // Given & When
-        var maybe = Maybe<string>.Some(nullValue);
+        var maybe = Maybe<string>.Some(nullValue!);
 
         // Then
         maybe.HasValue.Should().BeFalse();

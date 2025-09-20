@@ -25,7 +25,10 @@
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\\Architecture.Core.Benchmarks\")",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\" /s)",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\\Domain\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(.specifyscriptspowershellcheck-implementation-prerequisites.ps1 -Json)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\examples\\QuickstartExample\\Domain\")",
+      "Bash(dotnet run:*)"
     ],
     "deny": [],
     "ask": []

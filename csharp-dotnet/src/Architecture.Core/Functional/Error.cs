@@ -32,8 +32,16 @@ public readonly struct Error : IEquatable<Error>
 
     private Error(string code, string message, ErrorCategory category, IDictionary<string, object>? metadata)
     {
-        Code = code ?? throw new ArgumentNullException(nameof(code));
-        Message = message ?? throw new ArgumentNullException(nameof(message));
+        ArgumentNullException.ThrowIfNull(code);
+        if (string.IsNullOrWhiteSpace(code))
+            throw new ArgumentException("Error code cannot be empty", nameof(code));
+
+        ArgumentNullException.ThrowIfNull(message);
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Error message cannot be empty", nameof(message));
+
+        Code = code;
+        Message = message;
         Category = category;
         Metadata = metadata?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) as IReadOnlyDictionary<string, object>
                    ?? new Dictionary<string, object>();

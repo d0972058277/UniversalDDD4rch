@@ -46,7 +46,8 @@ public readonly struct Maybe<T> : IEquatable<Maybe<T>>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Static factory methods are appropriate for this functional type")]
     public static Maybe<T> Some(T value)
     {
-        ArgumentNullException.ThrowIfNull(value, "Cannot create Some with null value");
+        if (value == null)
+            return None();
         return new(true, value);
     }
 

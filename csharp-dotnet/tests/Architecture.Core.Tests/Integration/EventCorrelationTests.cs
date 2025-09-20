@@ -225,7 +225,7 @@ public class EventCorrelationTests
 // Test aggregates and events for correlation testing
 public class TestOrderAggregate : AggregateRoot<string>
 {
-    public OrderStatus Status { get; private set; }
+    public CorrelationOrderStatus Status { get; private set; }
     private readonly string? _correlationId;
     private readonly Dictionary<string, object>? _baseMetadata;
     private IDomainEvent? _lastEvent;
@@ -233,7 +233,7 @@ public class TestOrderAggregate : AggregateRoot<string>
     public TestOrderAggregate(string id, string? correlationId = null, Dictionary<string, object>? metadata = null)
         : base(id)
     {
-        Status = OrderStatus.Created;
+        Status = CorrelationOrderStatus.Created;
         _correlationId = correlationId;
         _baseMetadata = metadata;
 
@@ -244,9 +244,9 @@ public class TestOrderAggregate : AggregateRoot<string>
 
     public void ConfirmOrder(string? causationId = null)
     {
-        if (Status != OrderStatus.Created) return;
+        if (Status != CorrelationOrderStatus.Created) return;
 
-        Status = OrderStatus.Confirmed;
+        Status = CorrelationOrderStatus.Confirmed;
         var confirmedEvent = new OrderConfirmedEvent(Id, _correlationId, causationId ?? _lastEvent?.Id.ToString(), _baseMetadata);
         AddEvent(confirmedEvent);
         _lastEvent = confirmedEvent;
@@ -254,9 +254,9 @@ public class TestOrderAggregate : AggregateRoot<string>
 
     public void ShipOrder(Dictionary<string, object>? additionalMetadata = null)
     {
-        if (Status != OrderStatus.Confirmed) return;
+        if (Status != CorrelationOrderStatus.Confirmed) return;
 
-        Status = OrderStatus.Shipped;
+        Status = CorrelationOrderStatus.Shipped;
         var metadata = CombineMetadata(_baseMetadata, additionalMetadata);
         var shippedEvent = new OrderShippedEvent(Id, _correlationId, _lastEvent?.Id.ToString(), metadata);
         AddEvent(shippedEvent);
@@ -265,9 +265,9 @@ public class TestOrderAggregate : AggregateRoot<string>
 
     public void DeliverOrder()
     {
-        if (Status != OrderStatus.Shipped) return;
+        if (Status != CorrelationOrderStatus.Shipped) return;
 
-        Status = OrderStatus.Delivered;
+        Status = CorrelationOrderStatus.Delivered;
         var deliveredEvent = new OrderDeliveredEvent(Id, _correlationId, _lastEvent?.Id.ToString(), _baseMetadata);
         AddEvent(deliveredEvent);
         _lastEvent = deliveredEvent;
@@ -319,7 +319,7 @@ public class TestPaymentAggregate : AggregateRoot<string>
     }
 }
 
-public enum OrderStatus { Created, Confirmed, Shipped, Delivered }
+public enum CorrelationOrderStatus { Created, Confirmed, Shipped, Delivered }
 public enum PaymentStatus { Pending, Processed, Failed }
 
 // Test events for correlation scenarios

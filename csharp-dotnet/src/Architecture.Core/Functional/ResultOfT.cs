@@ -32,7 +32,7 @@ public readonly struct Result<T> : IEquatable<Result<T>>
         get
         {
             if (!_isSuccess)
-                throw new InvalidOperationException("Cannot access Value when Result is failed");
+                throw new InvalidOperationException("Cannot access Value when Result is in failure state");
             return _value!;
         }
     }
@@ -46,7 +46,7 @@ public readonly struct Result<T> : IEquatable<Result<T>>
         get
         {
             if (_isSuccess)
-                throw new InvalidOperationException("Cannot access Error when Result is successful");
+                throw new InvalidOperationException("Cannot access Error when Result is in success state");
             return _error;
         }
     }

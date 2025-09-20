@@ -20,7 +20,7 @@ public class CustomerId : ValueObject
         yield return Value;
     }
 
-    public static implicit operator string(CustomerId customerId) => customerId?.Value ?? throw new ArgumentNullException(nameof(customerId));
+    public static implicit operator string(CustomerId customerId) => customerId?.Value ?? string.Empty;
     public static implicit operator CustomerId(string value) => new(value);
 
     public static CustomerId FromString(string value) => new(value);
