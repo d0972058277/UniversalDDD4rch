@@ -13,7 +13,19 @@
       "Bash(dotnet test:*)",
       "Bash(dotnet new sln:*)",
       "Bash(dotnet sln add:*)",
-      "Bash(dotnet sln:*)"
+      "Bash(dotnet sln:*)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\tests\\Architecture.Core.Tests\\Domain\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\tests\\Architecture.Core.Tests\\Integration\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\tests\\Architecture.Core.Tests\\TestDomain\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\examples\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\examples\\QuickstartExample\" /s)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\examples\\QuickstartExample\")",
+      "Bash(mkdir:*)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\\Architecture.Core.Benchmarks\")",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\" /s)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\\Domain\")",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

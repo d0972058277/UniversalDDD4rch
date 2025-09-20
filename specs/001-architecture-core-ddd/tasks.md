@@ -60,16 +60,16 @@
 - [x] **T011** [P] Maybe monadic laws tests (Left Identity, Right Identity, Associativity) in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/MaybeMonadicLawsTests.cs`
 
 ### DDD Abstractions Contract Tests
-- [ ] **T012** [P] ValueObject equality contract tests in `tests/Architecture.Core.Tests/Domain/ValueObjectTests.cs`
-- [ ] **T013** [P] Entity<TId> identity equality tests in `tests/Architecture.Core.Tests/Domain/EntityTests.cs`
-- [ ] **T014** [P] AggregateRoot<TId> event collection tests in `tests/Architecture.Core.Tests/Domain/AggregateRootTests.cs`
-- [ ] **T015** [P] DomainEventBase metadata handling tests in `tests/Architecture.Core.Tests/Domain/DomainEventBaseTests.cs`
-- [ ] **T016** [P] IRepository<TAggregate,TId> interface contract tests in `tests/Architecture.Core.Tests/Domain/RepositoryTests.cs`
+- [x] **T012** [P] ValueObject equality contract tests in `tests/Architecture.Core.Tests/Domain/ValueObjectTests.cs`
+- [x] **T013** [P] Entity<TId> identity equality tests in `tests/Architecture.Core.Tests/Domain/EntityTests.cs`
+- [x] **T014** [P] AggregateRoot<TId> event collection tests in `tests/Architecture.Core.Tests/Domain/AggregateRootTests.cs`
+- [x] **T015** [P] DomainEventBase metadata handling tests in `tests/Architecture.Core.Tests/Domain/DomainEventBaseTests.cs`
+- [x] **T016** [P] IRepository<TAggregate,TId> interface contract tests in `tests/Architecture.Core.Tests/Domain/RepositoryTests.cs`
 
 ### Integration Scenario Tests
-- [ ] **T017** [P] Order domain quickstart scenario test in `tests/Architecture.Core.Tests/Integration/QuickstartScenarioTests.cs`
-- [ ] **T018** [P] ValueObject multi-field equality scenarios in `tests/Architecture.Core.Tests/Integration/ValueObjectEqualityScenarios.cs`
-- [ ] **T019** [P] Aggregate event correlation chain tests in `tests/Architecture.Core.Tests/Integration/EventCorrelationTests.cs`
+- [x] **T017** [P] Order domain quickstart scenario test in `tests/Architecture.Core.Tests/Integration/QuickstartScenarioTests.cs`
+- [x] **T018** [P] ValueObject multi-field equality scenarios in `tests/Architecture.Core.Tests/Integration/ValueObjectEqualityScenarios.cs`
+- [x] **T019** [P] Aggregate event correlation chain tests in `tests/Architecture.Core.Tests/Integration/EventCorrelationTests.cs`
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
 **DDD Implementation Order: Functional Types → Domain Base Classes → Repository Interfaces**
@@ -96,24 +96,24 @@
 ## Phase 3.4: Integration & Infrastructure
 
 ### Test Infrastructure
-- [ ] **T033** [P] Test data builders in `tests/Architecture.Core.Tests/Builders/TestDataBuilders.cs`
-- [ ] **T034** [P] Custom assertion extensions in `tests/Architecture.Core.Tests/Extensions/AssertionExtensions.cs`
+- [x] **T033** [P] Test data builders in `tests/Architecture.Core.Tests/Builders/TestDataBuilders.cs`
+- [x] **T034** [P] Custom assertion extensions in `tests/Architecture.Core.Tests/Extensions/AssertionExtensions.cs`
 
 ### Example Implementation
-- [ ] **T035** Order domain example implementation in `examples/QuickstartExample/Domain/` (Money, CustomerId, Order, Events)
-- [ ] **T036** Order repository example in `examples/QuickstartExample/Repositories/IOrderRepository.cs`
-- [ ] **T037** Quickstart program demonstrating all scenarios in `examples/QuickstartExample/Program.cs`
+- [x] **T035** Order domain example implementation in `examples/QuickstartExample/Domain/` (Money, CustomerId, Order, Events)
+- [x] **T036** Order repository example in `examples/QuickstartExample/Repositories/IOrderRepository.cs`
+- [x] **T037** Quickstart program demonstrating all scenarios in `examples/QuickstartExample/Program.cs`
 
 ## Phase 3.5: Performance & Polish
 
 ### Performance Benchmarks
-- [ ] **T038** [P] ValueObject equality performance benchmarks in `benchmarks/Architecture.Core.Benchmarks/ValueObjectEqualityBenchmarks.cs`
-- [ ] **T039** [P] Result/Maybe allocation benchmarks in `benchmarks/Architecture.Core.Benchmarks/FunctionalTypesAllocationBenchmarks.cs`
+- [x] **T038** [P] ValueObject equality performance benchmarks in `benchmarks/Architecture.Core.Benchmarks/ValueObjectEqualityBenchmarks.cs`
+- [x] **T039** [P] Result/Maybe allocation benchmarks in `benchmarks/Architecture.Core.Benchmarks/FunctionalTypesAllocationBenchmarks.cs`
 
 ### Documentation & Validation
-- [ ] **T040** [P] XML documentation comments for all public APIs
-- [ ] **T041** [P] README.md with usage examples and getting started guide
-- [ ] **T042** Run all tests, verify 100% pass rate, and validate quickstart example execution
+- [x] **T040** [P] XML documentation comments for all public APIs
+- [x] **T041** [P] README.md with usage examples and getting started guide
+- [x] **T042** Run all tests, verify 100% pass rate, and validate quickstart example execution
 
 ## Dependencies
 
