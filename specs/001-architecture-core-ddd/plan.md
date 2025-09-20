@@ -30,18 +30,18 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Architecture.Core provides essential DDD abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional programming types (Result, Maybe, Error) for building domain-driven applications. The implementation follows pure BCL approach with zero external runtime dependencies, targeting .NET 8 LTS with optional integration packages for MediatR, Entity Framework, and FluentValidation.
+Architecture.Core provides essential DDD abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional programming types (Result, Maybe, Error) for building domain-driven applications. The implementation follows pure Node.js standard library approach with zero external runtime dependencies, targeting Node.js 22 LTS with optional integration packages for Express.js, TypeORM, Jest, and class-validator.
 
 ## Technical Context
-**Language/Version**: C# .NET 8 LTS (supported until November 2026)
-**Primary Dependencies**: Pure BCL only (core), optional MediatR, Entity Framework, FluentValidation
+**Language/Version**: TypeScript 5.9+ with Node.js 22 LTS (Active LTS, supported until April 2027)
+**Primary Dependencies**: Pure Node.js standard library only (core), optional Express.js, TypeORM, Jest, class-validator
 **Storage**: N/A (abstractions only, Repository interface)
-**Testing**: xUnit, NUnit, or MSTest with Given-When-Then structure
-**Target Platform**: .NET 8+ applications (web, console, desktop)
+**Testing**: Jest with Given-When-Then structure and Should_ExpectedBehavior_When_StateUnderTest naming
+**Target Platform**: Node.js 22+ applications (Express web apps, microservices, CLI tools)
 **Project Type**: single - DDD core library
-**Performance Goals**: Minimal allocations, optimized equality operations for ValueObject
-**Constraints**: Zero runtime dependencies in core library, BCL only
-**Scale/Scope**: Foundation library for enterprise DDD applications, multi-language consistency
+**Performance Goals**: Minimal memory allocations, optimized equality operations for ValueObject, async/await best practices
+**Constraints**: Zero external runtime dependencies in core library, pure Node.js standard library only
+**Scale/Scope**: Foundation library for enterprise DDD applications, multi-language consistency with C# implementation
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -125,16 +125,16 @@ tests/
 4. ✅ Domain event correlation/causation ID patterns
 5. ✅ Repository interface design for async/cancellation best practices
 
-**Output**: research.md with all technical decisions documented and justified
+**Output**: research-typescript.md with all technical decisions documented and justified for TypeScript implementation
 
 ## Phase 1: Design & Contracts
 *✅ COMPLETED*
 
 **Artifacts Generated**:
-1. ✅ `data-model.md`: Core types, relationships, validation rules
-2. ✅ `contracts/core-types-contract.cs`: Public API contracts and interfaces
-3. ✅ `quickstart.md`: Usage examples with Order domain demonstration
-4. ✅ `CLAUDE.md`: Agent context file with project overview and current status
+1. ✅ `data-model-typescript.md`: Core types, relationships, validation rules for TypeScript
+2. ✅ `contracts-typescript/core-types-contract.ts`: Public API contracts and interfaces for TypeScript
+3. ✅ `quickstart-typescript.md`: Usage examples with Order domain demonstration for TypeScript
+4. ✅ `CLAUDE.md`: Agent context file updated with TypeScript project overview and current status
 
 **Phase 1 Validation**:
 - All entities extracted from feature specification

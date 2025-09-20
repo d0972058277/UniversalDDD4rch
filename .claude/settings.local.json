@@ -32,7 +32,11 @@
       "Bash(.specify/scripts/powershell/check-implementation-prerequisites.ps1 -Json)",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\src\\Architecture.Core\\Functional\")",
       "Bash(dotnet add reference:*)",
-      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\\Architecture.Core.Benchmarks\" /s)"
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\csharp-dotnet\\benchmarks\\Architecture.Core.Benchmarks\" /s)",
+      "Bash(.specify/scripts/powershell/setup-plan.ps1 -Json)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\typescript-nodejs\" /s)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\typescript-nodejs\" /b)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\" /b)"
     ],
     "deny": [],
     "ask": []
