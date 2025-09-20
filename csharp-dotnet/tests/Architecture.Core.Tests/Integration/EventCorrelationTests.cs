@@ -130,8 +130,8 @@ public class EventCorrelationTests
     public void Should_TimestampEventsCorrectly_When_EventsRaisedOverTime()
     {
         // Given
-        var aggregate = new TestOrderAggregate("order-1");
         var startTime = DateTimeOffset.UtcNow;
+        var aggregate = new TestOrderAggregate("order-1");
 
         // When
         aggregate.ConfirmOrder();
