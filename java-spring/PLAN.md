@@ -4,7 +4,7 @@
 Implement DDD core abstractions (AggregateRoot<TId>, Entity<TId>, ValueObject, DomainEvent, Repository<TAggregate,TId>) and functional types (Result/Result<T>, Error, Maybe<T>) using pure JDK with no external runtime dependencies.
 
 ## Target Framework
-- Java 17+ LTS
+- Java 21 LTS (free until September 2026) or Java 25 LTS (free until September 2028)
 - Pure JDK implementation
 - Optional integration packages: Spring Boot, Spring Data JPA, Spring Security, JUnit 5
 
