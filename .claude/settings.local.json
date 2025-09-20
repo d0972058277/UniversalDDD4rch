@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git commit:*)",
       "Bash(powershell:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\")"
     ],
     "deny": [],
     "ask": []
