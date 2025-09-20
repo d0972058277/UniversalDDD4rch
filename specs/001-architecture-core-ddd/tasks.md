@@ -38,11 +38,11 @@
 
 ## Phase 3.1: Setup
 
-- [ ] **T001** Create .NET 8 project structure for Architecture.Core at `src/Architecture.Core/Architecture.Core.csproj`
-- [ ] **T002** Create test project structure at `tests/Architecture.Core.Tests/Architecture.Core.Tests.csproj` with xUnit dependencies
-- [ ] **T003** [P] Configure EditorConfig, Directory.Build.props for warnings-as-errors and C# 12 features
-- [ ] **T004** [P] Create benchmark project at `benchmarks/Architecture.Core.Benchmarks/Architecture.Core.Benchmarks.csproj` with BenchmarkDotNet
-- [ ] **T005** [P] Create example project at `examples/QuickstartExample/QuickstartExample.csproj` referencing Architecture.Core
+- [x] **T001** Create .NET 8 project structure for Architecture.Core at `csharp-dotnet/src/Architecture.Core/Architecture.Core.csproj`
+- [x] **T002** Create test project structure at `csharp-dotnet/tests/Architecture.Core.Tests/Architecture.Core.Tests.csproj` with xUnit dependencies
+- [x] **T003** [P] Configure EditorConfig, Directory.Build.props for warnings-as-errors and C# 12 features
+- [x] **T004** [P] Create benchmark project at `csharp-dotnet/benchmarks/Architecture.Core.Benchmarks/Architecture.Core.Benchmarks.csproj` with BenchmarkDotNet
+- [x] **T005** [P] Create example project at `csharp-dotnet/examples/QuickstartExample/QuickstartExample.csproj` referencing Architecture.Core
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
@@ -50,14 +50,14 @@
 **Test structure: Given-When-Then blocks with explicit comments**
 
 ### Functional Types Contract Tests
-- [ ] **T006** [P] Result struct contract tests in `tests/Architecture.Core.Tests/Functional/ResultTests.cs`
-- [ ] **T007** [P] Result<T> struct contract tests in `tests/Architecture.Core.Tests/Functional/ResultOfTTests.cs`
-- [ ] **T008** [P] Error struct contract tests in `tests/Architecture.Core.Tests/Functional/ErrorTests.cs`
-- [ ] **T009** [P] Maybe<T> struct contract tests in `tests/Architecture.Core.Tests/Functional/MaybeTests.cs`
+- [x] **T006** [P] Result struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultTests.cs`
+- [x] **T007** [P] Result<T> struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultOfTTests.cs`
+- [x] **T008** [P] Error struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ErrorTests.cs`
+- [x] **T009** [P] Maybe<T> struct contract tests in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/MaybeTests.cs`
 
 ### Monadic Laws Tests
-- [ ] **T010** [P] Result monadic laws tests (Left Identity, Right Identity, Associativity) in `tests/Architecture.Core.Tests/Functional/ResultMonadicLawsTests.cs`
-- [ ] **T011** [P] Maybe monadic laws tests (Left Identity, Right Identity, Associativity) in `tests/Architecture.Core.Tests/Functional/MaybeMonadicLawsTests.cs`
+- [x] **T010** [P] Result monadic laws tests (Left Identity, Right Identity, Associativity) in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/ResultMonadicLawsTests.cs`
+- [x] **T011** [P] Maybe monadic laws tests (Left Identity, Right Identity, Associativity) in `csharp-dotnet/tests/Architecture.Core.Tests/Functional/MaybeMonadicLawsTests.cs`
 
 ### DDD Abstractions Contract Tests
 - [ ] **T012** [P] ValueObject equality contract tests in `tests/Architecture.Core.Tests/Domain/ValueObjectTests.cs`

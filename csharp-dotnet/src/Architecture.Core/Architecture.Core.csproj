@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Universal DDD Architecture Team</Authors>
+    <Company>Universal DDD Architecture</Company>
+    <Product>Architecture.Core</Product>
+    <Description>Core DDD abstractions and functional types for domain-driven applications. Provides AggregateRoot, Entity, ValueObject, DomainEvent, Repository interfaces, and Result/Maybe monads with zero external dependencies.</Description>
+    <PackageTags>DDD;Domain-Driven-Design;Functional;Result;Maybe;Entity;ValueObject;AggregateRoot</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/your-org/UniversalDDD4rch</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+
+</Project>
