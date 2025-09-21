@@ -162,23 +162,23 @@ Implementation tasks for Architecture.Core TypeScript Node.js library providing 
 ## Phase 3.6: Performance and Benchmarks
 
 ### Performance Benchmarks
-- [ ] **T065** [P] ValueObject equality performance benchmarks in `typescript-nodejs/benchmarks/value-object-performance.bench.ts`
-- [ ] **T066** [P] Result/Maybe memory allocation benchmarks in `typescript-nodejs/benchmarks/functional-types-performance.bench.ts`
-- [ ] **T067** [P] AggregateRoot event collection benchmarks in `typescript-nodejs/benchmarks/aggregate-performance.bench.ts`
-- [ ] **T068** [P] Repository async operations benchmarks in `typescript-nodejs/benchmarks/repository-performance.bench.ts`
+- [X] **T065** [P] ValueObject equality performance benchmarks in `typescript-nodejs/benchmarks/value-object-performance.bench.ts`
+- [X] **T066** [P] Result/Maybe memory allocation benchmarks in `typescript-nodejs/benchmarks/functional-types-performance.bench.ts`
+- [X] **T067** [P] AggregateRoot event collection benchmarks in `typescript-nodejs/benchmarks/aggregate-performance.bench.ts`
+- [X] **T068** [P] Repository async operations benchmarks in `typescript-nodejs/benchmarks/repository-performance.bench.ts`
 
 ### Memory and GC Analysis
-- [ ] **T069** [P] Memory leak detection tests in `typescript-nodejs/tests/performance/memory-tests.test.ts`
-- [ ] **T070** [P] Hash code stability performance tests in `typescript-nodejs/tests/performance/hash-performance.test.ts`
+- [X] **T069** [P] Memory leak detection tests in `typescript-nodejs/tests/performance/memory-tests.test.ts`
+- [X] **T070** [P] Hash code stability performance tests in `typescript-nodejs/tests/performance/hash-performance.test.ts`
 
 ## Phase 3.7: Polish and Documentation
 
 ### Unit Tests for Complex Scenarios
-- [ ] **T071** [P] ValueObject multi-field equality unit tests in `typescript-nodejs/tests/unit/value-object-edge-cases.test.ts`
-- [ ] **T072** [P] Entity invariant enforcement unit tests in `typescript-nodejs/tests/unit/entity-invariants.test.ts`
-- [ ] **T073** [P] AggregateRoot version control unit tests in `typescript-nodejs/tests/unit/aggregate-versioning.test.ts`
-- [ ] **T074** [P] DomainEvent metadata handling unit tests in `typescript-nodejs/tests/unit/domain-event-metadata.test.ts`
-- [ ] **T075** [P] Repository cancellation handling unit tests in `typescript-nodejs/tests/unit/repository-cancellation.test.ts`
+- [X] **T071** [P] ValueObject multi-field equality unit tests in `typescript-nodejs/tests/unit/value-object-edge-cases.test.ts`
+- [X] **T072** [P] Entity invariant enforcement unit tests in `typescript-nodejs/tests/unit/entity-invariants.test.ts`
+- [X] **T073** [P] AggregateRoot version control unit tests in `typescript-nodejs/tests/unit/aggregate-versioning.test.ts`
+- [X] **T074** [P] DomainEvent metadata handling unit tests in `typescript-nodejs/tests/unit/domain-event-metadata.test.ts`
+- [X] **T075** [P] Repository cancellation handling unit tests in `typescript-nodejs/tests/unit/repository-cancellation.test.ts`
 
 ### Type Safety and Compilation Tests
 - [ ] **T076** [P] TypeScript strict mode compilation tests in `typescript-nodejs/tests/unit/type-safety.test.ts`
