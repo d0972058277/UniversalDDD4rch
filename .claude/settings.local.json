@@ -64,7 +64,10 @@
       "Bash(where go)",
       "Bash(go build:*)",
       "Bash(go mod:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(go doc:*)",
+      "Bash(set CGO_ENABLED=1)",
+      "Bash(go run:*)"
     ],
     "deny": [],
     "ask": []
