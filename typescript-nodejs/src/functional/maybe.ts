@@ -117,6 +117,14 @@ export class Maybe<T> implements IMaybe<T> {
   }
 
   /**
+   * Creates a Maybe<T> from a nullable value.
+   * Alias for fromValue to maintain API compatibility.
+   */
+  public static fromNullable<T>(value: T | null | undefined): Maybe<T> {
+    return Maybe.fromValue(value);
+  }
+
+  /**
    * Equality comparison for Maybe instances.
    */
   public equals(other: Maybe<T>): boolean {

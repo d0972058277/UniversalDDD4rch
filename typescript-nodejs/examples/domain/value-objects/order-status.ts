@@ -84,7 +84,7 @@ export class OrderStatus extends ValueObject {
      * Check if order can be cancelled
      */
     public canBeCancelled(): boolean {
-        return this.value === 'Pending' || this.value === 'Confirmed';
+        return this.value === 'Pending';
     }
 
     /**

@@ -58,10 +58,14 @@ export class Result {
    * Creates a failed Result<T> with an error.
    */
   public static fail<T>(error: Error): ResultOf<T>;
-  public static fail<T>(error: Error): Result | ResultOf<T> {
-    // TypeScript can't determine the type at runtime, so we need a way to distinguish
-    // For now, we'll always return ResultOf<T> and let type inference handle it
-    return new ResultOf<T>(false, undefined, error);
+  public static fail<T>(error?: Error): Result | ResultOf<T> {
+    if (arguments.length === 1 && error) {
+      // If called with type parameter, return ResultOf<T>
+      return new ResultOf<T>(false, undefined, error);
+    } else {
+      // If called without type parameter, return Result
+      return new Result(false, error);
+    }
   }
 
   /**
@@ -186,10 +190,20 @@ export class ResultOf<T> {
   /**
    * Chains Result operations, executing the next operation only if current Result is successful.
    */
-  public bind<TResult>(func: (value: T) => ResultOf<TResult>): ResultOf<TResult> {
+  public bind<TResult>(func: (value: T) => ResultOf<TResult> | Result): ResultOf<TResult> {
     if (this._isSuccess) {
       try {
-        return func(this._value!);
+        const result = func(this._value!);
+        // Handle both Result and ResultOf return types
+        if (result instanceof ResultOf) {
+          return result;
+        } else if (result instanceof Result) {
+          // Convert Result to ResultOf
+          return result.isSuccess
+            ? new ResultOf<TResult>(true, undefined as unknown as TResult)
+            : new ResultOf<TResult>(false, undefined, result.error!);
+        }
+        return result as ResultOf<TResult>;
       } catch (err) {
         return new ResultOf<TResult>(false, undefined, Error.infrastructure('BIND_ERROR', `Bind operation failed: ${err}`));
       }
@@ -213,3 +227,6 @@ export class ResultOf<T> {
       : new ResultOf<T>(false, undefined, errorWhenNone);
   }
 }
+
+// Type alias to support Result<T> syntax - uses conditional type to handle void
+export type ResultType<T> = T extends void ? Result : ResultOf<T>;

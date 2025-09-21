@@ -369,9 +369,8 @@ export class OrderService {
     }
 
     private calculateTaxOnAmount(amount: Money): Money {
-        return this.pricingStrategy.calculateTax(
-            Order.create(new CustomerId('temp-customer-id'))
-        );
+        const taxRate = 0.08; // 8% tax rate
+        return amount.multiply(taxRate);
     }
 
     private findDuplicateProducts(order: Order): string[] {

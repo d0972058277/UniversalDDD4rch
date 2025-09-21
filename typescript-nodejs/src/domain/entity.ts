@@ -121,7 +121,7 @@ export abstract class Entity<TId extends object> implements IEntity<TId> {
     }
 
     // Handle objects with equals method
-    if (typeof id1 === 'object' && 'equals' in id1 &&
+    if (typeof id1 === 'object' && id1 !== null && 'equals' in id1 &&
         typeof (id1 as any).equals === 'function') {
       return (id1 as any).equals(id2);
     }

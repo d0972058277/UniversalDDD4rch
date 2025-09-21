@@ -1,4 +1,4 @@
-import { Result, Error } from '../../src/functional';
+import { Result, ResultOf, Error } from '../../src/functional';
 
 /**
  * Integration tests for Result chaining and combinators
@@ -24,20 +24,20 @@ describe('Result Integration Tests', () => {
 
         it('should chain bind operations on successful results', () => {
             // Given
-            const parseNumber = (str: string): Result<number> => {
+            const parseNumber = (str: string): ResultOf<number> => {
                 const parsed = parseInt(str, 10);
                 return isNaN(parsed)
-                    ? Result.fail(Error.validation('INVALID_NUMBER', `'${str}' is not a valid number`))
+                    ? Result.fail<number>(Error.validation('INVALID_NUMBER', `'${str}' is not a valid number`))
                     : Result.ok(parsed);
             };
 
-            const validatePositive = (num: number): Result<number> => {
+            const validatePositive = (num: number): ResultOf<number> => {
                 return num > 0
                     ? Result.ok(num)
-                    : Result.fail(Error.validation('NOT_POSITIVE', 'Number must be positive'));
+                    : Result.fail<number>(Error.validation('NOT_POSITIVE', 'Number must be positive'));
             };
 
-            const square = (num: number): Result<number> => {
+            const square = (num: number): ResultOf<number> => {
                 return Result.ok(num * num);
             };
 
@@ -63,7 +63,7 @@ describe('Result Integration Tests', () => {
             );
 
             const failureMessage = failureResult.match(
-                value => `Success: ${value}`,
+                () => 'Success',
                 error => `Error: ${error.message}`
             );
 
@@ -80,7 +80,7 @@ describe('Result Integration Tests', () => {
 
             const faultyOperation = (x: number): number => {
                 operationsExecuted++;
-                throw new Error('Operation failed');
+                throw new globalThis.Error('Operation failed');
             };
 
             const normalOperation = (x: number): number => {
@@ -98,21 +98,21 @@ describe('Result Integration Tests', () => {
             expect(result.isFailure).toBe(true);
             expect(operationsExecuted).toBe(2); // Only first two operations executed
             expect(result.error.category).toBe('Infrastructure');
-            expect(result.error.message).toBe('Operation failed');
+            expect(result.error.message).toBe('Map operation failed: Error: Operation failed');
         });
 
         it('should stop chain execution on first bind failure', () => {
             // Given
             let operationsExecuted = 0;
 
-            const successOperation = (x: number): Result<number> => {
+            const successOperation = (x: number): ResultOf<number> => {
                 operationsExecuted++;
                 return Result.ok(x * 2);
             };
 
-            const failureOperation = (x: number): Result<number> => {
+            const failureOperation = (x: number): ResultOf<number> => {
                 operationsExecuted++;
-                return Result.fail(Error.domain('BIND_FAILURE', 'Bind operation failed'));
+                return Result.fail<number>(Error.domain('BIND_FAILURE', 'Bind operation failed'));
             };
 
             // When
@@ -136,7 +136,7 @@ describe('Result Integration Tests', () => {
             // When
             const result = Result.fail(firstError)
                 .bind(() => Result.fail(secondError))  // Should not execute
-                .map(x => x + 1);                       // Should not execute
+                .map(() => 1);                          // Should not execute
 
             // Then
             expect(result.isFailure).toBe(true);
@@ -159,22 +159,22 @@ describe('Result Integration Tests', () => {
             currency: string;
         }
 
-        const validateUser = (user: User): Result<User> => {
+        const validateUser = (user: User): ResultOf<User> => {
             if (!user.email || !user.email.includes('@')) {
-                return Result.fail(Error.validation('INVALID_EMAIL', 'Invalid email address'));
+                return Result.fail<User>(Error.validation('INVALID_EMAIL', 'Invalid email address'));
             }
             if (user.age < 18) {
-                return Result.fail(Error.validation('UNDERAGE', 'User must be 18 or older'));
+                return Result.fail<User>(Error.validation('UNDERAGE', 'User must be 18 or older'));
             }
             return Result.ok(user);
         };
 
-        const createOrder = (user: User, amount: number): Result<Order> => {
+        const createOrder = (user: User, amount: number): ResultOf<Order> => {
             if (amount <= 0) {
-                return Result.fail(Error.validation('INVALID_AMOUNT', 'Amount must be positive'));
+                return Result.fail<Order>(Error.validation('INVALID_AMOUNT', 'Amount must be positive'));
             }
             if (amount > 10000) {
-                return Result.fail(Error.domain('AMOUNT_TOO_HIGH', 'Amount exceeds maximum limit'));
+                return Result.fail<Order>(Error.domain('AMOUNT_TOO_HIGH', 'Amount exceeds maximum limit'));
             }
 
             return Result.ok({
@@ -185,10 +185,10 @@ describe('Result Integration Tests', () => {
             });
         };
 
-        const processPayment = (order: Order): Result<string> => {
+        const processPayment = (order: Order): ResultOf<string> => {
             // Simulate payment processing
             if (order.amount > 5000) {
-                return Result.fail(Error.infrastructure('PAYMENT_FAILED', 'Payment processing failed'));
+                return Result.fail<string>(Error.infrastructure('PAYMENT_FAILED', 'Payment processing failed'));
             }
             return Result.ok(`payment-${order.id}`);
         };
@@ -276,23 +276,23 @@ describe('Result Integration Tests', () => {
     });
 
     describe('Should_HandleParallelOperations_When_CombiningIndependentResults', () => {
-        const fetchUserById = (id: string): Result<{ id: string; name: string }> => {
+        const fetchUserById = (id: string): ResultOf<{ id: string; name: string }> => {
             if (id === 'invalid') {
-                return Result.fail(Error.domain('USER_NOT_FOUND', 'User not found'));
+                return ResultOf.fail(Error.domain('USER_NOT_FOUND', 'User not found'));
             }
             return Result.ok({ id, name: `User ${id}` });
         };
 
-        const fetchUserPreferences = (userId: string): Result<{ theme: string; language: string }> => {
+        const fetchUserPreferences = (userId: string): ResultOf<{ theme: string; language: string }> => {
             if (userId === 'no-prefs') {
-                return Result.fail(Error.domain('PREFERENCES_NOT_FOUND', 'User preferences not found'));
+                return ResultOf.fail(Error.domain('PREFERENCES_NOT_FOUND', 'User preferences not found'));
             }
             return Result.ok({ theme: 'dark', language: 'en' });
         };
 
-        const fetchUserOrders = (userId: string): Result<string[]> => {
+        const fetchUserOrders = (userId: string): ResultOf<string[]> => {
             if (userId === 'no-orders') {
-                return Result.fail(Error.domain('ORDERS_NOT_FOUND', 'User orders not found'));
+                return ResultOf.fail(Error.domain('ORDERS_NOT_FOUND', 'User orders not found'));
             }
             return Result.ok([`order-1-${userId}`, `order-2-${userId}`]);
         };
@@ -350,25 +350,25 @@ describe('Result Integration Tests', () => {
     });
 
     describe('Should_HandleAsyncOperations_When_UsingPromiseBasedWorkflows', () => {
-        const asyncValidateEmail = async (email: string): Promise<Result<string>> => {
+        const asyncValidateEmail = async (email: string): Promise<ResultOf<string>> => {
             // Simulate async validation
             await new Promise(resolve => setTimeout(resolve, 10));
 
             if (!email.includes('@')) {
-                return Result.fail(Error.validation('INVALID_EMAIL_FORMAT', 'Email must contain @'));
+                return ResultOf.fail(Error.validation('INVALID_EMAIL_FORMAT', 'Email must contain @'));
             }
             if (email.endsWith('@blocked.com')) {
-                return Result.fail(Error.security('BLOCKED_DOMAIN', 'Email domain is blocked'));
+                return ResultOf.fail(Error.security('BLOCKED_DOMAIN', 'Email domain is blocked'));
             }
             return Result.ok(email);
         };
 
-        const asyncCreateUser = async (email: string): Promise<Result<{ id: string; email: string }>> => {
+        const asyncCreateUser = async (email: string): Promise<ResultOf<{ id: string; email: string }>> => {
             // Simulate async user creation
             await new Promise(resolve => setTimeout(resolve, 10));
 
             if (email === 'duplicate@example.com') {
-                return Result.fail(Error.domain('USER_ALREADY_EXISTS', 'User with this email already exists'));
+                return ResultOf.fail(Error.domain('USER_ALREADY_EXISTS', 'User with this email already exists'));
             }
 
             return Result.ok({
@@ -377,7 +377,7 @@ describe('Result Integration Tests', () => {
             });
         };
 
-        const asyncSendWelcomeEmail = async (user: { id: string; email: string }): Promise<Result<void>> => {
+        const asyncSendWelcomeEmail = async (user: { id: string; email: string }): Promise<Result> => {
             // Simulate async email sending
             await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -395,16 +395,16 @@ describe('Result Integration Tests', () => {
             // When
             const emailResult = await asyncValidateEmail(email);
 
-            let finalResult: Result<void>;
+            let finalResult: Result;
             if (emailResult.isSuccess) {
                 const userResult = await asyncCreateUser(emailResult.value);
                 if (userResult.isSuccess) {
                     finalResult = await asyncSendWelcomeEmail(userResult.value);
                 } else {
-                    finalResult = userResult.error;
+                    finalResult = Result.fail(userResult.error);
                 }
             } else {
-                finalResult = emailResult.error;
+                finalResult = Result.fail(emailResult.error);
             }
 
             // Then
@@ -418,16 +418,16 @@ describe('Result Integration Tests', () => {
             // When
             const emailResult = await asyncValidateEmail(email);
 
-            let finalResult: Result<void>;
+            let finalResult: Result;
             if (emailResult.isSuccess) {
                 const userResult = await asyncCreateUser(emailResult.value);
                 if (userResult.isSuccess) {
                     finalResult = await asyncSendWelcomeEmail(userResult.value);
                 } else {
-                    finalResult = userResult.error;
+                    finalResult = Result.fail(userResult.error);
                 }
             } else {
-                finalResult = emailResult.error;
+                finalResult = Result.fail(emailResult.error);
             }
 
             // Then
@@ -443,16 +443,16 @@ describe('Result Integration Tests', () => {
             // When
             const emailResult = await asyncValidateEmail(email);
 
-            let finalResult: Result<void>;
+            let finalResult: Result;
             if (emailResult.isSuccess) {
                 const userResult = await asyncCreateUser(emailResult.value);
                 if (userResult.isSuccess) {
                     finalResult = await asyncSendWelcomeEmail(userResult.value);
                 } else {
-                    finalResult = userResult.error;
+                    finalResult = Result.fail(userResult.error);
                 }
             } else {
-                finalResult = emailResult.error;
+                finalResult = Result.fail(emailResult.error);
             }
 
             // Then

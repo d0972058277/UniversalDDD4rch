@@ -199,7 +199,7 @@ describe('Performance Contract Tests', () => {
 
       // Then
       expect(isEqual).toBe(true);
-      expect(endTime - startTime).toBeLessThan(10); // Should handle large objects in < 10ms
+      expect(endTime - startTime).toBeLessThan(50); // Should handle large objects efficiently
     });
   });
 

@@ -357,12 +357,12 @@ describe('ValueObject Multi-Field Equality Edge Cases', () => {
 
         test('Should_NotBeEqual_When_MapsHaveDifferentEntries', () => {
             // Given
-            const map1 = new Map([
+            const map1 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key2', 42]
             ]);
 
-            const map2 = new Map([
+            const map2 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key2', 43] // Different value
             ]);
@@ -379,12 +379,12 @@ describe('ValueObject Multi-Field Equality Edge Cases', () => {
 
         test('Should_NotBeEqual_When_MapsHaveDifferentKeys', () => {
             // Given
-            const map1 = new Map([
+            const map1 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key2', 42]
             ]);
 
-            const map2 = new Map([
+            const map2 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key3', 42] // Different key
             ]);
@@ -402,7 +402,7 @@ describe('ValueObject Multi-Field Equality Edge Cases', () => {
         test('Should_BeEqual_When_BothMapsEmpty', () => {
             // Given
             const map1 = new Map();
-            const map2 = new Map();
+            const map2 = new Map<string, any>();
 
             const obj1 = new ComplexObject('test', [], [], [], map1, new Set(), null);
             const obj2 = new ComplexObject('test', [], [], [], map2, new Set(), null);
@@ -647,7 +647,7 @@ describe('ValueObject Multi-Field Equality Edge Cases', () => {
         test('Should_GenerateConsistentHashCodes_When_ObjectsAreEqual', () => {
             // Given
             const map1 = new Map([['key', 'value']]);
-            const map2 = new Map([['key', 'value']]);
+            const map2 = new Map<string, any>([['key', 'value']]);
             const set1 = new Set(['a', 'b']);
             const set2 = new Set(['a', 'b']);
 

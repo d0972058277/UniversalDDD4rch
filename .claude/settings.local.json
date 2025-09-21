@@ -55,7 +55,10 @@
       "Bash(npx typedoc:*)",
       "Bash(npm run test:coverage:*)",
       "Bash(node:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm run test:integration:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

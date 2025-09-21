@@ -54,7 +54,10 @@ export class Money extends ValueObject {
      * Multiply money by a factor
      */
     public multiply(factor: number): Money {
-        return new Money(this.amount * factor, this.currency);
+        // Use more precise rounding for monetary calculations
+        // Keep up to 3 decimal places for intermediate calculations
+        const result = Math.round((this.amount * factor) * 1000) / 1000;
+        return new Money(result, this.currency);
     }
 
     /**
@@ -89,7 +92,7 @@ export class Money extends ValueObject {
 
         const amount = parseFloat(parts[0]!);
         if (isNaN(amount)) {
-            throw new Error('Invalid amount format');
+            throw new Error('Invalid money format');
         }
 
         return new Money(amount, parts[1]!);

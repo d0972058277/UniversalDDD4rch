@@ -353,6 +353,7 @@ export class Order extends AggregateRoot<OrderId> {
             this._status.value
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 

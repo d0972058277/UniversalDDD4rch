@@ -19,7 +19,7 @@ class UserId extends ValueObject {
         return [this.value];
     }
 
-    toString(): string {
+    override toString(): string {
         return this.value;
     }
 
@@ -43,7 +43,7 @@ class ProductId extends ValueObject {
         return [this.value];
     }
 
-    toString(): string {
+    override toString(): string {
         return this.value;
     }
 
@@ -52,9 +52,30 @@ class ProductId extends ValueObject {
     }
 }
 
+class OrderId extends ValueObject {
+    constructor(private readonly value: string) {
+        super();
+        if (!value || value.trim() === '') {
+            throw new Error('OrderId cannot be empty');
+        }
+    }
+
+    protected getEqualityComponents(): readonly unknown[] {
+        return [this.value];
+    }
+
+    override toString(): string {
+        return this.value;
+    }
+
+    static create(value: string): OrderId {
+        return new OrderId(value);
+    }
+}
+
 // Test Entity implementations with invariants
 class User extends Entity<UserId> {
-    private _email: string;
+    private _email!: string;
     private _isActive: boolean;
     private _createdAt: Date;
     private _lastLoginAt?: Date;
@@ -121,11 +142,11 @@ class User extends Entity<UserId> {
 }
 
 class Product extends Entity<ProductId> {
-    private _name: string;
-    private _price: number;
-    private _category: string;
-    private _isAvailable: boolean;
-    private _stockQuantity: number;
+    private _name!: string;
+    private _price!: number;
+    private _category!: string;
+    private _isAvailable!: boolean;
+    private _stockQuantity!: number;
 
     constructor(id: ProductId, name: string, price: number, category: string, stockQuantity: number = 0) {
         super(id);
@@ -258,14 +279,14 @@ class Product extends Entity<ProductId> {
 }
 
 // Complex entity with cross-field invariants
-class Order extends Entity<string> {
+class Order extends Entity<OrderId> {
     private _items: Array<{ productId: ProductId; quantity: number; unitPrice: number }> = [];
     private _status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
     private _customerId: UserId;
     private _orderDate: Date;
     private _shippingAddress?: string;
 
-    constructor(id: string, customerId: UserId) {
+    constructor(id: OrderId, customerId: UserId) {
         super(id);
         this._customerId = customerId;
         this._status = 'pending';
@@ -304,7 +325,7 @@ class Order extends Entity<string> {
         const existingItemIndex = this._items.findIndex(item => item.productId.equals(productId));
         if (existingItemIndex >= 0) {
             // Update existing item
-            this._items[existingItemIndex].quantity += quantity;
+            this._items[existingItemIndex]!.quantity += quantity;
         } else {
             // Add new item
             this._items.push({ productId, quantity, unitPrice });
@@ -450,10 +471,15 @@ describe('Entity Invariant Enforcement Tests', () => {
         test('Should_ThrowError_When_InvalidEmailProvided', () => {
             // Given
             const userId = UserId.create('user123');
-            const invalidEmails = ['', '   ', 'invalid-email', 'test@', '@example.com', 'test@.com'];
+            const emptyEmails = ['', '   '];
+            const invalidFormatEmails = ['invalid-email', 'test@', '@example.com', 'test@.com'];
 
             // When & Then
-            invalidEmails.forEach(email => {
+            emptyEmails.forEach(email => {
+                expect(() => new User(userId, email)).toThrow('Email cannot be empty');
+            });
+
+            invalidFormatEmails.forEach(email => {
                 expect(() => new User(userId, email)).toThrow('Email must be in valid format');
             });
         });
@@ -571,7 +597,7 @@ describe('Entity Invariant Enforcement Tests', () => {
     describe('Complex Entity Invariants (Order)', () => {
         test('Should_CreateOrder_When_ValidDataProvided', () => {
             // Given
-            const orderId = 'ORD-123';
+            const orderId = OrderId.create('ORD-123');
             const customerId = UserId.create('customer123');
 
             // When
@@ -587,7 +613,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_AddItems_When_OrderPending', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             const productId = ProductId.create('PROD-123');
 
             // When
@@ -595,15 +621,15 @@ describe('Entity Invariant Enforcement Tests', () => {
 
             // Then
             expect(order.items).toHaveLength(1);
-            expect(order.items[0].productId).toBe(productId);
-            expect(order.items[0].quantity).toBe(2);
-            expect(order.items[0].unitPrice).toBe(50.00);
+            expect(order.items[0]!.productId).toBe(productId);
+            expect(order.items[0]!.quantity).toBe(2);
+            expect(order.items[0]!.unitPrice).toBe(50.00);
             expect(order.totalAmount).toBe(100.00);
         });
 
         test('Should_ThrowError_When_AddingItemsToNonPendingOrder', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             order.setShippingAddress('123 Test St');
             order.addItem(ProductId.create('PROD-123'), 1, 50.00);
             order.confirm();
@@ -615,7 +641,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_UpdateExistingItem_When_AddingSameProduct', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             const productId = ProductId.create('PROD-123');
 
             // When
@@ -624,13 +650,13 @@ describe('Entity Invariant Enforcement Tests', () => {
 
             // Then
             expect(order.items).toHaveLength(1);
-            expect(order.items[0].quantity).toBe(5); // 2 + 3
+            expect(order.items[0]!.quantity).toBe(5); // 2 + 3
             expect(order.totalAmount).toBe(250.00); // 5 * 50
         });
 
         test('Should_EnforceItemInvariants_When_AddingItems', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             const productId = ProductId.create('PROD-123');
 
             // When & Then
@@ -643,7 +669,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_EnforceOrderTotalLimit_When_AddingExpensiveItems', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             const productId1 = ProductId.create('PROD-123');
             const productId2 = ProductId.create('PROD-456');
 
@@ -661,7 +687,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_EnforceItemCountLimit_When_AddingManyItems', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
 
             // When - Add 50 items (at the limit)
             for (let i = 1; i <= 50; i++) {
@@ -675,7 +701,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_EnforceShippingAddressInvariant_When_Confirming', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             order.addItem(ProductId.create('PROD-123'), 1, 50.00);
 
             // When & Then - Cannot confirm without shipping address
@@ -691,7 +717,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_EnforceStatusTransitionInvariants_When_ChangingStatus', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             order.addItem(ProductId.create('PROD-123'), 1, 50.00);
             order.setShippingAddress('123 Test St');
 
@@ -711,7 +737,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_ThrowError_When_InvalidStatusTransitionAttempted', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
 
             // When & Then - Test invalid transitions
             expect(() => order.ship()).toThrow('Cannot ship order with status: pending');
@@ -720,7 +746,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_ValidateShippingAddressInvariants_When_Setting', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
 
             // When & Then
             expect(() => order.setShippingAddress('')).toThrow('Shipping address cannot be empty');
@@ -737,7 +763,7 @@ describe('Entity Invariant Enforcement Tests', () => {
             // Given
             const user = new User(UserId.create('user123'), 'test@example.com');
             const product = new Product(ProductId.create('PROD-123'), 'Test Product', 99.99, 'Electronics', 10);
-            const order = new Order('ORD-123', user.id);
+            const order = new Order(OrderId.create('ORD-123'), user.id);
 
             // When
             order.addItem(product.id, 2, product.price);
@@ -754,7 +780,7 @@ describe('Entity Invariant Enforcement Tests', () => {
             // Given
             const user = new User(UserId.create('user123'), 'test@example.com');
             const product = new Product(ProductId.create('PROD-123'), 'Test Product', 99.99, 'Electronics', 5);
-            const order = new Order('ORD-123', user.id);
+            const order = new Order(OrderId.create('ORD-123'), user.id);
 
             order.addItem(product.id, 3, product.price);
             order.setShippingAddress('123 Test Street');
@@ -796,7 +822,7 @@ describe('Entity Invariant Enforcement Tests', () => {
 
         test('Should_MaintainConsistency_When_PartialOperationFails', () => {
             // Given
-            const order = new Order('ORD-123', UserId.create('customer123'));
+            const order = new Order(OrderId.create('ORD-123'), UserId.create('customer123'));
             const productId = ProductId.create('PROD-123');
 
             order.addItem(productId, 1, 50.00);

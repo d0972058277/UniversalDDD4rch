@@ -148,7 +148,7 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
         await this.delay(cancellationToken);
 
         if (cancellationToken?.aborted) {
-            return Result.fail(DomainError.infrastructure('CANCELLED', 'Exists check was cancelled'));
+            return Result.fail<boolean>(DomainError.infrastructure('CANCELLED', 'Exists check was cancelled'));
         }
 
         return Result.ok(this.storage.has(id.value));

@@ -93,10 +93,12 @@ describe('ValueObject Equality Scenarios Integration Tests', () => {
             // When & Then
             for (let i = 0; i < statuses.length; i++) {
                 for (let j = 0; j < statuses.length; j++) {
+                    const statusI = statuses[i]!; // Safe assertion since i < length
+                    const statusJ = statuses[j]!; // Safe assertion since j < length
                     if (i === j) {
-                        expect(statuses[i].equals(statuses[j])).toBe(true);
+                        expect(statusI.equals(statusJ)).toBe(true);
                     } else {
-                        expect(statuses[i].equals(statuses[j])).toBe(false);
+                        expect(statusI.equals(statusJ)).toBe(false);
                     }
                 }
             }

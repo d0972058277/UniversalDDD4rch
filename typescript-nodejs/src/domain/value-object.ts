@@ -113,6 +113,12 @@ export abstract class ValueObject {
       return true;
     }
 
+    // Handle NaN special case - NaN !== NaN in JavaScript, but we want them to be equal
+    if (typeof component1 === 'number' && typeof component2 === 'number' &&
+        Number.isNaN(component1) && Number.isNaN(component2)) {
+      return true;
+    }
+
     if (component1 === null || component1 === undefined ||
         component2 === null || component2 === undefined) {
       return component1 === component2;
@@ -125,6 +131,39 @@ export abstract class ValueObject {
       }
       for (let i = 0; i < component1.length; i++) {
         if (!this.componentsEqual(component1[i], component2[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Handle Map objects
+    if (component1 instanceof Map && component2 instanceof Map) {
+      if (component1.size !== component2.size) {
+        return false;
+      }
+      for (const [key, value] of component1) {
+        if (!component2.has(key) || !this.componentsEqual(value, component2.get(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Handle Set objects
+    if (component1 instanceof Set && component2 instanceof Set) {
+      if (component1.size !== component2.size) {
+        return false;
+      }
+      for (const value of component1) {
+        let found = false;
+        for (const otherValue of component2) {
+          if (this.componentsEqual(value, otherValue)) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
           return false;
         }
       }
@@ -180,6 +219,10 @@ export abstract class ValueObject {
     }
 
     if (typeof component === 'number') {
+      // Handle NaN consistently
+      if (Number.isNaN(component)) {
+        return 0; // Consistent hash for NaN
+      }
       return component;
     }
 
@@ -195,6 +238,31 @@ export abstract class ValueObject {
       let hash = 17;
       for (const item of component) {
         hash = hash * 23 + this.getComponentHashCode(item);
+      }
+      return hash;
+    }
+
+    if (component instanceof Map) {
+      let hash = 17;
+      // Sort entries by key to ensure consistent hash regardless of insertion order
+      const sortedEntries = Array.from(component.entries()).sort(([a], [b]) =>
+        String(a).localeCompare(String(b))
+      );
+      for (const [key, value] of sortedEntries) {
+        hash = hash * 23 + this.getComponentHashCode(key);
+        hash = hash * 31 + this.getComponentHashCode(value);
+      }
+      return hash;
+    }
+
+    if (component instanceof Set) {
+      let hash = 17;
+      // Sort values to ensure consistent hash regardless of insertion order
+      const sortedValues = Array.from(component).sort((a, b) =>
+        String(a).localeCompare(String(b))
+      );
+      for (const value of sortedValues) {
+        hash = hash * 23 + this.getComponentHashCode(value);
       }
       return hash;
     }

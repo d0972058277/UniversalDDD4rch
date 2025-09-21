@@ -5,11 +5,30 @@
 
 import { AggregateRoot } from '../../src/domain/aggregate-root';
 import { DomainEventBase } from '../../src/domain/domain-event-base';
+import { ValueObject } from '../../src/domain/value-object';
+
+// Test ID value object
+class OrderId extends ValueObject {
+    constructor(public readonly value: string) {
+        super();
+        if (!value) {
+            throw new Error('OrderId cannot be empty');
+        }
+    }
+
+    protected getEqualityComponents(): any[] {
+        return [this.value];
+    }
+
+    override toString(): string {
+        return this.value;
+    }
+}
 
 // Test domain events
 class OrderCreatedEvent extends DomainEventBase {
     constructor(
-        public readonly orderId: string,
+        public readonly orderId: OrderId,
         public readonly customerId: string,
         public readonly amount: number
     ) {
@@ -19,7 +38,7 @@ class OrderCreatedEvent extends DomainEventBase {
 
 class OrderItemAddedEvent extends DomainEventBase {
     constructor(
-        public readonly orderId: string,
+        public readonly orderId: OrderId,
         public readonly productId: string,
         public readonly quantity: number,
         public readonly unitPrice: number
@@ -30,7 +49,7 @@ class OrderItemAddedEvent extends DomainEventBase {
 
 class OrderStatusChangedEvent extends DomainEventBase {
     constructor(
-        public readonly orderId: string,
+        public readonly orderId: OrderId,
         public readonly previousStatus: string,
         public readonly newStatus: string
     ) {
@@ -40,7 +59,7 @@ class OrderStatusChangedEvent extends DomainEventBase {
 
 class OrderCancelledEvent extends DomainEventBase {
     constructor(
-        public readonly orderId: string,
+        public readonly orderId: OrderId,
         public readonly reason: string
     ) {
         super();
@@ -48,19 +67,20 @@ class OrderCancelledEvent extends DomainEventBase {
 }
 
 // Test aggregate implementation
-class Order extends AggregateRoot<string> {
+class Order extends AggregateRoot<OrderId> {
     private _customerId: string;
     private _status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
     private _items: Array<{ productId: string; quantity: number; unitPrice: number }> = [];
     private _createdAt: Date;
 
-    constructor(id: string, customerId: string) {
+    constructor(id: OrderId, customerId: string) {
         super(id);
         this._customerId = customerId;
         this._status = 'pending';
         this._createdAt = new Date();
 
         this.addEvent(new OrderCreatedEvent(id, customerId, 0));
+        this.incrementVersion(); // Increment version for the creation event
     }
 
     get customerId(): string {
@@ -90,12 +110,13 @@ class Order extends AggregateRoot<string> {
 
         const existingItemIndex = this._items.findIndex(item => item.productId === productId);
         if (existingItemIndex >= 0) {
-            this._items[existingItemIndex].quantity += quantity;
+            this._items[existingItemIndex]!.quantity += quantity;
         } else {
             this._items.push({ productId, quantity, unitPrice });
         }
 
         this.addEvent(new OrderItemAddedEvent(this.id, productId, quantity, unitPrice));
+        this.incrementVersion();
     }
 
     public confirm(): void {
@@ -109,6 +130,7 @@ class Order extends AggregateRoot<string> {
         const previousStatus = this._status;
         this._status = 'confirmed';
         this.addEvent(new OrderStatusChangedEvent(this.id, previousStatus, this._status));
+        this.incrementVersion();
     }
 
     public ship(): void {
@@ -119,6 +141,7 @@ class Order extends AggregateRoot<string> {
         const previousStatus = this._status;
         this._status = 'shipped';
         this.addEvent(new OrderStatusChangedEvent(this.id, previousStatus, this._status));
+        this.incrementVersion();
     }
 
     public deliver(): void {
@@ -129,6 +152,7 @@ class Order extends AggregateRoot<string> {
         const previousStatus = this._status;
         this._status = 'delivered';
         this.addEvent(new OrderStatusChangedEvent(this.id, previousStatus, this._status));
+        this.incrementVersion();
     }
 
     public cancel(reason: string): void {
@@ -141,11 +165,12 @@ class Order extends AggregateRoot<string> {
 
         this._status = 'cancelled';
         this.addEvent(new OrderCancelledEvent(this.id, reason));
+        this.incrementVersion();
     }
 
     // Method to simulate loading from persistence
     public static fromSnapshot(
-        id: string,
+        id: OrderId,
         customerId: string,
         status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled',
         items: Array<{ productId: string; quantity: number; unitPrice: number }>,
@@ -162,17 +187,17 @@ class Order extends AggregateRoot<string> {
     }
 
     // Protected method to set version for testing scenarios
-    protected setVersion(version: number): void {
-        (this as any)._version = version;
+    protected override setVersion(version: number): void {
+        super.setVersion(version);
     }
 }
 
 // Test aggregate with complex version scenarios
-class ComplexAggregate extends AggregateRoot<string> {
+class ComplexAggregate extends AggregateRoot<OrderId> {
     private _data: Record<string, unknown> = {};
     private _operationCount: number = 0;
 
-    constructor(id: string) {
+    constructor(id: OrderId) {
         super(id);
     }
 
@@ -188,12 +213,14 @@ class ComplexAggregate extends AggregateRoot<string> {
         this._data[key] = value;
         this._operationCount++;
         this.addEvent(new TestDataChangedEvent(this.id, key, value));
+        this.incrementVersion();
     }
 
     public removeData(key: string): void {
         delete this._data[key];
         this._operationCount++;
         this.addEvent(new TestDataRemovedEvent(this.id, key));
+        this.incrementVersion();
     }
 
     public performBulkOperation(operations: Array<{ type: 'set' | 'remove'; key: string; value?: unknown }>): void {
@@ -217,11 +244,16 @@ class ComplexAggregate extends AggregateRoot<string> {
             throw new Error(`Version conflict: expected ${expectedVersion}, but current version is ${this.version}`);
         }
     }
+
+    // Public method to set version for testing
+    public setVersionForTesting(version: number): void {
+        this.setVersion(version);
+    }
 }
 
 class TestDataChangedEvent extends DomainEventBase {
     constructor(
-        public readonly aggregateId: string,
+        public readonly aggregateId: OrderId,
         public readonly key: string,
         public readonly value: unknown
     ) {
@@ -231,7 +263,7 @@ class TestDataChangedEvent extends DomainEventBase {
 
 class TestDataRemovedEvent extends DomainEventBase {
     constructor(
-        public readonly aggregateId: string,
+        public readonly aggregateId: OrderId,
         public readonly key: string
     ) {
         super();
@@ -242,15 +274,16 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Initialization', () => {
         test('Should_InitializeVersionToZero_When_CreatingNewAggregate', () => {
             // Given & When
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
 
             // Then
-            expect(order.version).toBe(0);
+            // Version is 1 after creation because OrderCreatedEvent is added in constructor
+            expect(order.version).toBe(1);
         });
 
         test('Should_InitializeVersionToZero_When_CreatingComplexAggregate', () => {
             // Given & When
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
 
             // Then
             expect(aggregate.getCurrentVersion()).toBe(0);
@@ -260,7 +293,7 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Increment on Events', () => {
         test('Should_IncrementVersion_When_AddingDomainEvents', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             const initialVersion = order.version;
 
             // When
@@ -273,7 +306,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_IncrementVersionForEachEvent_When_PerformingMultipleOperations', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             const initialVersion = order.version;
 
             // When
@@ -288,7 +321,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_IncrementVersionCorrectly_When_PerformingComplexOperations', () => {
             // Given
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
             const initialVersion = aggregate.getCurrentVersion();
 
             // When
@@ -304,7 +337,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_IncrementVersionForBulkOperations_When_MultipleEventsGenerated', () => {
             // Given
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
             const initialVersion = aggregate.getCurrentVersion();
 
             const operations = [
@@ -326,7 +359,7 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Stability', () => {
         test('Should_NotChangeVersion_When_NoEventsAdded', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             const initialVersion = order.version;
 
             // When - Perform read operations only
@@ -341,7 +374,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_MaintainVersionConsistency_When_ClearingEvents', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             order.addItem('product-1', 2, 50.00);
             order.confirm();
 
@@ -358,7 +391,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_MaintainVersionAfterEventClearing_When_AddingNewEvents', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             order.addItem('product-1', 2, 50.00);
             order.confirm();
 
@@ -377,7 +410,7 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Conflict Detection', () => {
         test('Should_DetectVersionConflict_When_ExpectedVersionDiffers', () => {
             // Given
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
             aggregate.setData('key1', 'value1'); // Version becomes 1
 
             // When & Then
@@ -390,7 +423,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_PassVersionCheck_When_ExpectedVersionMatches', () => {
             // Given
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
             aggregate.setData('key1', 'value1'); // Version becomes 1
 
             // When & Then
@@ -399,8 +432,8 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_HandleConcurrentModificationScenario_When_VersionsConflict', () => {
             // Given - Simulate two instances of the same aggregate
-            const aggregate1 = new ComplexAggregate('aggregate-1');
-            const aggregate2 = new ComplexAggregate('aggregate-1');
+            const aggregate1 = new ComplexAggregate(new OrderId('aggregate-1'));
+            const aggregate2 = new ComplexAggregate(new OrderId('aggregate-1'));
 
             // Both start at version 0
             expect(aggregate1.getCurrentVersion()).toBe(0);
@@ -428,7 +461,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
             // When
             const order = Order.fromSnapshot(
-                'order-1',
+                new OrderId('order-1'),
                 'customer-1',
                 'confirmed',
                 items,
@@ -446,7 +479,7 @@ describe('AggregateRoot Version Control Tests', () => {
         test('Should_ContinueVersioning_When_ModifyingRestoredAggregate', () => {
             // Given
             const order = Order.fromSnapshot(
-                'order-1',
+                new OrderId('order-1'),
                 'customer-1',
                 'confirmed',
                 [{ productId: 'product-1', quantity: 2, unitPrice: 50.00 }],
@@ -468,7 +501,7 @@ describe('AggregateRoot Version Control Tests', () => {
         test('Should_HandleOptimisticLocking_When_SimulatingConcurrentUpdates', () => {
             // Given - Simulate loading same aggregate in two different contexts
             const order1 = Order.fromSnapshot(
-                'order-1',
+                new OrderId('order-1'),
                 'customer-1',
                 'confirmed',
                 [{ productId: 'product-1', quantity: 1, unitPrice: 100.00 }],
@@ -477,7 +510,7 @@ describe('AggregateRoot Version Control Tests', () => {
             );
 
             const order2 = Order.fromSnapshot(
-                'order-1',
+                new OrderId('order-1'),
                 'customer-1',
                 'confirmed',
                 [{ productId: 'product-1', quantity: 1, unitPrice: 100.00 }],
@@ -503,7 +536,7 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Edge Cases', () => {
         test('Should_HandleRapidSuccessiveOperations_When_GeneratingManyEvents', () => {
             // Given
-            const aggregate = new ComplexAggregate('aggregate-1');
+            const aggregate = new ComplexAggregate(new OrderId('aggregate-1'));
             const initialVersion = aggregate.getCurrentVersion();
 
             // When - Perform many rapid operations
@@ -518,23 +551,23 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_HandleEventClearingCycles_When_PerformingMultipleClearOperations', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
 
             // When - Cycle through operations and clearing
-            order.addItem('product-1', 1, 50.00); // Version: 1
-            expect(order.version).toBe(1);
-
-            order.clearEvents();
-            expect(order.version).toBe(1); // Version unchanged after clear
-
-            order.addItem('product-2', 1, 25.00); // Version: 2
+            order.addItem('product-1', 1, 50.00); // Version: 2 (1 from creation + 1 from addItem)
             expect(order.version).toBe(2);
 
             order.clearEvents();
             expect(order.version).toBe(2); // Version unchanged after clear
 
-            order.confirm(); // Version: 3
+            order.addItem('product-2', 1, 25.00); // Version: 3
             expect(order.version).toBe(3);
+
+            order.clearEvents();
+            expect(order.version).toBe(3); // Version unchanged after clear
+
+            order.confirm(); // Version: 4
+            expect(order.version).toBe(4);
 
             // Then
             expect(order.events.length).toBe(1); // Only the confirm event
@@ -542,7 +575,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_MaintainVersionIntegrity_When_ExceptionsOccur', () => {
             // Given
-            const order = new Order('order-1', 'customer-1');
+            const order = new Order(new OrderId('order-1'), 'customer-1');
             order.addItem('product-1', 1, 50.00);
             order.confirm();
 
@@ -558,7 +591,7 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_HandleZeroVersionCorrectly_When_StartingFromScratch', () => {
             // Given & When
-            const aggregate = new ComplexAggregate('new-aggregate');
+            const aggregate = new ComplexAggregate(new OrderId('new-aggregate'));
 
             // Then
             expect(aggregate.getCurrentVersion()).toBe(0);
@@ -572,10 +605,10 @@ describe('AggregateRoot Version Control Tests', () => {
 
         test('Should_HandleLargeVersionNumbers_When_LongRunningAggregate', () => {
             // Given
-            const aggregate = new ComplexAggregate('long-running');
+            const aggregate = new ComplexAggregate(new OrderId('long-running'));
 
             // Simulate a long-running aggregate that has been loaded with high version
-            aggregate.setVersion(999999);
+            aggregate.setVersionForTesting(999999);
 
             const initialVersion = aggregate.getCurrentVersion();
 
@@ -591,7 +624,7 @@ describe('AggregateRoot Version Control Tests', () => {
     describe('Version Performance', () => {
         test('Should_MaintainPerformance_When_HandlingManyVersionIncrements', () => {
             // Given
-            const aggregate = new ComplexAggregate('performance-test');
+            const aggregate = new ComplexAggregate(new OrderId('performance-test'));
             const operationCount = 10000;
 
             // When

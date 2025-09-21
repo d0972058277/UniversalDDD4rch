@@ -129,8 +129,8 @@ export interface OrderStatistics {
     totalAmount: number;
     currency: string;
     averageOrderValue: number;
-    lastOrderDate?: Date;
-    firstOrderDate?: Date;
+    lastOrderDate: Date | undefined;
+    firstOrderDate: Date | undefined;
     ordersByStatus: Record<string, number>;
     mostOrderedProducts: ProductStatistic[];
 }

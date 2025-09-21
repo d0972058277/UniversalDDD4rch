@@ -51,6 +51,7 @@ export abstract class AggregateRoot<TId extends object>
 
     this._events.push(domainEvent);
     this._cachedEvents = undefined; // Invalidate cache
+    // Version is managed by the repository during persistence, not here
   }
 
   /**
@@ -166,6 +167,6 @@ export abstract class AggregateRoot<TId extends object>
    * @returns String representation including type, ID, version, and event count
    */
   public override toString(): string {
-    return `${this.constructor.name}(${this.id}, v${this._version}, ${this._events.length} events)`;
+    return `${this.constructor.name}(${super.toString()}, v${this._version}, ${this._events.length} events)`;
   }
 }

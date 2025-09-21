@@ -309,10 +309,10 @@ describe('AggregateRoot Event Collection Integration Tests', () => {
             const customerId = new CustomerId('customer-123');
             const order = Order.create(customerId);
 
-            // When - Build order and then cancel
+            // When - Build order and then cancel (before confirmation)
             const item = OrderItem.create('Product A', new Money(10, 'USD'), 1);
             order.addItem(item);
-            order.confirm();
+            // Don't confirm - only pending orders can be cancelled
 
             const initialEventCount = order.events.length;
             const cancelResult = order.cancel();
@@ -323,7 +323,7 @@ describe('AggregateRoot Event Collection Integration Tests', () => {
             expect(order.events).toHaveLength(initialEventCount + 1);
 
             const cancelEvent = order.events[order.events.length - 1] as OrderStatusChangedEvent;
-            expect(cancelEvent.previousStatus).toBe('Confirmed');
+            expect(cancelEvent.previousStatus).toBe('Pending');
             expect(cancelEvent.newStatus).toBe('Cancelled');
 
             // Then - Cannot perform further operations
