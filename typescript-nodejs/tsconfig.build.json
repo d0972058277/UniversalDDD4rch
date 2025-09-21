@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false
+  },
+  "exclude": [
+    "node_modules",
+    "tests",
+    "examples",
+    "benchmarks",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

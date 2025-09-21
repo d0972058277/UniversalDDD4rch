@@ -37,7 +37,13 @@
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\typescript-nodejs\" /s)",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\typescript-nodejs\" /b)",
       "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\" /b)",
-      "Bash(.specify/scripts/powershell/check-task-prerequisites.ps1 -Json)"
+      "Bash(.specify/scripts/powershell/check-task-prerequisites.ps1 -Json)",
+      "Bash(dir \"C:\\Users\\user\\Github\\UniversalDDD4rch\\specs\\001-architecture-core-ddd\\contracts\" /s)",
+      "Bash(npm install)",
+      "Bash(npm test)",
+      "Bash(npx jest:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
