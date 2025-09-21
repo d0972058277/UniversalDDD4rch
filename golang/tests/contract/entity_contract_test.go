@@ -55,11 +55,11 @@ func TestEntity_Should_ProvideIdentityBasedEquality_When_Compared(t *testing.T) 
 		entity := domain.NewTestEntity(originalID)
 
 		// When: Getting ID multiple times
-		id1 := entity.GetID()
-		id2 := entity.GetID()
+		id1 := entity.ID()
+		id2 := entity.ID()
 
 		// Then: ID should be immutable and consistent
-		if id1 != originalID || id2 != originalID || id1 != id2 {
+		if id1.String() != originalID || id2.String() != originalID || id1 != id2 {
 			t.Error("Entity ID should be immutable and consistent")
 		}
 	})
@@ -68,10 +68,8 @@ func TestEntity_Should_ProvideIdentityBasedEquality_When_Compared(t *testing.T) 
 		// Given: Different ID types that satisfy constraints
 		stringEntity := domain.NewTestEntity("string-id")
 
-		type CustomID struct {
-			Value string
-		}
-		customEntity := domain.NewTestEntityWithCustomID(CustomID{Value: "custom-id"})
+		customID := domain.CustomTestID{Value: "custom-id"}
+		customEntity := domain.NewTestEntityWithCustomID(customID)
 
 		// When: Working with different ID types
 		// Then: Should compile and work correctly

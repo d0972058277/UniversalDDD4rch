@@ -39,7 +39,7 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		maybe := functional.Some("hello")
 
 		// When: Mapping value
-		mapped := maybe.Map(func(s string) int {
+		mapped := functional.MapMaybe(maybe, func(s string) int {
 			return len(s)
 		})
 
@@ -57,7 +57,7 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		maybe := functional.None[string]()
 
 		// When: Mapping value
-		mapped := maybe.Map(func(s string) int {
+		mapped := functional.MapMaybe(maybe, func(s string) int {
 			return len(s) // Should not execute
 		})
 
@@ -72,7 +72,7 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		maybe := functional.Some("hello")
 
 		// When: Binding to function that returns Maybe
-		bound := maybe.Bind(func(s string) functional.Maybe[int] {
+		bound := functional.BindMaybe(maybe, func(s string) functional.Maybe[int] {
 			if len(s) > 0 {
 				return functional.Some(len(s))
 			}
@@ -93,7 +93,7 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		maybe := functional.None[string]()
 
 		// When: Binding to function
-		bound := maybe.Bind(func(s string) functional.Maybe[int] {
+		bound := functional.BindMaybe(maybe, func(s string) functional.Maybe[int] {
 			return functional.Some(len(s)) // Should not execute
 		})
 
@@ -107,25 +107,25 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		// Given: Maybe with value
 		maybe := functional.Some("original")
 
-		// When: Using OrElse
-		result := maybe.OrElse("default")
+		// When: Using ValueOr
+		result := maybe.ValueOr("default")
 
 		// Then: Should return original value
 		if result != "original" {
-			t.Error("OrElse should return original value when present")
+			t.Error("ValueOr should return original value when present")
 		}
 	})
 
-	t.Run("Should_ReturnDefault_When_OrElseWithoutValue", func(t *testing.T) {
+	t.Run("Should_ReturnDefault_When_ValueOrWithoutValue", func(t *testing.T) {
 		// Given: Maybe without value
 		maybe := functional.None[string]()
 
-		// When: Using OrElse
-		result := maybe.OrElse("default")
+		// When: Using ValueOr
+		result := maybe.ValueOr("default")
 
 		// Then: Should return default value
 		if result != "default" {
-			t.Error("OrElse should return default value when no value present")
+			t.Error("ValueOr should return default value when no value present")
 		}
 	})
 
@@ -166,11 +166,11 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		none := functional.None[string]()
 
 		// When: Matching both cases
-		someResult := some.Match(
+		someResult := functional.MatchTyped(some,
 			func(s string) string { return "has: " + s },
 			func() string { return "no value" },
 		)
-		noneResult := none.Match(
+		noneResult := functional.MatchTyped(none,
 			func(s string) string { return "has: " + s },
 			func() string { return "no value" },
 		)
@@ -190,10 +190,10 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		errorWhenNone := functional.DomainError("NO_VALUE", "No value present")
 
 		// When: Converting to Result
-		result := maybe.ToResult(errorWhenNone)
+		result := maybe.ToResultWithError(errorWhenNone)
 
 		// Then: Should create success result
-		if !result.IsSuccess() {
+		if !result.IsOk() {
 			t.Error("ToResult should create success when Maybe has value")
 		}
 		if result.Value() != "test value" {
@@ -207,10 +207,10 @@ func TestMaybe_Should_ProvideOptionalValueSemantics_When_Used(t *testing.T) {
 		errorWhenNone := functional.DomainError("NO_VALUE", "No value present")
 
 		// When: Converting to Result
-		result := maybe.ToResult(errorWhenNone)
+		result := maybe.ToResultWithError(errorWhenNone)
 
 		// Then: Should create failure result
-		if !result.IsFailure() {
+		if !result.IsError() {
 			t.Error("ToResult should create failure when Maybe has no value")
 		}
 		if result.Error() != errorWhenNone {

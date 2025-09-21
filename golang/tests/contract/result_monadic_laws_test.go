@@ -13,12 +13,12 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		// Given: A value and a monadic function
 		value := "test value"
 		f := func(s string) functional.Result[int] {
-			return functional.OkWith(len(s))
+			return functional.Ok(len(s))
 		}
 
 		// When: Applying the left identity law
 		// unit(a).bind(f) === f(a)
-		leftSide := functional.OkWith(value).Bind(f)
+		leftSide := functional.Bind(functional.Ok(value), f)
 		rightSide := f(value)
 
 		// Then: Both sides should be equivalent
@@ -35,12 +35,12 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 	t.Run("Should_SatisfyRightIdentityLaw_When_BindingUnit", func(t *testing.T) {
 		// Given: A monadic Result value
-		result := functional.OkWith("test value")
+		result := functional.Ok("test value")
 
 		// When: Applying the right identity law
 		// m.bind(unit) === m
-		leftSide := result.Bind(func(s string) functional.Result[string] {
-			return functional.OkWith(s) // This is the unit function
+		leftSide := functional.Bind(result, func(s string) functional.Result[string] {
+			return functional.Ok(s) // This is the unit function
 		})
 		rightSide := result
 
@@ -55,19 +55,19 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 	t.Run("Should_SatisfyAssociativityLaw_When_ChainingBinds", func(t *testing.T) {
 		// Given: A monadic value and two functions
-		result := functional.OkWith(10)
+		result := functional.Ok(10)
 		f := func(i int) functional.Result[string] {
-			return functional.OkWith(string(rune('A' + i)))
+			return functional.Ok(string(rune('A' + i)))
 		}
 		g := func(s string) functional.Result[int] {
-			return functional.OkWith(len(s))
+			return functional.Ok(len(s))
 		}
 
 		// When: Applying the associativity law
 		// m.bind(f).bind(g) === m.bind(x => f(x).bind(g))
-		leftSide := result.Bind(f).Bind(g)
-		rightSide := result.Bind(func(x int) functional.Result[int] {
-			return f(x).Bind(g)
+		leftSide := functional.Bind(functional.Bind(result, f), g)
+		rightSide := functional.Bind(result, func(x int) functional.Result[int] {
+			return functional.Bind(f(x), g)
 		})
 
 		// Then: Both sides should be equivalent
@@ -91,7 +91,7 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		}
 
 		// When: Applying left identity law with failure
-		leftSide := functional.OkWith(value).Bind(f)
+		leftSide := functional.Bind(functional.Ok(value), f)
 		rightSide := f(value)
 
 		// Then: Both should be equivalent failures
@@ -105,19 +105,19 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 	t.Run("Should_SatisfyAssociativityLaw_When_FirstFunctionFails", func(t *testing.T) {
 		// Given: A monadic value and functions where first fails
-		result := functional.OkWith(10)
+		result := functional.Ok(10)
 		err := functional.DomainError("FIRST_FAIL", "First function failed")
 		f := func(i int) functional.Result[string] {
 			return functional.FailWith[string](err)
 		}
 		g := func(s string) functional.Result[int] {
-			return functional.OkWith(len(s))
+			return functional.Ok(len(s))
 		}
 
 		// When: Applying associativity law with failure
-		leftSide := result.Bind(f).Bind(g)
-		rightSide := result.Bind(func(x int) functional.Result[int] {
-			return f(x).Bind(g)
+		leftSide := functional.Bind(functional.Bind(result, f), g)
+		rightSide := functional.Bind(result, func(x int) functional.Result[int] {
+			return functional.Bind(f(x), g)
 		})
 
 		// Then: Both should be equivalent failures
@@ -131,9 +131,9 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 	t.Run("Should_SatisfyAssociativityLaw_When_SecondFunctionFails", func(t *testing.T) {
 		// Given: A monadic value and functions where second fails
-		result := functional.OkWith(10)
+		result := functional.Ok(10)
 		f := func(i int) functional.Result[string] {
-			return functional.OkWith("success")
+			return functional.Ok("success")
 		}
 		err := functional.DomainError("SECOND_FAIL", "Second function failed")
 		g := func(s string) functional.Result[int] {
@@ -141,9 +141,9 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		}
 
 		// When: Applying associativity law with second function failure
-		leftSide := result.Bind(f).Bind(g)
-		rightSide := result.Bind(func(x int) functional.Result[int] {
-			return f(x).Bind(g)
+		leftSide := functional.Bind(functional.Bind(result, f), g)
+		rightSide := functional.Bind(result, func(x int) functional.Result[int] {
+			return functional.Bind(f(x), g)
 		})
 
 		// Then: Both should be equivalent failures
@@ -161,12 +161,13 @@ func TestResult_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		result := functional.FailWith[string](err)
 
 		// When: Chaining operations
-		finalResult := result.Bind(func(s string) functional.Result[int] {
+		step1 := functional.Bind(result, func(s string) functional.Result[int] {
 			t.Error("This function should never be called on failure")
-			return functional.OkWith(len(s))
-		}).Bind(func(i int) functional.Result[string] {
+			return functional.Ok(len(s))
+		})
+		finalResult := functional.Bind(step1, func(i int) functional.Result[string] {
 			t.Error("This function should never be called on failure")
-			return functional.OkWith("final")
+			return functional.Ok("final")
 		})
 
 		// Then: Should preserve original error

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/universalddd/architecture-core-go/pkg/domain"
-	"github.com/universalddd/architecture-core-go/pkg/functional"
 )
 
 // TestRepository_Should_ProvideAsyncCRUDOperations_When_Used

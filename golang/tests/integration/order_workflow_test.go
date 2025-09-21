@@ -27,7 +27,8 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 			t.Fatalf("Order creation failed: %v", createResult.Error())
 		}
 
-		orderID := createResult.Value()
+		orderIDString := createResult.Value()
+		orderID := quickstart.NewOrderId(orderIDString)
 
 		// When: Confirming order
 		confirmResult := service.ConfirmOrder(ctx, orderID)
@@ -49,11 +50,7 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		getResult := service.GetOrder(ctx, orderID)
 
 		// Then: Order should be in shipped state
-		if getResult.IsFailure() {
-			t.Fatalf("Getting order failed: %v", getResult.Error())
-		}
-
-		if !getResult.HasValue() {
+		if getResult.IsNone() {
 			t.Fatal("Order should exist")
 		}
 
@@ -75,7 +72,8 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		if createResult.IsFailure() {
 			t.Fatalf("Setup failed: %v", createResult.Error())
 		}
-		orderID := createResult.Value()
+		orderIDString := createResult.Value()
+		orderID := quickstart.NewOrderId(orderIDString)
 
 		// When: Attempting to ship without confirming
 		shipResult := service.ShipOrder(ctx, orderID)
@@ -98,7 +96,8 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		amount := quickstart.NewMoney(200.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "")
-		orderID := createResult.Value()
+		orderIDString := createResult.Value()
+		orderID := quickstart.NewOrderId(orderIDString)
 		service.ConfirmOrder(ctx, orderID)
 
 		// When: Cancelling order
@@ -111,6 +110,9 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 		// And order should be cancelled
 		getResult := service.GetOrder(ctx, orderID)
+		if getResult.IsNone() {
+			t.Fatal("Order should exist")
+		}
 		order := getResult.Value()
 		if order.GetStatus() != quickstart.Cancelled {
 			t.Errorf("Expected order status Cancelled, got %v", order.GetStatus())
@@ -126,7 +128,8 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		amount := quickstart.NewMoney(300.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "")
-		orderID := createResult.Value()
+		orderIDString := createResult.Value()
+		orderID := quickstart.NewOrderId(orderIDString)
 		service.ConfirmOrder(ctx, orderID)
 		service.ShipOrder(ctx, orderID)
 
@@ -152,10 +155,14 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 		// When: Executing full workflow
 		createResult := service.CreateOrder(ctx, customerID, amount, "correlation-123")
-		orderID := createResult.Value()
+		orderIDString := createResult.Value()
+		orderID := quickstart.NewOrderId(orderIDString)
 
 		// Get order and check events after creation
 		getResult := service.GetOrder(ctx, orderID)
+		if getResult.IsNone() {
+			t.Fatal("Order should exist")
+		}
 		order := getResult.Value()
 		events := order.GetEvents()
 
@@ -166,6 +173,9 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		// Confirm order and check additional events
 		service.ConfirmOrder(ctx, orderID)
 		getResult = service.GetOrder(ctx, orderID)
+		if getResult.IsNone() {
+			t.Fatal("Order should exist")
+		}
 		order = getResult.Value()
 		events = order.GetEvents()
 
@@ -176,6 +186,9 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		// Ship order and check final events
 		service.ShipOrder(ctx, orderID)
 		getResult = service.GetOrder(ctx, orderID)
+		if getResult.IsNone() {
+			t.Fatal("Order should exist")
+		}
 		order = getResult.Value()
 		events = order.GetEvents()
 

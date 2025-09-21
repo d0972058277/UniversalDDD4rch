@@ -3,6 +3,7 @@ package performance
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/universalddd/architecture-core-go/pkg/domain"
 	testutils "github.com/universalddd/architecture-core-go/internal/testing"
@@ -33,8 +34,8 @@ func (s SimpleValueObject) Equals(other domain.ValueObject) bool {
 	return false
 }
 
-func (s SimpleValueObject) GetHashCode() int {
-	return hashString(s.value)
+func (s SimpleValueObject) GetHashCode() uint64 {
+	return uint64(hashString(s.value))
 }
 
 // ComplexValueObject for testing multi-field equality
@@ -68,12 +69,12 @@ func (c ComplexValueObject) Equals(other domain.ValueObject) bool {
 	return false
 }
 
-func (c ComplexValueObject) GetHashCode() int {
-	hash := 17
-	hash = hash*31 + hashString(c.stringField)
-	hash = hash*31 + c.intField
-	hash = hash*31 + hashFloat(c.floatField)
-	hash = hash*31 + hashBool(c.boolField)
+func (c ComplexValueObject) GetHashCode() uint64 {
+	hash := uint64(17)
+	hash = hash*31 + uint64(hashString(c.stringField))
+	hash = hash*31 + uint64(c.intField)
+	hash = hash*31 + uint64(hashFloat(c.floatField))
+	hash = hash*31 + uint64(hashBool(c.boolField))
 	return hash
 }
 
@@ -148,20 +149,20 @@ func (c CollectionValueObject) Equals(other domain.ValueObject) bool {
 	return false
 }
 
-func (c CollectionValueObject) GetHashCode() int {
-	hash := 17
+func (c CollectionValueObject) GetHashCode() uint64 {
+	hash := uint64(17)
 
 	// Hash slice
-	hash = hash*31 + len(c.items)
+	hash = hash*31 + uint64(len(c.items))
 	for _, item := range c.items {
-		hash = hash*31 + hashString(item)
+		hash = hash*31 + uint64(hashString(item))
 	}
 
 	// Hash map
-	hash = hash*31 + len(c.tags)
+	hash = hash*31 + uint64(len(c.tags))
 	for k, v := range c.tags {
-		hash = hash*31 + hashString(k)
-		hash = hash*31 + v
+		hash = hash*31 + uint64(hashString(k))
+		hash = hash*31 + uint64(v)
 	}
 
 	return hash
@@ -482,7 +483,7 @@ func BenchmarkValueObject_ComprehensiveScenarios(b *testing.B) {
 	// Scenario 1: Hash table operations (typical usage pattern)
 	tester.BenchmarkOperation("Scenario_HashTable", func() {
 		// Simulate adding value objects to a hash table
-		objects := make(map[int]SimpleValueObject)
+		objects := make(map[uint64]SimpleValueObject)
 		for i := 0; i < 10; i++ {
 			obj := NewSimpleValueObject(fmt.Sprintf("key_%d", i))
 			hash := obj.GetHashCode()

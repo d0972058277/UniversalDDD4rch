@@ -3,7 +3,7 @@ package quickstart
 
 import (
 	"fmt"
-	"strings"
+	"hash/fnv"
 
 	"github.com/universalddd/architecture-core-go/pkg/domain"
 	"github.com/universalddd/architecture-core-go/pkg/functional"
@@ -45,7 +45,7 @@ func (os OrderStatus) String() string {
 
 // Money represents a monetary value with currency
 type Money struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	amount   float64
 	currency string
 }
@@ -73,6 +73,33 @@ func (m Money) GetEqualityComponents() []interface{} {
 	return []interface{}{m.amount, m.currency}
 }
 
+// GetHashCode returns the hash code for this money object
+func (m Money) GetHashCode() uint64 {
+	h := fnv.New64a()
+	for _, component := range m.GetEqualityComponents() {
+		if component != nil {
+			h.Write([]byte(fmt.Sprintf("%v", component)))
+		} else {
+			h.Write([]byte("null"))
+		}
+	}
+	return h.Sum64()
+}
+
+// Equals compares two Money objects for equality
+func (m Money) Equals(other domain.ValueObject) bool {
+	if other == nil {
+		return false
+	}
+
+	otherMoney, ok := other.(Money)
+	if !ok {
+		return false
+	}
+
+	return m.amount == otherMoney.amount && m.currency == otherMoney.currency
+}
+
 // Add adds two Money values (same currency)
 func (m Money) Add(other Money) Money {
 	if m.currency != other.currency {
@@ -96,7 +123,7 @@ func (m Money) String() string {
 
 // CustomerId represents a customer identifier
 type CustomerId struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	value string
 }
 
@@ -115,6 +142,33 @@ func (c CustomerId) GetEqualityComponents() []interface{} {
 	return []interface{}{c.value}
 }
 
+// GetHashCode returns the hash code for this customer ID
+func (c CustomerId) GetHashCode() uint64 {
+	h := fnv.New64a()
+	for _, component := range c.GetEqualityComponents() {
+		if component != nil {
+			h.Write([]byte(fmt.Sprintf("%v", component)))
+		} else {
+			h.Write([]byte("null"))
+		}
+	}
+	return h.Sum64()
+}
+
+// Equals compares two CustomerId objects for equality
+func (c CustomerId) Equals(other domain.ValueObject) bool {
+	if other == nil {
+		return false
+	}
+
+	otherCustomerId, ok := other.(CustomerId)
+	if !ok {
+		return false
+	}
+
+	return c.value == otherCustomerId.value
+}
+
 // String returns string representation
 func (c CustomerId) String() string {
 	return c.value
@@ -122,7 +176,7 @@ func (c CustomerId) String() string {
 
 // OrderId represents an order identifier
 type OrderId struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	value string
 }
 
@@ -141,6 +195,33 @@ func (o OrderId) GetEqualityComponents() []interface{} {
 	return []interface{}{o.value}
 }
 
+// GetHashCode returns the hash code for this order ID
+func (o OrderId) GetHashCode() uint64 {
+	h := fnv.New64a()
+	for _, component := range o.GetEqualityComponents() {
+		if component != nil {
+			h.Write([]byte(fmt.Sprintf("%v", component)))
+		} else {
+			h.Write([]byte("null"))
+		}
+	}
+	return h.Sum64()
+}
+
+// Equals compares two OrderId objects for equality
+func (o OrderId) Equals(other domain.ValueObject) bool {
+	if other == nil {
+		return false
+	}
+
+	otherOrderId, ok := other.(OrderId)
+	if !ok {
+		return false
+	}
+
+	return o.value == otherOrderId.value
+}
+
 // String returns string representation
 func (o OrderId) String() string {
 	return o.value
@@ -148,7 +229,7 @@ func (o OrderId) String() string {
 
 // OrderCreatedEvent represents an order creation event
 type OrderCreatedEvent struct {
-	*domain.DomainEventBase
+	*domain.BaseDomainEvent
 	orderID    string
 	customerID string
 	amount     Money
@@ -156,17 +237,23 @@ type OrderCreatedEvent struct {
 
 // NewOrderCreatedEvent creates a new order created event
 func NewOrderCreatedEvent(orderID, customerID string, amount Money, correlationID, causationID string) *OrderCreatedEvent {
-	base := domain.NewDomainEventBaseWithCorrelation(
+	var corrID, causID *string
+	if correlationID != "" {
+		corrID = &correlationID
+	}
+	if causationID != "" {
+		causID = &causationID
+	}
+
+	base := domain.NewBaseDomainEventWithCorrelation(
 		"OrderCreated",
-		orderID,
-		"Order",
-		correlationID,
-		causationID,
+		corrID,
+		causID,
 		nil,
 	)
 
 	return &OrderCreatedEvent{
-		DomainEventBase: base,
+		BaseDomainEvent: base,
 		orderID:         orderID,
 		customerID:      customerID,
 		amount:          amount,
@@ -190,7 +277,7 @@ func (e *OrderCreatedEvent) GetAmount() Money {
 
 // OrderStatusChangedEvent represents an order status change event
 type OrderStatusChangedEvent struct {
-	*domain.DomainEventBase
+	*domain.BaseDomainEvent
 	orderID       string
 	previousStatus string
 	newStatus     string
@@ -198,17 +285,23 @@ type OrderStatusChangedEvent struct {
 
 // NewOrderStatusChangedEvent creates a new order status changed event
 func NewOrderStatusChangedEvent(orderID, previousStatus, newStatus, correlationID, causationID string) *OrderStatusChangedEvent {
-	base := domain.NewDomainEventBaseWithCorrelation(
+	var corrID, causID *string
+	if correlationID != "" {
+		corrID = &correlationID
+	}
+	if causationID != "" {
+		causID = &causationID
+	}
+
+	base := domain.NewBaseDomainEventWithCorrelation(
 		"OrderStatusChanged",
-		orderID,
-		"Order",
-		correlationID,
-		causationID,
+		corrID,
+		causID,
 		nil,
 	)
 
 	return &OrderStatusChangedEvent{
-		DomainEventBase: base,
+		BaseDomainEvent: base,
 		orderID:         orderID,
 		previousStatus:  previousStatus,
 		newStatus:       newStatus,
@@ -232,7 +325,7 @@ func (e *OrderStatusChangedEvent) GetNewStatus() string {
 
 // Order represents an order aggregate root
 type Order struct {
-	*domain.AggregateRoot[string]
+	*domain.BaseAggregateRoot[OrderId]
 	customerID    string
 	totalAmount   Money
 	status        OrderStatus
@@ -241,18 +334,18 @@ type Order struct {
 
 // NewOrder creates a new order
 func NewOrder(customerID string, totalAmount Money) *Order {
-	orderId := generateOrderID()
+	orderId := NewOrderId(generateOrderID())
 
 	order := &Order{
-		AggregateRoot: domain.NewAggregateRoot(orderId),
-		customerID:    customerID,
-		totalAmount:   totalAmount,
-		status:        Pending,
+		BaseAggregateRoot: domain.NewBaseAggregateRoot(orderId),
+		customerID:        customerID,
+		totalAmount:       totalAmount,
+		status:            Pending,
 	}
 
 	// Add creation event
-	event := NewOrderCreatedEvent(orderId, customerID, totalAmount, "", "")
-	order.AddEvent(event)
+	event := NewOrderCreatedEvent(orderId.String(), customerID, totalAmount, "", "")
+	order.AddDomainEvent(event)
 	order.IncrementVersion()
 
 	return order
@@ -260,19 +353,19 @@ func NewOrder(customerID string, totalAmount Money) *Order {
 
 // NewOrderWithCorrelation creates a new order with correlation context
 func NewOrderWithCorrelation(customerID string, totalAmount Money, correlationID string) *Order {
-	orderId := generateOrderID()
+	orderId := NewOrderId(generateOrderID())
 
 	order := &Order{
-		AggregateRoot: domain.NewAggregateRoot(orderId),
-		customerID:    customerID,
-		totalAmount:   totalAmount,
-		status:        Pending,
-		correlationID: correlationID,
+		BaseAggregateRoot: domain.NewBaseAggregateRoot(orderId),
+		customerID:        customerID,
+		totalAmount:       totalAmount,
+		status:            Pending,
+		correlationID:     correlationID,
 	}
 
 	// Add creation event with correlation
-	event := NewOrderCreatedEvent(orderId, customerID, totalAmount, correlationID, "")
-	order.AddEvent(event)
+	event := NewOrderCreatedEvent(orderId.String(), customerID, totalAmount, correlationID, "")
+	order.AddDomainEvent(event)
 	order.IncrementVersion()
 
 	return order
@@ -280,8 +373,9 @@ func NewOrderWithCorrelation(customerID string, totalAmount Money, correlationID
 
 // NewOrderWithID creates a new order with specific ID (for testing)
 func NewOrderWithID(orderID, customerID string, totalAmount Money) *Order {
+	orderId := NewOrderId(orderID)
 	order := &Order{
-		AggregateRoot: domain.NewAggregateRoot(orderID),
+		BaseAggregateRoot: domain.NewBaseAggregateRoot(orderId),
 		customerID:    customerID,
 		totalAmount:   totalAmount,
 		status:        Pending,
@@ -289,19 +383,19 @@ func NewOrderWithID(orderID, customerID string, totalAmount Money) *Order {
 
 	// Add creation event
 	event := NewOrderCreatedEvent(orderID, customerID, totalAmount, "", "")
-	order.AddEvent(event)
+	order.AddDomainEvent(event)
 	order.IncrementVersion()
 
 	return order
 }
 
 // GetCustomerID returns the customer ID
-func (o *Order) GetCustomerID() string {
+func (o Order) GetCustomerID() string {
 	return o.customerID
 }
 
 // GetTotalAmount returns the total amount
-func (o *Order) GetTotalAmount() Money {
+func (o Order) GetTotalAmount() Money {
 	return o.totalAmount
 }
 
@@ -311,9 +405,9 @@ func (o *Order) GetStatus() OrderStatus {
 }
 
 // ConfirmOrder confirms the order
-func (o *Order) ConfirmOrder() functional.Result {
+func (o *Order) ConfirmOrder() functional.Result[interface{}] {
 	if o.status != Pending {
-		return functional.Fail(functional.DomainError(
+		return functional.Fail[interface{}](functional.DomainError(
 			"INVALID_STATUS_TRANSITION",
 			fmt.Sprintf("Cannot confirm order in %s status", o.status),
 		))
@@ -322,24 +416,31 @@ func (o *Order) ConfirmOrder() functional.Result {
 	previousStatus := o.status
 	o.status = Confirmed
 
+	// Get the last event ID for causation
+	var causationID string
+	events := o.GetEvents()
+	if len(events) > 0 {
+		causationID = events[len(events)-1].ID()
+	}
+
 	// Add status change event
 	event := NewOrderStatusChangedEvent(
-		o.GetID(),
+		o.ID().String(),
 		previousStatus.String(),
 		o.status.String(),
 		o.correlationID,
-		"", // Would be set to previous event ID in real implementation
+		causationID,
 	)
-	o.AddEvent(event)
+	o.AddDomainEvent(event)
 	o.IncrementVersion()
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // ShipOrder ships the order
-func (o *Order) ShipOrder() functional.Result {
+func (o *Order) ShipOrder() functional.Result[interface{}] {
 	if o.status != Confirmed {
-		return functional.Fail(functional.DomainError(
+		return functional.Fail[interface{}](functional.DomainError(
 			"INVALID_STATUS_TRANSITION",
 			fmt.Sprintf("Cannot ship order in %s status", o.status),
 		))
@@ -348,24 +449,31 @@ func (o *Order) ShipOrder() functional.Result {
 	previousStatus := o.status
 	o.status = Shipped
 
+	// Get the last event ID for causation
+	var causationID string
+	events := o.GetEvents()
+	if len(events) > 0 {
+		causationID = events[len(events)-1].ID()
+	}
+
 	// Add status change event
 	event := NewOrderStatusChangedEvent(
-		o.GetID(),
+		o.ID().String(),
 		previousStatus.String(),
 		o.status.String(),
 		o.correlationID,
-		"",
+		causationID,
 	)
-	o.AddEvent(event)
+	o.AddDomainEvent(event)
 	o.IncrementVersion()
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // DeliverOrder delivers the order
-func (o *Order) DeliverOrder() functional.Result {
+func (o *Order) DeliverOrder() functional.Result[interface{}] {
 	if o.status != Shipped {
-		return functional.Fail(functional.DomainError(
+		return functional.Fail[interface{}](functional.DomainError(
 			"INVALID_STATUS_TRANSITION",
 			fmt.Sprintf("Cannot deliver order in %s status", o.status),
 		))
@@ -374,31 +482,38 @@ func (o *Order) DeliverOrder() functional.Result {
 	previousStatus := o.status
 	o.status = Delivered
 
+	// Get the last event ID for causation
+	var causationID string
+	events := o.GetEvents()
+	if len(events) > 0 {
+		causationID = events[len(events)-1].ID()
+	}
+
 	// Add status change event
 	event := NewOrderStatusChangedEvent(
-		o.GetID(),
+		o.ID().String(),
 		previousStatus.String(),
 		o.status.String(),
 		o.correlationID,
-		"",
+		causationID,
 	)
-	o.AddEvent(event)
+	o.AddDomainEvent(event)
 	o.IncrementVersion()
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // CancelOrder cancels the order
-func (o *Order) CancelOrder() functional.Result {
+func (o *Order) CancelOrder() functional.Result[interface{}] {
 	if o.status == Shipped || o.status == Delivered {
-		return functional.Fail(functional.DomainError(
+		return functional.Fail[interface{}](functional.DomainError(
 			"CANNOT_CANCEL",
 			fmt.Sprintf("Cannot cancel order in %s status", o.status),
 		))
 	}
 
 	if o.status == Cancelled {
-		return functional.Fail(functional.DomainError(
+		return functional.Fail[interface{}](functional.DomainError(
 			"ALREADY_CANCELLED",
 			"Order is already cancelled",
 		))
@@ -409,16 +524,16 @@ func (o *Order) CancelOrder() functional.Result {
 
 	// Add status change event
 	event := NewOrderStatusChangedEvent(
-		o.GetID(),
+		o.ID().String(),
 		previousStatus.String(),
 		o.status.String(),
 		o.correlationID,
 		"",
 	)
-	o.AddEvent(event)
+	o.AddDomainEvent(event)
 	o.IncrementVersion()
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // ModifyState is a test helper method
@@ -427,17 +542,38 @@ func (o *Order) ModifyState(newState string) {
 	o.IncrementVersion()
 }
 
+// Wrapper methods for integration test compatibility
+func (o *Order) GetVersion() int64 {
+	return o.Version()
+}
+
+func (o *Order) GetEvents() []domain.DomainEvent {
+	return o.DomainEvents()
+}
+
+func (o *Order) ClearEvents() {
+	o.ClearDomainEvents()
+}
+
+func (o *Order) GetID() OrderId {
+	return o.ID()
+}
+
+// orderCounter provides a simple counter for generating unique order IDs
+var orderCounter int64 = 0
+
 // generateOrderID generates a simple order ID for examples
 func generateOrderID() string {
-	// Simple ID generation for example purposes
-	return fmt.Sprintf("ORDER-%d", len("temp"))
+	// Simple ID generation for example purposes - increment counter for uniqueness
+	orderCounter++
+	return fmt.Sprintf("ORDER-%d", orderCounter)
 }
 
 // Additional value objects for testing
 
 // Address represents a postal address
 type Address struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	street     string
 	city       string
 	postalCode string
@@ -459,6 +595,36 @@ func (a Address) GetEqualityComponents() []interface{} {
 	return []interface{}{a.street, a.city, a.postalCode, a.country}
 }
 
+// GetHashCode returns the hash code for this address
+func (a Address) GetHashCode() uint64 {
+	h := fnv.New64a()
+	for _, component := range a.GetEqualityComponents() {
+		if component != nil {
+			h.Write([]byte(fmt.Sprintf("%v", component)))
+		} else {
+			h.Write([]byte("null"))
+		}
+	}
+	return h.Sum64()
+}
+
+// Equals compares two Address objects for equality
+func (a Address) Equals(other domain.ValueObject) bool {
+	if other == nil {
+		return false
+	}
+
+	otherAddress, ok := other.(Address)
+	if !ok {
+		return false
+	}
+
+	return a.street == otherAddress.street &&
+		   a.city == otherAddress.city &&
+		   a.postalCode == otherAddress.postalCode &&
+		   a.country == otherAddress.country
+}
+
 // String returns string representation
 func (a Address) String() string {
 	return fmt.Sprintf("%s, %s %s, %s", a.street, a.city, a.postalCode, a.country)
@@ -466,7 +632,7 @@ func (a Address) String() string {
 
 // ProductTags represents product tags (for collection testing)
 type ProductTags struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	productID string
 	tags      []string
 }
@@ -485,12 +651,25 @@ func NewProductTags(productID string, tags []string) ProductTags {
 
 // GetEqualityComponents returns components for structural equality
 func (p ProductTags) GetEqualityComponents() []interface{} {
-	return []interface{}{p.productID, p.tags}
+	// Return a copy of the slice to ensure immutability
+	tagsCopy := make([]string, len(p.tags))
+	copy(tagsCopy, p.tags)
+	return []interface{}{p.productID, tagsCopy}
+}
+
+// Equals compares two ProductTags for equality
+func (p ProductTags) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(p, other)
+}
+
+// GetHashCode returns the hash code for ProductTags
+func (p ProductTags) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(p)
 }
 
 // PhoneNumber represents a phone number
 type PhoneNumber struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	number string
 }
 
@@ -504,9 +683,19 @@ func (p *PhoneNumber) GetEqualityComponents() []interface{} {
 	return []interface{}{p.number}
 }
 
+// Equals compares two PhoneNumber objects for equality
+func (p *PhoneNumber) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(p, other)
+}
+
+// GetHashCode returns the hash code for PhoneNumber
+func (p *PhoneNumber) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(p)
+}
+
 // ContactInfo represents contact information with optional phone
 type ContactInfo struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	email string
 	phone *PhoneNumber
 }
@@ -524,9 +713,19 @@ func (c ContactInfo) GetEqualityComponents() []interface{} {
 	return []interface{}{c.email, c.phone}
 }
 
+// Equals compares two ContactInfo objects for equality
+func (c ContactInfo) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(c, other)
+}
+
+// GetHashCode returns the hash code for ContactInfo
+func (c ContactInfo) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(c)
+}
+
 // OrderItem represents an order line item
 type OrderItem struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	productID string
 	quantity  int
 	unitPrice Money
@@ -544,4 +743,14 @@ func NewOrderItem(productID string, quantity int, unitPrice Money) OrderItem {
 // GetEqualityComponents returns components for structural equality
 func (oi OrderItem) GetEqualityComponents() []interface{} {
 	return []interface{}{oi.productID, oi.quantity, oi.unitPrice}
+}
+
+// Equals compares two OrderItem objects for equality
+func (oi OrderItem) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(oi, other)
+}
+
+// GetHashCode returns the hash code for OrderItem
+func (oi OrderItem) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(oi)
 }

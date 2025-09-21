@@ -79,7 +79,7 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 		result := usdAmount.Add(eurAmount)
 		// If no panic, verify the implementation handles it appropriately
-		if result != nil {
+		if result.GetCurrency() != "" {
 			t.Log("Addition of different currencies handled without panic")
 		}
 	})

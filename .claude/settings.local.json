@@ -67,7 +67,15 @@
       "Bash(grep:*)",
       "Bash(go doc:*)",
       "Bash(set CGO_ENABLED=1)",
-      "Bash(go run:*)"
+      "Bash(go run:*)",
+      "Bash(move:*)",
+      "Bash(move entity.go old )",
+      "Bash(move event.go old )",
+      "Bash(move repository.go old)",
+      "Bash(cat:*)",
+      "Bash(CGO_ENABLED=1 go test -race ./...)",
+      "Bash(ren:*)",
+      "Bash(CGO_ENABLED=1 go test -race ./tests/...)"
     ],
     "deny": [],
     "ask": []

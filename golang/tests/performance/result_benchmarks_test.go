@@ -3,6 +3,7 @@ package performance
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/universalddd/architecture-core-go/pkg/functional"
 	testutils "github.com/universalddd/architecture-core-go/internal/testing"
@@ -49,34 +50,34 @@ func BenchmarkResult_Map_SingleOperation(b *testing.B) {
 
 	// String conversion
 	tester.BenchmarkOperation("Map_IntToString", func() {
-		_ = result.Map(func(x int) string {
+		_ = functional.Map(result, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
 
 	// Arithmetic operation
 	tester.BenchmarkOperation("Map_Arithmetic", func() {
-		_ = result.Map(func(x int) int {
+		_ = functional.Map(result, func(x int) int {
 			return x * 2
 		})
 	})
 
 	// Boolean conversion
 	tester.BenchmarkOperation("Map_ToBoolean", func() {
-		_ = result.Map(func(x int) bool {
+		_ = functional.Map(result, func(x int) bool {
 			return x > 0
 		})
 	})
 
 	// Zero allocation tests - CRITICAL REQUIREMENT
 	tester.BenchmarkZeroAlloc("Map_IntToString", func() {
-		_ = result.Map(func(x int) string {
+		_ = functional.Map(result, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Map_Arithmetic", func() {
-		_ = result.Map(func(x int) int {
+		_ = functional.Map(result, func(x int) int {
 			return x * 2
 		})
 	})
@@ -90,43 +91,47 @@ func BenchmarkResult_Map_ChainedOperations(b *testing.B) {
 
 	// Chain of 3 operations
 	tester.BenchmarkOperation("Map_Chain_3_Operations", func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		// Step 1: multiply by 2
+		step1 := functional.Map(result, func(x int) int { return x * 2 })
+		// Step 2: add 1
+		step2 := functional.Map(step1, func(x int) int { return x + 1 })
+		// Step 3: convert to string
+		_ = functional.Map(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Chain of 5 operations
 	tester.BenchmarkOperation("Map_Chain_5_Operations", func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) int { return x - 5 }).
-			Map(func(x int) int { return x / 2 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		// Step 1: multiply by 2
+		step1 := functional.Map(result, func(x int) int { return x * 2 })
+		// Step 2: add 1
+		step2 := functional.Map(step1, func(x int) int { return x + 1 })
+		// Step 3: subtract 5
+		step3 := functional.Map(step2, func(x int) int { return x - 5 })
+		// Step 4: divide by 2
+		step4 := functional.Map(step3, func(x int) int { return x / 2 })
+		// Step 5: convert to string
+		_ = functional.Map(step4, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Chain of 10 operations
 	tester.BenchmarkOperation("Map_Chain_10_Operations", func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) int { return x - 5 }).
-			Map(func(x int) int { return x / 2 }).
-			Map(func(x int) int { return x * 3 }).
-			Map(func(x int) int { return x + 10 }).
-			Map(func(x int) int { return x - 2 }).
-			Map(func(x int) int { return x / 4 }).
-			Map(func(x int) int { return x + 7 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		current := result
+		// Apply 9 integer operations
+		for i := 0; i < 9; i++ {
+			current = functional.Map(current, func(x int) int { return x + 1 })
+		}
+		// Final operation: convert to string
+		_ = functional.Map(current, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Zero allocation tests for chained operations
 	tester.BenchmarkZeroAlloc("Map_Chain_3_Operations", func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		// Step 1: multiply by 2
+		step1 := functional.Map(result, func(x int) int { return x * 2 })
+		// Step 2: add 1
+		step2 := functional.Map(step1, func(x int) int { return x + 1 })
+		// Step 3: convert to string
+		_ = functional.Map(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 }
 
@@ -138,7 +143,7 @@ func BenchmarkResult_Bind_Operations(b *testing.B) {
 
 	// Single bind operation
 	tester.BenchmarkOperation("Bind_Single", func() {
-		_ = result.Bind(func(x int) functional.Result[string] {
+		_ = functional.Bind(result, func(x int) functional.Result[string] {
 			if x > 0 {
 				return functional.Ok(strconv.Itoa(x))
 			}
@@ -148,34 +153,38 @@ func BenchmarkResult_Bind_Operations(b *testing.B) {
 
 	// Chained bind operations
 	tester.BenchmarkOperation("Bind_Chain_3", func() {
-		_ = result.
-			Bind(func(x int) functional.Result[int] {
-				return functional.Ok(x * 2)
-			}).
-			Bind(func(x int) functional.Result[int] {
-				return functional.Ok(x + 1)
-			}).
-			Bind(func(x int) functional.Result[string] {
-				return functional.Ok(strconv.Itoa(x))
-			})
+		// Step 1: multiply by 2
+		step1 := functional.Bind(result, func(x int) functional.Result[int] {
+			return functional.Ok(x * 2)
+		})
+		// Step 2: add 1
+		step2 := functional.Bind(step1, func(x int) functional.Result[int] {
+			return functional.Ok(x + 1)
+		})
+		// Step 3: convert to string
+		_ = functional.Bind(step2, func(x int) functional.Result[string] {
+			return functional.Ok(strconv.Itoa(x))
+		})
 	})
 
 	// Mixed Map and Bind operations
 	tester.BenchmarkOperation("Mixed_Map_Bind", func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Bind(func(x int) functional.Result[int] {
-				if x > 50 {
-					return functional.Ok(x)
-				}
-				return functional.Fail[int](functional.NewValidationError("TOO_SMALL", "Value too small"))
-			}).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		// Step 1: Map to multiply by 2
+		mapped := functional.Map(result, func(x int) int { return x * 2 })
+		// Step 2: Bind with validation
+		bound := functional.Bind(mapped, func(x int) functional.Result[int] {
+			if x > 50 {
+				return functional.Ok(x)
+			}
+			return functional.Fail[int](functional.NewValidationError("TOO_SMALL", "Value too small"))
+		})
+		// Step 3: Map to string
+		_ = functional.Map(bound, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Zero allocation tests
 	tester.BenchmarkZeroAlloc("Bind_Single", func() {
-		_ = result.Bind(func(x int) functional.Result[string] {
+		_ = functional.Bind(result, func(x int) functional.Result[string] {
 			return functional.Ok(strconv.Itoa(x))
 		})
 	})
@@ -190,7 +199,7 @@ func BenchmarkResult_Match_Operations(b *testing.B) {
 
 	// Match on successful result
 	tester.BenchmarkOperation("Match_Success", func() {
-		_ = okResult.Match(
+		_ = functional.Match(okResult,
 			func(value int) string {
 				return strconv.Itoa(value)
 			},
@@ -202,7 +211,7 @@ func BenchmarkResult_Match_Operations(b *testing.B) {
 
 	// Match on error result
 	tester.BenchmarkOperation("Match_Error", func() {
-		_ = errorResult.Match(
+		_ = functional.Match(errorResult,
 			func(value int) string {
 				return strconv.Itoa(value)
 			},
@@ -214,7 +223,7 @@ func BenchmarkResult_Match_Operations(b *testing.B) {
 
 	// Zero allocation tests
 	tester.BenchmarkZeroAlloc("Match_Success", func() {
-		_ = okResult.Match(
+		_ = functional.Match(okResult,
 			func(value int) string {
 				return strconv.Itoa(value)
 			},
@@ -318,39 +327,42 @@ func BenchmarkResult_ErrorHandling_Paths(b *testing.B) {
 
 	// Map operation on error (should short-circuit)
 	tester.BenchmarkOperation("Map_On_Error", func() {
-		_ = errorResult.Map(func(x int) string {
+		_ = functional.Map(errorResult, func(x int) string {
 			return strconv.Itoa(x) // This should not execute
 		})
 	})
 
 	// Bind operation on error (should short-circuit)
 	tester.BenchmarkOperation("Bind_On_Error", func() {
-		_ = errorResult.Bind(func(x int) functional.Result[string] {
+		_ = functional.Bind(errorResult, func(x int) functional.Result[string] {
 			return functional.Ok(strconv.Itoa(x)) // This should not execute
 		})
 	})
 
 	// Chain operations on error (should short-circuit)
 	tester.BenchmarkOperation("Chain_On_Error", func() {
-		_ = errorResult.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Bind(func(x int) functional.Result[string] {
-				return functional.Ok(strconv.Itoa(x))
-			})
+		// Step 1: Map multiply by 2
+		step1 := functional.Map(errorResult, func(x int) int { return x * 2 })
+		// Step 2: Map add 1
+		step2 := functional.Map(step1, func(x int) int { return x + 1 })
+		// Step 3: Bind to string conversion
+		_ = functional.Bind(step2, func(x int) functional.Result[string] {
+			return functional.Ok(strconv.Itoa(x))
+		})
 	})
 
 	// Zero allocation tests - error path operations should also be zero allocation
 	tester.BenchmarkZeroAlloc("Map_On_Error", func() {
-		_ = errorResult.Map(func(x int) string {
+		_ = functional.Map(errorResult, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Chain_On_Error", func() {
-		_ = errorResult.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 })
+		// Step 1: Map multiply by 2
+		step1 := functional.Map(errorResult, func(x int) int { return x * 2 })
+		// Step 2: Map add 1
+		_ = functional.Map(step1, func(x int) int { return x + 1 })
 	})
 }
 
@@ -360,7 +372,7 @@ func BenchmarkResult_Different_Types(b *testing.B) {
 	// String results
 	stringResult := functional.Ok("test string")
 	tester.BenchmarkOperation("Map_String", func() {
-		_ = stringResult.Map(func(s string) int {
+		_ = functional.Map(stringResult, func(s string) int {
 			return len(s)
 		})
 	})
@@ -368,7 +380,7 @@ func BenchmarkResult_Different_Types(b *testing.B) {
 	// Boolean results
 	boolResult := functional.Ok(true)
 	tester.BenchmarkOperation("Map_Boolean", func() {
-		_ = boolResult.Map(func(b bool) string {
+		_ = functional.Map(boolResult, func(b bool) string {
 			if b {
 				return "true"
 			}
@@ -384,20 +396,20 @@ func BenchmarkResult_Different_Types(b *testing.B) {
 	}
 	structResult := functional.Ok(testStruct{ID: 1, Name: "test", Value: 3.14})
 	tester.BenchmarkOperation("Map_Struct", func() {
-		_ = structResult.Map(func(s testStruct) string {
+		_ = functional.Map(structResult, func(s testStruct) string {
 			return s.Name
 		})
 	})
 
 	// Zero allocation tests for different types
 	tester.BenchmarkZeroAlloc("Map_String", func() {
-		_ = stringResult.Map(func(s string) int {
+		_ = functional.Map(stringResult, func(s string) int {
 			return len(s)
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Map_Boolean", func() {
-		_ = boolResult.Map(func(b bool) string {
+		_ = functional.Map(boolResult, func(b bool) string {
 			if b {
 				return "true"
 			}
@@ -413,7 +425,7 @@ func BenchmarkResult_Parallel_Operations(b *testing.B) {
 	b.Run("Map_Parallel", func(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				_ = result.Map(func(x int) int {
+				_ = functional.Map(result, func(x int) int {
 					return x * 2
 				})
 			}
@@ -449,56 +461,66 @@ func BenchmarkResult_ComprehensiveScenarios(b *testing.B) {
 	// Scenario 1: Simple data transformation pipeline
 	tester.BenchmarkOperation("Scenario_DataTransformation", func() {
 		result := functional.Ok("123")
-		_ = result.
-			Map(func(s string) int {
-				val, _ := strconv.Atoi(s)
-				return val
-			}).
-			Ensure(func(x int) bool { return x > 0 }, "Must be positive").
-			Map(func(x int) float64 { return float64(x) * 1.5 }).
-			Map(func(x float64) string { return strconv.FormatFloat(x, 'f', 2, 64) })
+		// Step 1: string to int
+		intResult := functional.Map(result, func(s string) int {
+			val, _ := strconv.Atoi(s)
+			return val
+		})
+		// Step 2: ensure positive
+		validResult := intResult.Ensure(func(x int) bool { return x > 0 }, "Must be positive")
+		// Step 3: int to float
+		floatResult := functional.Map(validResult, func(x int) float64 { return float64(x) * 1.5 })
+		// Step 4: float to string
+		_ = functional.Map(floatResult, func(x float64) string { return strconv.FormatFloat(x, 'f', 2, 64) })
 	})
 
 	// Scenario 2: Error handling workflow
 	tester.BenchmarkOperation("Scenario_ErrorHandling", func() {
 		result := functional.Ok(10)
-		_ = result.
-			Ensure(func(x int) bool { return x > 5 }, "Too small").
-			Bind(func(x int) functional.Result[int] {
-				if x%2 == 0 {
-					return functional.Ok(x / 2)
-				}
-				return functional.Fail[int](functional.NewDomainError("ODD", "Must be even"))
-			}).
-			Map(func(x int) string { return "Result: " + strconv.Itoa(x) })
+		// Step 1: ensure > 5
+		ensuredResult := result.Ensure(func(x int) bool { return x > 5 }, "Too small")
+		// Step 2: bind with even check
+		boundResult := functional.Bind(ensuredResult, func(x int) functional.Result[int] {
+			if x%2 == 0 {
+				return functional.Ok(x / 2)
+			}
+			return functional.Fail[int](functional.NewDomainError("ODD", "Must be even"))
+		})
+		// Step 3: map to string
+		_ = functional.Map(boundResult, func(x int) string { return "Result: " + strconv.Itoa(x) })
 	})
 
 	// Scenario 3: Complex business logic simulation
 	tester.BenchmarkOperation("Scenario_BusinessLogic", func() {
 		result := functional.Ok(100)
-		_ = result.
-			Ensure(func(x int) bool { return x >= 0 }, "Must be non-negative").
-			Map(func(x int) int { return x * 2 }). // Double the value
-			Ensure(func(x int) bool { return x <= 1000 }, "Too large").
-			Bind(func(x int) functional.Result[int] {
-				// Simulate some business rule
-				if x%10 == 0 {
-					return functional.Ok(x + 5)
-				}
-				return functional.Ok(x)
-			}).
-			Map(func(x int) string { return "Final: " + strconv.Itoa(x) })
+		// Step 1: ensure non-negative
+		ensured1 := result.Ensure(func(x int) bool { return x >= 0 }, "Must be non-negative")
+		// Step 2: double the value
+		doubled := functional.Map(ensured1, func(x int) int { return x * 2 })
+		// Step 3: ensure not too large
+		ensured2 := doubled.Ensure(func(x int) bool { return x <= 1000 }, "Too large")
+		// Step 4: bind with business rule
+		bound := functional.Bind(ensured2, func(x int) functional.Result[int] {
+			// Simulate some business rule
+			if x%10 == 0 {
+				return functional.Ok(x + 5)
+			}
+			return functional.Ok(x)
+		})
+		// Step 5: map to final string
+		_ = functional.Map(bound, func(x int) string { return "Final: " + strconv.Itoa(x) })
 	})
 
 	// Zero allocation validation for scenarios
 	tester.BenchmarkZeroAlloc("Scenario_DataTransformation", func() {
 		result := functional.Ok("123")
-		_ = result.
-			Map(func(s string) int {
-				val, _ := strconv.Atoi(s)
-				return val
-			}).
-			Map(func(x int) float64 { return float64(x) * 1.5 })
+		// Step 1: string to int
+		intResult := functional.Map(result, func(s string) int {
+			val, _ := strconv.Atoi(s)
+			return val
+		})
+		// Step 2: int to float
+		_ = functional.Map(intResult, func(x int) float64 { return float64(x) * 1.5 })
 	})
 }
 
@@ -514,13 +536,13 @@ func TestResult_ZeroAllocations(t *testing.T) {
 
 	// Test Map operations
 	allocs := testutils.MeasureAllocations(func() {
-		_ = result.Map(func(x int) int { return x * 2 })
+		_ = functional.Map(result, func(x int) int { return x * 2 })
 	})
 	assertions.Equal(0.0, allocs, "Map operation should have zero allocations")
 
 	// Test Bind operations
 	allocs = testutils.MeasureAllocations(func() {
-		_ = result.Bind(func(x int) functional.Result[int] {
+		_ = functional.Bind(result, func(x int) functional.Result[int] {
 			return functional.Ok(x + 1)
 		})
 	})
@@ -528,9 +550,10 @@ func TestResult_ZeroAllocations(t *testing.T) {
 
 	// Test chained operations
 	allocs = testutils.MeasureAllocations(func() {
-		_ = result.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 })
+		// Step 1: multiply by 2
+		mapped1 := functional.Map(result, func(x int) int { return x * 2 })
+		// Step 2: add 1
+		_ = functional.Map(mapped1, func(x int) int { return x + 1 })
 	})
 	assertions.Equal(0.0, allocs, "Chained Map operations should have zero allocations")
 }
@@ -542,13 +565,13 @@ func TestResult_PerformanceThresholds(t *testing.T) {
 	// Test single Map operation
 	testutils.ValidatePerformance(t, "Result.Map", expectations, func() {
 		result := functional.Ok(42)
-		_ = result.Map(func(x int) int { return x * 2 })
+		_ = functional.Map(result, func(x int) int { return x * 2 })
 	})
 
 	// Test single Bind operation
 	testutils.ValidatePerformance(t, "Result.Bind", expectations, func() {
 		result := functional.Ok(42)
-		_ = result.Bind(func(x int) functional.Result[int] {
+		_ = functional.Bind(result, func(x int) functional.Result[int] {
 			return functional.Ok(x + 1)
 		})
 	})

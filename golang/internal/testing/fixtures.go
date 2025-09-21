@@ -89,11 +89,11 @@ func (t TestValueObject) Equals(other domain.ValueObject) bool {
 	return false
 }
 
-func (t TestValueObject) GetHashCode() int {
-	hash := 17
-	hash = hash*31 + hashString(t.StringField)
-	hash = hash*31 + t.IntField
-	hash = hash*31 + hashBool(t.BoolField)
+func (t TestValueObject) GetHashCode() uint64 {
+	hash := uint64(17)
+	hash = hash*31 + uint64(hashString(t.StringField))
+	hash = hash*31 + uint64(t.IntField)
+	hash = hash*31 + uint64(hashBool(t.BoolField))
 	return hash
 }
 

@@ -18,7 +18,7 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 		// When: Applying the left identity law
 		// unit(a).bind(f) === f(a)
-		leftSide := functional.Some(value).Bind(f)
+		leftSide := functional.BindTyped(functional.Some(value), f)
 		rightSide := f(value)
 
 		// Then: Both sides should be equivalent
@@ -36,7 +36,7 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 		// When: Applying the right identity law
 		// m.bind(unit) === m
-		leftSide := maybe.Bind(func(s string) functional.Maybe[string] {
+		leftSide := functional.BindTyped(maybe, func(s string) functional.Maybe[string] {
 			return functional.Some(s) // This is the unit function
 		})
 		rightSide := maybe
@@ -65,9 +65,9 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 		// When: Applying the associativity law
 		// m.bind(f).bind(g) === m.bind(x => f(x).bind(g))
-		leftSide := maybe.Bind(f).Bind(g)
-		rightSide := maybe.Bind(func(x int) functional.Maybe[int] {
-			return f(x).Bind(g)
+		leftSide := functional.BindTyped(functional.BindTyped(maybe, f), g)
+		rightSide := functional.BindTyped(maybe, func(x int) functional.Maybe[int] {
+			return functional.BindTyped(f(x), g)
 		})
 
 		// Then: Both sides should be equivalent
@@ -87,7 +87,7 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		}
 
 		// When: Applying left identity law with None result
-		leftSide := functional.Some(value).Bind(f)
+		leftSide := functional.BindTyped(functional.Some(value), f)
 		rightSide := f(value)
 
 		// Then: Both should be None
@@ -101,7 +101,7 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		maybe := functional.None[string]()
 
 		// When: Applying right identity law
-		leftSide := maybe.Bind(func(s string) functional.Maybe[string] {
+		leftSide := functional.BindTyped(maybe, func(s string) functional.Maybe[string] {
 			return functional.Some(s)
 		})
 		rightSide := maybe
@@ -123,9 +123,9 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		}
 
 		// When: Applying associativity law with first function returning None
-		leftSide := maybe.Bind(f).Bind(g)
-		rightSide := maybe.Bind(func(x int) functional.Maybe[int] {
-			return f(x).Bind(g)
+		leftSide := functional.BindTyped(functional.BindTyped(maybe, f), g)
+		rightSide := functional.BindTyped(maybe, func(x int) functional.Maybe[int] {
+			return functional.BindTyped(f(x), g)
 		})
 
 		// Then: Both should be None
@@ -145,9 +145,9 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		}
 
 		// When: Applying associativity law with second function returning None
-		leftSide := maybe.Bind(f).Bind(g)
-		rightSide := maybe.Bind(func(x int) functional.Maybe[int] {
-			return f(x).Bind(g)
+		leftSide := functional.BindTyped(functional.BindTyped(maybe, f), g)
+		rightSide := functional.BindTyped(maybe, func(x int) functional.Maybe[int] {
+			return functional.BindTyped(f(x), g)
 		})
 
 		// Then: Both should be None
@@ -161,10 +161,11 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 		maybe := functional.None[string]()
 
 		// When: Chaining operations
-		finalMaybe := maybe.Bind(func(s string) functional.Maybe[int] {
+		firstBind := functional.BindTyped(maybe, func(s string) functional.Maybe[int] {
 			t.Error("This function should never be called on None")
 			return functional.Some(len(s))
-		}).Bind(func(i int) functional.Maybe[string] {
+		})
+		finalMaybe := functional.BindTyped(firstBind, func(i int) functional.Maybe[string] {
 			t.Error("This function should never be called on None")
 			return functional.Some("final")
 		})
@@ -183,10 +184,10 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 		// When: Applying functor composition law
 		// map(g ∘ f) === map(f).map(g)
-		leftSide := maybe.Map(func(i int) int {
+		leftSide := functional.MapMaybe(maybe, func(i int) int {
 			return g(f(i)) // Composition g ∘ f
 		})
-		rightSide := maybe.Map(f).Map(g)
+		rightSide := functional.MapMaybe(functional.MapMaybe(maybe, f), g)
 
 		// Then: Both sides should be equivalent
 		if leftSide.HasValue() != rightSide.HasValue() {
@@ -203,7 +204,7 @@ func TestMaybe_Should_SatisfyMonadicLaws_When_Used(t *testing.T) {
 
 		// When: Applying functor identity law
 		// map(id) === id
-		mapped := maybe.Map(func(s string) string { return s }) // Identity function
+		mapped := functional.MapMaybe(maybe, func(s string) string { return s }) // Identity function
 
 		// Then: Should be equivalent to original
 		if maybe.HasValue() != mapped.HasValue() {

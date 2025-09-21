@@ -2,7 +2,6 @@ package quickstart
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/universalddd/architecture-core-go/pkg/domain"
 	"github.com/universalddd/architecture-core-go/pkg/functional"
@@ -28,11 +27,11 @@ func NewOrderServiceWithRepository(repository IOrderRepository) *OrderService {
 }
 
 // CreateOrder creates a new order
-func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amount Money, correlationID string) functional.ResultOf[string] {
+func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amount Money, correlationID string) functional.Result[string] {
 	// Validate input
 	validationResult := s.validateCreateOrderInput(customerID, amount)
 	if validationResult.IsFailure() {
-		return functional.FailWith[string](validationResult.Error())
+		return functional.Fail[string](validationResult.Error())
 	}
 
 	// Create order
@@ -44,30 +43,26 @@ func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amoun
 	}
 
 	// Save to repository
-	addResult := s.repository.AddAsync(ctx, order)
-	if addResult.IsFailure() {
-		return functional.FailWith[string](addResult.Error())
+	err := s.repository.Save(ctx, order)
+	if err != nil {
+		return functional.Fail[string](functional.InfrastructureError("SAVE_FAILED", err.Error()))
 	}
 
-	return functional.OkWith(order.GetID())
+	return functional.OkWith(order.ID().String())
 }
 
 // GetOrder retrieves an order by ID
-func (s *OrderService) GetOrder(ctx context.Context, orderID string) functional.Maybe[Order] {
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
-	if maybeOrder.HasValue() {
-		// Dereference the pointer to return the value
-		return functional.Some(*maybeOrder.Value())
-	}
-	return functional.None[Order]()
+func (s *OrderService) GetOrder(ctx context.Context, orderID OrderId) functional.Maybe[*Order] {
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
+	return maybeOrder
 }
 
 // ConfirmOrder confirms an existing order
-func (s *OrderService) ConfirmOrder(ctx context.Context, orderID string) functional.Result {
+func (s *OrderService) ConfirmOrder(ctx context.Context, orderID OrderId) functional.Result[interface{}] {
 	// Get the order
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.Fail(functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.Fail[interface{}](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
 	}
 
 	order := maybeOrder.Value()
@@ -79,15 +74,19 @@ func (s *OrderService) ConfirmOrder(ctx context.Context, orderID string) functio
 	}
 
 	// Update in repository
-	return s.repository.UpdateAsync(ctx, order)
+	err := s.repository.Save(ctx, order)
+	if err != nil {
+		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	}
+	return functional.Ok[interface{}](nil)
 }
 
 // ShipOrder ships an existing order
-func (s *OrderService) ShipOrder(ctx context.Context, orderID string) functional.Result {
+func (s *OrderService) ShipOrder(ctx context.Context, orderID OrderId) functional.Result[interface{}] {
 	// Get the order
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.Fail(functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.Fail[interface{}](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
 	}
 
 	order := maybeOrder.Value()
@@ -99,15 +98,19 @@ func (s *OrderService) ShipOrder(ctx context.Context, orderID string) functional
 	}
 
 	// Update in repository
-	return s.repository.UpdateAsync(ctx, order)
+	err := s.repository.Save(ctx, order)
+	if err != nil {
+		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	}
+	return functional.Ok[interface{}](nil)
 }
 
 // CancelOrder cancels an existing order
-func (s *OrderService) CancelOrder(ctx context.Context, orderID string) functional.Result {
+func (s *OrderService) CancelOrder(ctx context.Context, orderID OrderId) functional.Result[interface{}] {
 	// Get the order
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.Fail(functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.Fail[interface{}](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
 	}
 
 	order := maybeOrder.Value()
@@ -119,7 +122,11 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderID string) function
 	}
 
 	// Update in repository
-	return s.repository.UpdateAsync(ctx, order)
+	err := s.repository.Save(ctx, order)
+	if err != nil {
+		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	}
+	return functional.Ok[interface{}](nil)
 }
 
 // GetOrdersByStatus retrieves orders by status
@@ -128,83 +135,99 @@ func (s *OrderService) GetOrdersByStatus(ctx context.Context, status OrderStatus
 }
 
 // GetOrderByCustomer retrieves an order by customer ID
-func (s *OrderService) GetOrderByCustomer(ctx context.Context, customerID string) functional.Maybe[Order] {
+func (s *OrderService) GetOrderByCustomer(ctx context.Context, customerID string) functional.Maybe[*Order] {
 	return s.repository.GetByCustomerIDAsync(ctx, customerID)
 }
 
 // ProcessOrderWorkflow executes a complete order workflow
-func (s *OrderService) ProcessOrderWorkflow(ctx context.Context, customerID string, amount Money, correlationID string) functional.ResultOf[string] {
-	return s.CreateOrder(ctx, customerID, amount, correlationID).
-		Bind(func(orderID string) functional.ResultOf[string] {
-			return s.ConfirmOrder(ctx, orderID).Map(func() string { return orderID })
-		}).
-		Bind(func(orderID string) functional.ResultOf[string] {
-			return s.ShipOrder(ctx, orderID).Map(func() string { return orderID })
-		})
+func (s *OrderService) ProcessOrderWorkflow(ctx context.Context, customerID string, amount Money, correlationID string) functional.Result[string] {
+	createResult := s.CreateOrder(ctx, customerID, amount, correlationID)
+	if createResult.IsFailure() {
+		return createResult
+	}
+
+	orderID := createResult.Value()
+	orderIDType := NewOrderId(orderID)
+
+	confirmResult := s.ConfirmOrder(ctx, orderIDType)
+	if confirmResult.IsFailure() {
+		return functional.Fail[string](confirmResult.Error())
+	}
+
+	shipResult := s.ShipOrder(ctx, orderIDType)
+	if shipResult.IsFailure() {
+		return functional.Fail[string](shipResult.Error())
+	}
+
+	return functional.Ok(orderID)
 }
 
 // ValidateOrder validates an order's business rules
-func (s *OrderService) ValidateOrder(ctx context.Context, orderID string) functional.Result {
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+func (s *OrderService) ValidateOrder(ctx context.Context, orderID OrderId) functional.Result[interface{}] {
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.Fail(functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.Fail[interface{}](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
 	}
 
 	order := maybeOrder.Value()
 
 	// Validate business rules
 	if order.GetTotalAmount().GetAmount() <= 0 {
-		return functional.Fail(functional.ValidationError("INVALID_AMOUNT", "Order amount must be positive"))
+		return functional.Fail[interface{}](functional.ValidationError("INVALID_AMOUNT", "Order amount must be positive"))
 	}
 
 	if order.GetCustomerID() == "" {
-		return functional.Fail(functional.ValidationError("MISSING_CUSTOMER", "Order must have a customer"))
+		return functional.Fail[interface{}](functional.ValidationError("MISSING_CUSTOMER", "Order must have a customer"))
 	}
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // GetOrderEvents retrieves events for an order
-func (s *OrderService) GetOrderEvents(ctx context.Context, orderID string) functional.ResultOf[[]domain.IDomainEvent] {
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+func (s *OrderService) GetOrderEvents(ctx context.Context, orderID OrderId) functional.ResultOf[[]domain.DomainEvent] {
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.FailWith[[]domain.IDomainEvent](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.ResultOf[[]domain.DomainEvent](functional.Fail[[]domain.DomainEvent](functional.DomainError("ORDER_NOT_FOUND", "Order not found")))
 	}
 
 	order := maybeOrder.Value()
-	events := order.GetEvents()
+	events := order.DomainEvents()
 
-	return functional.OkWith(events)
+	return functional.ResultOf[[]domain.DomainEvent](functional.Ok(events))
 }
 
 // ClearOrderEvents clears events for an order (typically after publishing)
-func (s *OrderService) ClearOrderEvents(ctx context.Context, orderID string) functional.Result {
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+func (s *OrderService) ClearOrderEvents(ctx context.Context, orderID OrderId) functional.Result[interface{}] {
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.Fail(functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.Fail[interface{}](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
 	}
 
 	order := maybeOrder.Value()
-	order.ClearEvents()
+	order.ClearDomainEvents()
 
-	return s.repository.UpdateAsync(ctx, order)
+	err := s.repository.Save(ctx, order)
+	if err != nil {
+		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	}
+	return functional.Ok[interface{}](nil)
 }
 
 // validateCreateOrderInput validates input for order creation
-func (s *OrderService) validateCreateOrderInput(customerID string, amount Money) functional.Result {
+func (s *OrderService) validateCreateOrderInput(customerID string, amount Money) functional.Result[interface{}] {
 	if customerID == "" {
-		return functional.Fail(functional.ValidationError("EMPTY_CUSTOMER_ID", "Customer ID cannot be empty"))
+		return functional.Fail[interface{}](functional.ValidationError("EMPTY_CUSTOMER_ID", "Customer ID cannot be empty"))
 	}
 
 	if amount.GetAmount() <= 0 {
-		return functional.Fail(functional.ValidationError("INVALID_AMOUNT", "Order amount must be positive"))
+		return functional.Fail[interface{}](functional.ValidationError("INVALID_AMOUNT", "Order amount must be positive"))
 	}
 
 	if amount.GetCurrency() == "" {
-		return functional.Fail(functional.ValidationError("EMPTY_CURRENCY", "Currency cannot be empty"))
+		return functional.Fail[interface{}](functional.ValidationError("EMPTY_CURRENCY", "Currency cannot be empty"))
 	}
 
-	return functional.Ok()
+	return functional.Ok[interface{}](nil)
 }
 
 // OrderSummary represents a summary of an order
@@ -217,23 +240,23 @@ type OrderSummary struct {
 }
 
 // GetOrderSummary retrieves a summary of an order
-func (s *OrderService) GetOrderSummary(ctx context.Context, orderID string) functional.ResultOf[OrderSummary] {
-	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
+func (s *OrderService) GetOrderSummary(ctx context.Context, orderID OrderId) functional.ResultOf[OrderSummary] {
+	maybeOrder, _ := s.repository.GetByID(ctx, orderID)
 	if !maybeOrder.HasValue() {
-		return functional.FailWith[OrderSummary](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
+		return functional.ResultOf[OrderSummary](functional.Fail[OrderSummary](functional.DomainError("ORDER_NOT_FOUND", "Order not found")))
 	}
 
 	order := maybeOrder.Value()
 
 	summary := OrderSummary{
-		OrderID:     order.GetID(),
+		OrderID:     order.ID().String(),
 		CustomerID:  order.GetCustomerID(),
 		TotalAmount: order.GetTotalAmount(),
 		Status:      order.GetStatus(),
 		EventCount:  order.GetEventCount(),
 	}
 
-	return functional.OkWith(summary)
+	return functional.ResultOf[OrderSummary](functional.Ok(summary))
 }
 
 // BatchCreateOrders creates multiple orders in a batch
@@ -246,16 +269,16 @@ func (s *OrderService) BatchCreateOrders(ctx context.Context, requests []CreateO
 		if result.IsSuccess() {
 			orderIDs = append(orderIDs, result.Value())
 		} else {
-			errors = append(errors, result.Error())
+			errors = append(errors, *result.Error())
 		}
 	}
 
 	if len(errors) > 0 {
 		// Return first error for simplicity
-		return functional.FailWith[[]string](errors[0])
+		return functional.ResultOf[[]string](functional.Fail[[]string](&errors[0]))
 	}
 
-	return functional.OkWith(orderIDs)
+	return functional.ResultOf[[]string](functional.Ok(orderIDs))
 }
 
 // CreateOrderRequest represents a request to create an order
@@ -285,7 +308,7 @@ func (s *OrderService) GetOrderStatistics(ctx context.Context) functional.Result
 	for _, status := range statuses {
 		ordersResult := s.repository.GetOrdersByStatusAsync(ctx, status)
 		if ordersResult.IsFailure() {
-			return functional.FailWith[OrderStatistics](ordersResult.Error())
+			return functional.ResultOf[OrderStatistics](functional.Fail[OrderStatistics](ordersResult.Error()))
 		}
 
 		count := len(ordersResult.Value())
@@ -305,5 +328,5 @@ func (s *OrderService) GetOrderStatistics(ctx context.Context) functional.Result
 		}
 	}
 
-	return functional.OkWith(stats)
+	return functional.ResultOf[OrderStatistics](functional.Ok(stats))
 }

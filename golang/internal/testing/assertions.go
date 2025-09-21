@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/universalddd/architecture-core-go/pkg/domain"
 	"github.com/universalddd/architecture-core-go/pkg/functional"
 )
 
@@ -72,11 +71,27 @@ func (a *Assertions) False(value bool, msgAndArgs ...interface{}) {
 // Nil asserts that a value is nil
 func (a *Assertions) Nil(value interface{}, msgAndArgs ...interface{}) {
 	a.t.Helper()
-	if value != nil {
+	if !isNil(value) {
 		a.t.Errorf("Expected nil, but was: %v", value)
 		if len(msgAndArgs) > 0 {
 			a.t.Errorf("Message: %v", msgAndArgs...)
 		}
+	}
+}
+
+// isNil checks if a value is nil, handling typed nil pointers correctly
+func isNil(value interface{}) bool {
+	if value == nil {
+		return true
+	}
+
+	// Use reflection to check for typed nil pointers
+	v := reflect.ValueOf(value)
+	switch v.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+		return v.IsNil()
+	default:
+		return false
 	}
 }
 

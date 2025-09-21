@@ -116,7 +116,8 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		}
 
 		// When: Checking existence of non-existent aggregate
-		notExistsResult := repo.ExistsAsync(ctx, "NON-EXISTENT")
+		nonExistentID := quickstart.NewOrderId("NON-EXISTENT")
+		notExistsResult := repo.ExistsAsync(ctx, nonExistentID)
 
 		// Then: Should return false
 		if notExistsResult.IsFailure() || notExistsResult.Value() {
@@ -130,7 +131,7 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		ctx := context.Background()
 
 		// When: Performing concurrent adds
-		results := make(chan functional.Result, 10)
+		results := make(chan functional.Result[interface{}], 10)
 
 		for i := 0; i < 10; i++ {
 			go func(index int) {
@@ -230,7 +231,7 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		ctx := context.Background()
 
 		const numOrders = 1000
-		orderIDs := make([]string, numOrders)
+		orderIDs := make([]quickstart.OrderId, numOrders)
 
 		// When: Adding many aggregates
 		for i := 0; i < numOrders; i++ {
@@ -308,10 +309,33 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		// Add orders with different statuses
 		pendingOrder := quickstart.NewOrder("CUST-010", quickstart.NewMoney(100.00, "USD"))
 		confirmedOrder := quickstart.NewOrder("CUST-011", quickstart.NewMoney(200.00, "USD"))
-		confirmedOrder.ConfirmOrder()
 
-		repo.AddAsync(ctx, pendingOrder)
-		repo.AddAsync(ctx, confirmedOrder)
+		// Add the pending order
+		addResult1 := repo.AddAsync(ctx, pendingOrder)
+		if addResult1.IsFailure() {
+			t.Fatalf("Failed to add pending order: %v", addResult1.Error())
+		}
+
+		// Add the order and then confirm it
+		addResult2 := repo.AddAsync(ctx, confirmedOrder)
+		if addResult2.IsFailure() {
+			t.Fatalf("Failed to add order to be confirmed: %v", addResult2.Error())
+		}
+
+		// Confirm the order and update it in the repository
+		confirmResult := confirmedOrder.ConfirmOrder()
+		if confirmResult.IsFailure() {
+			t.Fatalf("Failed to confirm order: %v", confirmResult.Error())
+		}
+
+		updateResult := repo.UpdateAsync(ctx, confirmedOrder)
+		if updateResult.IsFailure() {
+			t.Fatalf("Failed to update confirmed order: %v", updateResult.Error())
+		}
+
+		// Debug: Let's verify the order status after update
+		t.Logf("Pending order status: %v", pendingOrder.GetStatus())
+		t.Logf("Confirmed order status: %v", confirmedOrder.GetStatus())
 
 		// When: Querying by status (if supported)
 		pendingResult := repo.GetOrdersByStatusAsync(ctx, quickstart.Pending)
@@ -320,9 +344,12 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		// Then: Should return appropriate orders
 		if pendingResult.IsSuccess() {
 			pendingOrders := pendingResult.Value()
+			t.Logf("Found %d pending orders", len(pendingOrders))
 			if len(pendingOrders) < 1 {
 				t.Error("Should find at least one pending order")
 			}
+		} else {
+			t.Logf("Failed to query pending orders: %v", pendingResult.Error())
 		}
 
 		if confirmedResult.IsSuccess() {

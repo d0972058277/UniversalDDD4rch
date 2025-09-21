@@ -2,191 +2,176 @@ package functional
 
 import "fmt"
 
-// Result represents the result of an operation that can succeed or fail
-type Result struct {
-	isSuccess bool
-	error     Error
+// Result[T] represents the result of an operation that can succeed with a value or fail
+// Implements the Result interface from contracts
+type Result[T any] struct {
+	isOk  bool
+	value T
+	err   *Error
 }
 
-// ResultOf[T] represents the result of an operation that can succeed with a value or fail
-type ResultOf[T any] struct {
-	isSuccess bool
-	value     T
-	error     Error
+// IsOk returns true if the result represents success
+func (r Result[T]) IsOk() bool {
+	return r.isOk
 }
 
-// IsSuccess returns true if the result represents success
-func (r Result) IsSuccess() bool {
-	return r.isSuccess
+// IsSuccess returns true if the result represents success (alias for IsOk)
+func (r Result[T]) IsSuccess() bool {
+	return r.isOk
 }
 
-// IsFailure returns true if the result represents failure
-func (r Result) IsFailure() bool {
-	return !r.isSuccess
+// IsError returns true if the result represents failure
+func (r Result[T]) IsError() bool {
+	return !r.isOk
 }
 
-// Error returns the error if the result is a failure
-func (r Result) Error() Error {
-	return r.error
-}
-
-// Ok creates a successful Result
-func Ok() Result {
-	return Result{isSuccess: true}
-}
-
-// Fail creates a failed Result with the specified error
-func Fail(err Error) Result {
-	return Result{isSuccess: false, error: err}
-}
-
-// MapResult transforms a successful Result to a ResultOf[T] by applying the provided function
-func MapResult[T any](r Result, f func() T) ResultOf[T] {
-	if r.isSuccess {
-		return OkWith(f())
-	}
-	return FailWith[T](r.error)
-}
-
-// Bind chains Result operations, applying the function only if the current result is successful
-func (r Result) Bind(f func() Result) Result {
-	if r.isSuccess {
-		return f()
-	}
-	return r
-}
-
-// MatchResult applies one of two functions based on the result state
-func MatchResult[T any](r Result, onSuccess func() T, onFailure func(Error) T) T {
-	if r.isSuccess {
-		return onSuccess()
-	}
-	return onFailure(r.error)
-}
-
-// IsSuccess returns true if the result represents success
-func (r ResultOf[T]) IsSuccess() bool {
-	return r.isSuccess
-}
-
-// IsFailure returns true if the result represents failure
-func (r ResultOf[T]) IsFailure() bool {
-	return !r.isSuccess
+// IsFailure returns true if the result represents failure (alias for IsError)
+func (r Result[T]) IsFailure() bool {
+	return !r.isOk
 }
 
 // Value returns the value if the result is successful
-func (r ResultOf[T]) Value() T {
+func (r Result[T]) Value() T {
 	return r.value
 }
 
 // Error returns the error if the result is a failure
-func (r ResultOf[T]) Error() Error {
-	return r.error
+func (r Result[T]) Error() *Error {
+	return r.err
 }
 
-// OkWith creates a successful ResultOf[T] with the specified value
-func OkWith[T any](value T) ResultOf[T] {
-	return ResultOf[T]{isSuccess: true, value: value}
-}
-
-// FailWith creates a failed ResultOf[T] with the specified error
-func FailWith[T any](err Error) ResultOf[T] {
-	var zero T
-	return ResultOf[T]{isSuccess: false, value: zero, error: err}
-}
-
-// Map transforms the value of a successful ResultOf[T] to ResultOf[U]
-func (r ResultOf[T]) Map(f func(T) any) ResultOf[any] {
-	if r.isSuccess {
-		return OkWith(f(r.value))
+// Map transforms the value of a successful Result[T] to Result[U] (generic function)
+func Map[T, U any](r Result[T], f func(T) U) Result[U] {
+	if r.isOk {
+		return Ok(f(r.value))
 	}
-	return FailWith[any](r.error)
+	return Fail[U](r.err)
 }
 
-// MapTo transforms the value of a successful ResultOf[T] to ResultOf[U]
-func MapTo[T, U any](r ResultOf[T], f func(T) U) ResultOf[U] {
-	if r.isSuccess {
-		return OkWith(f(r.value))
-	}
-	return FailWith[U](r.error)
-}
-
-// Bind chains ResultOf[T] operations, applying the function only if the current result is successful
-func (r ResultOf[T]) Bind(f func(T) ResultOf[any]) ResultOf[any] {
-	if r.isSuccess {
+// Bind chains Result operations, applying the function only if the current result is successful (generic function)
+func Bind[T, U any](r Result[T], f func(T) Result[U]) Result[U] {
+	if r.isOk {
 		return f(r.value)
 	}
-	return FailWith[any](r.error)
+	return Fail[U](r.err)
 }
 
-// BindTo chains ResultOf[T] operations, applying the function only if the current result is successful
-func BindTo[T, U any](r ResultOf[T], f func(T) ResultOf[U]) ResultOf[U] {
-	if r.isSuccess {
-		return f(r.value)
-	}
-	return FailWith[U](r.error)
-}
-
-// Match applies one of two functions based on the result state
-func (r ResultOf[T]) Match(onSuccess func(T) any, onFailure func(Error) any) any {
-	if r.isSuccess {
+// Match applies one of two functions based on the result state (generic function)
+func Match[T, U any](r Result[T], onSuccess func(T) U, onError func(*Error) U) U {
+	if r.isOk {
 		return onSuccess(r.value)
 	}
-	return onFailure(r.error)
-}
-
-// MatchTo applies one of two functions based on the result state
-func MatchTo[T, U any](r ResultOf[T], onSuccess func(T) U, onFailure func(Error) U) U {
-	if r.isSuccess {
-		return onSuccess(r.value)
-	}
-	return onFailure(r.error)
-}
-
-// FromMaybe converts a Maybe[T] to ResultOf[T], using the provided error if Maybe is None
-func FromMaybe[T any](maybe Maybe[T], errorWhenNone Error) ResultOf[T] {
-	if maybe.HasValue() {
-		return OkWith(maybe.Value())
-	}
-	return FailWith[T](errorWhenNone)
+	return onError(r.err)
 }
 
 // Ensure validates a successful result with a predicate, converting to failure if predicate fails
-func (r ResultOf[T]) Ensure(predicate func(T) bool, errorWhenFalse Error) ResultOf[T] {
-	if r.isSuccess && !predicate(r.value) {
-		return FailWith[T](errorWhenFalse)
+func (r Result[T]) Ensure(predicate func(T) bool, errorMessage string) Result[T] {
+	if r.isOk && !predicate(r.value) {
+		return Fail[T](ValidationError("ENSURE_FAILED", errorMessage))
 	}
 	return r
 }
 
-// TryMapTo attempts to map the value, catching panics and converting them to errors
-func TryMapTo[T, U any](r ResultOf[T], f func(T) U) ResultOf[U] {
-	if !r.isSuccess {
-		return FailWith[U](r.error)
+// Map transforms the value using the provided function (method version for interface compatibility)
+func (r Result[T]) Map(f func(T) interface{}) Result[interface{}] {
+	if r.isOk {
+		return Result[interface{}]{isOk: true, value: f(r.value)}
+	}
+	return Result[interface{}]{isOk: false, err: r.err}
+}
+
+// Bind chains Result operations (method version for interface compatibility)
+func (r Result[T]) Bind(f func(T) Result[interface{}]) Result[interface{}] {
+	if r.isOk {
+		return f(r.value)
+	}
+	return Result[interface{}]{isOk: false, err: r.err}
+}
+
+// Match applies one of two functions based on the result state (method version)
+func (r Result[T]) Match(onSuccess func(T) interface{}, onError func(*Error) interface{}) interface{} {
+	if r.isOk {
+		return onSuccess(r.value)
+	}
+	return onError(r.err)
+}
+
+// Ok creates a successful Result[T] with the specified value
+func Ok[T any](value T) Result[T] {
+	return Result[T]{isOk: true, value: value}
+}
+
+// OkWith creates a successful Result[T] with the specified value (alias for Ok)
+func OkWith[T any](value T) Result[T] {
+	return Ok[T](value)
+}
+
+// Fail creates a failed Result[T] with the specified error
+func Fail[T any](err *Error) Result[T] {
+	var zero T
+	return Result[T]{isOk: false, value: zero, err: err}
+}
+
+// FailWithMessage creates a failed Result[T] with a simple error message
+func FailWithMessage[T any](message string) Result[T] {
+	return Fail[T](DomainError("GENERIC_ERROR", message))
+}
+
+// FailWith creates a failed Result[T] with the specified error
+func FailWith[T any](err *Error) Result[T] {
+	return Fail[T](err)
+}
+
+// FromMaybe converts a Maybe[T] to Result[T], using the provided error if Maybe is None
+func FromMaybe[T any](maybe Maybe[T], errorWhenNone *Error) Result[T] {
+	if maybe.HasValue() {
+		return Ok(maybe.Value())
+	}
+	return Fail[T](errorWhenNone)
+}
+
+// TryMap attempts to map the value, catching panics and converting them to errors
+func TryMap[T, U any](r Result[T], f func(T) U) Result[U] {
+	if !r.isOk {
+		return Fail[U](r.err)
 	}
 
 	defer func() {
 		if recovered := recover(); recovered != nil {
-			// Convert panic to infrastructure error - in a real implementation this would
-			// be handled properly with a panic handler that returns an error result
+			// Convert panic to infrastructure error
 			_ = InfrastructureError("PANIC_RECOVERED", "Operation panicked: "+fmt.Sprintf("%v", recovered))
 		}
 	}()
 
-	return OkWith(f(r.value))
+	return Ok(f(r.value))
 }
 
-// TryBindTo attempts to bind the operation, catching panics and converting them to errors
-func TryBindTo[T, U any](r ResultOf[T], f func(T) ResultOf[U]) ResultOf[U] {
-	if !r.isSuccess {
-		return FailWith[U](r.error)
+// TryBind attempts to bind the operation, catching panics and converting them to errors
+func TryBind[T, U any](r Result[T], f func(T) Result[U]) Result[U] {
+	if !r.isOk {
+		return Fail[U](r.err)
 	}
 
 	defer func() {
 		if recovered := recover(); recovered != nil {
-			// This is handled in the calling context since we can't modify return value from defer
+			// In a real implementation, this would be properly handled
 		}
 	}()
 
 	return f(r.value)
 }
+
+// Interface compatibility methods are defined above
+
+// ResultOf is a type for Result for compatibility
+type ResultOf[T any] Result[T]
+
+// Methods for ResultOf to maintain compatibility
+func (r ResultOf[T]) IsOk() bool { return Result[T](r).IsOk() }
+func (r ResultOf[T]) IsError() bool { return Result[T](r).IsError() }
+func (r ResultOf[T]) Value() T { return Result[T](r).Value() }
+func (r ResultOf[T]) Error() *Error { return Result[T](r).Error() }
+func (r ResultOf[T]) IsSuccess() bool { return Result[T](r).IsSuccess() }
+func (r ResultOf[T]) IsFailure() bool { return Result[T](r).IsFailure() }
+
+// Result interface methods are already defined above

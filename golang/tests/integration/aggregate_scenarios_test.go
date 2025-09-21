@@ -89,7 +89,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 			prev := events[i-1]
 			curr := events[i]
 
-			if curr.GetOccurredAt().Before(prev.GetOccurredAt()) {
+			if curr.OccurredAt().Before(prev.OccurredAt()) {
 				t.Error("Events should be in chronological order")
 			}
 		}
@@ -152,11 +152,11 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 		// Check that events have proper correlation tracking
 		for _, event := range events {
-			if event.GetCorrelationID() != correlationID {
+			if event.CorrelationID() == nil || *event.CorrelationID() != correlationID {
 				t.Error("Events should maintain correlation ID")
 			}
 
-			metadata := event.GetMetadata()
+			metadata := event.Metadata()
 			if metadata == nil {
 				t.Error("Events should have metadata")
 			}
@@ -179,7 +179,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 		creationEvent := events[0]
 		confirmationEvent := events[1]
 
-		if confirmationEvent.GetCausationID() != creationEvent.GetID().String() {
+		if confirmationEvent.CausationID() == nil || *confirmationEvent.CausationID() != creationEvent.ID() {
 			t.Error("Confirmation event should reference creation event as causation")
 		}
 	})
@@ -283,7 +283,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 		// All events should be properly ordered
 		events := order.GetEvents()
 		for i := 1; i < len(events); i++ {
-			if events[i].GetOccurredAt().Before(events[i-1].GetOccurredAt()) {
+			if events[i].OccurredAt().Before(events[i-1].OccurredAt()) {
 				t.Error("Events should maintain chronological order")
 			}
 		}

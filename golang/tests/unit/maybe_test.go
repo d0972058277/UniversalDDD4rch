@@ -258,7 +258,7 @@ func TestMaybe_Should_ReturnValue_When_OrElseCalledOnSomeValue(t *testing.T) {
 	defaultValue := "default value"
 
 	// When
-	result := maybe.OrElse(defaultValue)
+	result := maybe.ValueOr(defaultValue)
 
 	// Then
 	assertions.Equal("actual value", result, "Should return actual value")
@@ -271,7 +271,7 @@ func TestMaybe_Should_ReturnDefault_When_OrElseCalledOnNoneValue(t *testing.T) {
 	defaultValue := "default value"
 
 	// When
-	result := maybe.OrElse(defaultValue)
+	result := maybe.ValueOr(defaultValue)
 
 	// Then
 	assertions.Equal("default value", result, "Should return default value")
@@ -351,7 +351,7 @@ func TestMaybe_Should_ConvertToResult_When_ToResultCalled(t *testing.T) {
 
 	// When - Some case
 	someValue := functional.Some(42)
-	someResult := someValue.ToResult(*errorWhenNone)
+	someResult := someValue.ToResultWithError(errorWhenNone)
 
 	// Then
 	assertions.True(someResult.IsOk(), "Result from Some should be Ok")
@@ -359,7 +359,7 @@ func TestMaybe_Should_ConvertToResult_When_ToResultCalled(t *testing.T) {
 
 	// When - None case
 	noneValue := functional.None[int]()
-	noneResult := noneValue.ToResult(*errorWhenNone)
+	noneResult := noneValue.ToResultWithError(errorWhenNone)
 
 	// Then
 	assertions.True(noneResult.IsError(), "Result from None should be Error")

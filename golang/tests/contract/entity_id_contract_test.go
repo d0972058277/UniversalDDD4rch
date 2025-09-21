@@ -22,15 +22,11 @@ func TestEntityID_Should_SatisfyComparableConstraint_When_StateUnderTest(t *test
 
 	t.Run("Should_AcceptCustomIDType_When_ImplementingComparable", func(t *testing.T) {
 		// Given: A custom ID type that implements comparable constraint
-		type CustomID struct {
-			Value string
-		}
-
-		// When: Using CustomID as EntityID
+		// When: Using CustomTestID as EntityID
 		// Then: Should work with Entity generic constraint
 
 		// This test will fail until Entity is implemented
-		var customID CustomID = CustomID{Value: "custom-123"}
+		var customID domain.CustomTestID = domain.CustomTestID{Value: "custom-123"}
 		entity := domain.NewTestEntityWithCustomID(customID)
 		if entity == nil {
 			t.Fatal("Entity with custom ID creation should not return nil")

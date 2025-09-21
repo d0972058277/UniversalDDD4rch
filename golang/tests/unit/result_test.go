@@ -1,7 +1,7 @@
 package unit
 
 import (
-	"errors"
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -53,7 +53,7 @@ func TestResult_Should_ApplyFunction_When_MapOperationOnOkResult(t *testing.T) {
 	result := functional.Ok(42)
 
 	// When
-	mappedResult := result.Map(func(x int) string {
+	mappedResult := functional.Map(result, func(x int) string {
 		return strconv.Itoa(x)
 	})
 
@@ -69,7 +69,7 @@ func TestResult_Should_ReturnError_When_MapOperationOnErrorResult(t *testing.T) 
 	result := functional.Fail[int](err)
 
 	// When
-	mappedResult := result.Map(func(x int) string {
+	mappedResult := functional.Map(result, func(x int) string {
 		return strconv.Itoa(x) // This should not execute
 	})
 
@@ -84,10 +84,9 @@ func TestResult_Should_ChainOperations_When_MultipleMapsCalled(t *testing.T) {
 	result := functional.Ok(10)
 
 	// When
-	finalResult := result.
-		Map(func(x int) int { return x * 2 }).     // 20
-		Map(func(x int) int { return x + 5 }).     // 25
-		Map(func(x int) string { return strconv.Itoa(x) }) // "25"
+	step1 := functional.Map(result, func(x int) int { return x * 2 })     // 20
+	step2 := functional.Map(step1, func(x int) int { return x + 5 })      // 25
+	finalResult := functional.Map(step2, func(x int) string { return strconv.Itoa(x) }) // "25"
 
 	// Then
 	assertions.ResultOk(finalResult, "Final result should be Ok")
@@ -101,10 +100,9 @@ func TestResult_Should_StopChain_When_ErrorOccursInChain(t *testing.T) {
 	result := functional.Fail[int](err)
 
 	// When
-	finalResult := result.
-		Map(func(x int) int { return x * 2 }).     // Should not execute
-		Map(func(x int) int { return x + 5 }).     // Should not execute
-		Map(func(x int) string { return strconv.Itoa(x) }) // Should not execute
+	step1 := functional.Map(result, func(x int) int { return x * 2 })     // Should not execute
+	step2 := functional.Map(step1, func(x int) int { return x + 5 })      // Should not execute
+	finalResult := functional.Map(step2, func(x int) string { return strconv.Itoa(x) }) // Should not execute
 
 	// Then
 	assertions.ResultError(finalResult, "Final result should be Error")
@@ -117,7 +115,7 @@ func TestResult_Should_BindSuccessfully_When_BindOperationOnOkResult(t *testing.
 	result := functional.Ok(42)
 
 	// When
-	boundResult := result.Bind(func(x int) functional.Result[string] {
+	boundResult := functional.Bind(result,func(x int) functional.Result[string] {
 		if x > 0 {
 			return functional.Ok(strconv.Itoa(x))
 		}
@@ -136,7 +134,7 @@ func TestResult_Should_ReturnError_When_BindOperationOnErrorResult(t *testing.T)
 	result := functional.Fail[int](err)
 
 	// When
-	boundResult := result.Bind(func(x int) functional.Result[string] {
+	boundResult := functional.Bind(result,func(x int) functional.Result[string] {
 		return functional.Ok(strconv.Itoa(x)) // Should not execute
 	})
 
@@ -151,7 +149,7 @@ func TestResult_Should_ReturnBindError_When_BindFunctionReturnsError(t *testing.
 	result := functional.Ok(-5)
 
 	// When
-	boundResult := result.Bind(func(x int) functional.Result[string] {
+	boundResult := functional.Bind(result,func(x int) functional.Result[string] {
 		if x > 0 {
 			return functional.Ok(strconv.Itoa(x))
 		}
@@ -169,22 +167,21 @@ func TestResult_Should_ChainBindOperations_When_MultipleBindsCalled(t *testing.T
 	result := functional.Ok(10)
 
 	// When
-	finalResult := result.
-		Bind(func(x int) functional.Result[int] {
-			if x > 5 {
-				return functional.Ok(x * 2)
-			}
-			return functional.Fail[int](functional.NewDomainError("TOO_SMALL", "Value too small"))
-		}).
-		Bind(func(x int) functional.Result[int] {
-			if x < 100 {
-				return functional.Ok(x + 5)
-			}
-			return functional.Fail[int](functional.NewDomainError("TOO_LARGE", "Value too large"))
-		}).
-		Bind(func(x int) functional.Result[string] {
-			return functional.Ok("Result: " + strconv.Itoa(x))
-		})
+	step1 := functional.Bind(result, func(x int) functional.Result[int] {
+		if x > 5 {
+			return functional.Ok(x * 2)
+		}
+		return functional.Fail[int](functional.NewDomainError("TOO_SMALL", "Value too small"))
+	})
+	step2 := functional.Bind(step1, func(x int) functional.Result[int] {
+		if x < 100 {
+			return functional.Ok(x + 5)
+		}
+		return functional.Fail[int](functional.NewDomainError("TOO_LARGE", "Value too large"))
+	})
+	finalResult := functional.Bind(step2, func(x int) functional.Result[string] {
+		return functional.Ok("Result: " + strconv.Itoa(x))
+	})
 
 	// Then
 	assertions.ResultOk(finalResult, "Final result should be Ok")
@@ -197,15 +194,14 @@ func TestResult_Should_MixMapAndBind_When_CombinedOperationsUsed(t *testing.T) {
 	result := functional.Ok(8)
 
 	// When
-	finalResult := result.
-		Map(func(x int) int { return x * 2 }). // 16
-		Bind(func(x int) functional.Result[int] {
-			if x%2 == 0 {
-				return functional.Ok(x / 2) // 8
-			}
-			return functional.Fail[int](functional.NewDomainError("ODD", "Value is odd"))
-		}).
-		Map(func(x int) string { return fmt.Sprintf("Final: %d", x) }) // "Final: 8"
+	step1 := functional.Map(result, func(x int) int { return x * 2 }) // 16
+	step2 := functional.Bind(step1, func(x int) functional.Result[int] {
+		if x%2 == 0 {
+			return functional.Ok(x / 2) // 8
+		}
+		return functional.Fail[int](functional.NewDomainError("ODD", "Value is odd"))
+	})
+	finalResult := functional.Map(step2, func(x int) string { return fmt.Sprintf("Final: %d", x) }) // "Final: 8"
 
 	// Then
 	assertions.ResultOk(finalResult, "Final result should be Ok")
@@ -236,7 +232,7 @@ func TestResult_Should_ExecuteCorrectPath_When_MatchOperationCalled(t *testing.T
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// When
-			output := tc.result.Match(
+			output := functional.Match(tc.result,
 				func(value int) string {
 					return fmt.Sprintf("Success: %d", value)
 				},
@@ -349,7 +345,7 @@ func TestResult_Should_HandleDifferentTypes_When_TypeConversionsPerformed(t *tes
 
 	// String to int conversion
 	stringResult := functional.Ok("123")
-	intResult := stringResult.Map(func(s string) int {
+	intResult := functional.Map(stringResult,func(s string) int {
 		val, _ := strconv.Atoi(s)
 		return val
 	})
@@ -357,14 +353,14 @@ func TestResult_Should_HandleDifferentTypes_When_TypeConversionsPerformed(t *tes
 	assertions.ResultValue(123, intResult, "Converted value should be 123")
 
 	// Int to float conversion
-	floatResult := intResult.Map(func(i int) float64 {
+	floatResult := functional.Map(intResult,func(i int) float64 {
 		return float64(i) * 1.5
 	})
 	assertions.ResultOk(floatResult, "Int to float conversion should succeed")
 	assertions.ResultValue(184.5, floatResult, "Converted value should be 184.5")
 
 	// Float to string conversion
-	finalResult := floatResult.Map(func(f float64) string {
+	finalResult := functional.Map(floatResult,func(f float64) string {
 		return fmt.Sprintf("%.2f", f)
 	})
 	assertions.ResultOk(finalResult, "Float to string conversion should succeed")
@@ -394,11 +390,10 @@ func TestResult_Should_PreserveErrorCategory_When_ErrorPropagated(t *testing.T) 
 			result := functional.Fail[int](err)
 
 			// When
-			propagatedResult := result.
-				Map(func(x int) int { return x * 2 }).
-				Bind(func(x int) functional.Result[string] {
-					return functional.Ok(strconv.Itoa(x))
-				})
+			step1 := functional.Map(result, func(x int) int { return x * 2 })
+			propagatedResult := functional.Bind(step1, func(x int) functional.Result[string] {
+				return functional.Ok(strconv.Itoa(x))
+			})
 
 			// Then
 			assertions.ResultError(propagatedResult, "Result should remain error")
@@ -458,9 +453,9 @@ func TestResult_Should_HandleComplexBusinessScenarios_When_RealWorldOperationsPe
 	}
 
 	// When - Successful scenario
-	successResult := processOrder("order-123").
-		Bind(validateOrder).
-		Bind(processPayment)
+	step1 := processOrder("order-123")
+	step2 := functional.Bind(step1, validateOrder)
+	successResult := functional.Bind(step2, processPayment)
 
 	// Then
 	assertions.ResultOk(successResult, "Successful order processing should succeed")
@@ -471,9 +466,9 @@ func TestResult_Should_HandleComplexBusinessScenarios_When_RealWorldOperationsPe
 	}
 
 	// When - Failed scenario (empty order ID)
-	failureResult := processOrder("").
-		Bind(validateOrder).
-		Bind(processPayment)
+	step1Fail := processOrder("")
+	step2Fail := functional.Bind(step1Fail, validateOrder)
+	failureResult := functional.Bind(step2Fail, processPayment)
 
 	// Then
 	assertions.ResultError(failureResult, "Invalid order processing should fail")
@@ -502,7 +497,7 @@ func TestResult_Should_SupportErrorRecovery_When_RecoveryPatternsUsed(t *testing
 	}
 
 	// When - Test recovery
-	result := riskyOperation(-5).Match(
+	result := functional.Match(riskyOperation(-5),
 		func(value int) functional.Result[int] {
 			return functional.Ok(value)
 		},
@@ -541,7 +536,7 @@ func TestResult_Should_HandleConcurrentAccess_When_AccessedFromMultipleGoroutine
 			}
 
 			// Map operations should be safe (they create new instances)
-			mapped := result.Map(func(x int) int {
+			mapped := functional.Map(result,func(x int) int {
 				return x * 2
 			})
 
@@ -575,7 +570,7 @@ func TestResult_Should_ObeyLeftIdentityLaw_When_MonadicOperationsPerformed(t *te
 	}
 
 	// When
-	leftSide := functional.Ok(value).Bind(f)
+	leftSide := functional.Bind(functional.Ok(value), f)
 	rightSide := f(value)
 
 	// Then
@@ -592,7 +587,7 @@ func TestResult_Should_ObeyRightIdentityLaw_When_MonadicOperationsPerformed(t *t
 	result := functional.Ok(42)
 
 	// When
-	boundResult := result.Bind(func(x int) functional.Result[int] {
+	boundResult := functional.Bind(result,func(x int) functional.Result[int] {
 		return functional.Ok(x)
 	})
 
@@ -618,9 +613,9 @@ func TestResult_Should_ObeyAssociativityLaw_When_MonadicOperationsPerformed(t *t
 	}
 
 	// When
-	leftSide := result.Bind(f).Bind(g)
-	rightSide := result.Bind(func(x int) functional.Result[string] {
-		return f(x).Bind(g)
+	leftSide := functional.Bind(functional.Bind(result, f), g)
+	rightSide := functional.Bind(result, func(x int) functional.Result[string] {
+		return functional.Bind(f(x), g)
 	})
 
 	// Then

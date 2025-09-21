@@ -15,81 +15,7 @@ import (
 // Requirements: Version control, event collection, thread safety
 // =============================================================================
 
-// Test entity ID types
-type TestOrderID string
-
-func (id TestOrderID) String() string { return string(id) }
-
-type TestCustomerID string
-
-func (id TestCustomerID) String() string { return string(id) }
-
-// Test domain events
-type TestOrderCreatedEvent struct {
-	*domain.DomainEventBase
-	OrderID    TestOrderID
-	CustomerID TestCustomerID
-	Amount     float64
-}
-
-func NewTestOrderCreatedEvent(orderID TestOrderID, customerID TestCustomerID, amount float64) *TestOrderCreatedEvent {
-	return &TestOrderCreatedEvent{
-		DomainEventBase: domain.NewDomainEventBase("OrderCreated", string(orderID), "Order"),
-		OrderID:         orderID,
-		CustomerID:      customerID,
-		Amount:          amount,
-	}
-}
-
-type TestOrderStatusChangedEvent struct {
-	*domain.DomainEventBase
-	OrderID   TestOrderID
-	OldStatus string
-	NewStatus string
-}
-
-func NewTestOrderStatusChangedEvent(orderID TestOrderID, oldStatus, newStatus string) *TestOrderStatusChangedEvent {
-	return &TestOrderStatusChangedEvent{
-		DomainEventBase: domain.NewDomainEventBase("OrderStatusChanged", string(orderID), "Order"),
-		OrderID:         orderID,
-		OldStatus:       oldStatus,
-		NewStatus:       newStatus,
-	}
-}
-
-// Test aggregate
-type TestOrder struct {
-	*domain.AggregateRoot[TestOrderID]
-	CustomerID TestCustomerID
-	Amount     float64
-	Status     string
-}
-
-func NewTestOrder(orderID TestOrderID, customerID TestCustomerID, amount float64) *TestOrder {
-	order := &TestOrder{
-		AggregateRoot: domain.NewAggregateRoot(orderID),
-		CustomerID:    customerID,
-		Amount:        amount,
-		Status:        "pending",
-	}
-
-	// Add creation event
-	event := NewTestOrderCreatedEvent(orderID, customerID, amount)
-	order.AddEvent(event)
-
-	return order
-}
-
-func (o *TestOrder) ChangeStatus(newStatus string) {
-	if o.Status != newStatus {
-		oldStatus := o.Status
-		o.Status = newStatus
-
-		event := NewTestOrderStatusChangedEvent(o.GetID(), oldStatus, newStatus)
-		o.AddEvent(event)
-		o.IncrementVersion()
-	}
-}
+// Test types are now in test_types.go to avoid duplicates
 
 func TestAggregateRoot_Should_CreateWithInitialState_When_NewAggregateRootCalled(t *testing.T) {
 	// Given
@@ -97,13 +23,13 @@ func TestAggregateRoot_Should_CreateWithInitialState_When_NewAggregateRootCalled
 	orderID := TestOrderID("order-123")
 
 	// When
-	aggregate := domain.NewAggregateRoot(orderID)
+	aggregate := domain.NewBaseAggregateRoot(orderID)
 
 	// Then
 	assertions.NotNil(aggregate, "Aggregate should not be nil")
-	assertions.Equal(orderID, aggregate.GetID(), "Aggregate ID should match")
-	assertions.Equal(int64(0), aggregate.GetVersion(), "Initial version should be 0")
-	assertions.Equal(0, len(aggregate.GetEvents()), "Initial events should be empty")
+	assertions.Equal(orderID, aggregate.ID(), "Aggregate ID should match")
+	assertions.Equal(int64(0), aggregate.Version(), "Initial version should be 0")
+	assertions.Equal(0, len(aggregate.DomainEvents()), "Initial events should be empty")
 	assertions.False(aggregate.HasUncommittedEvents(), "Should not have uncommitted events initially")
 	assertions.Equal(0, aggregate.GetEventCount(), "Event count should be 0 initially")
 }
@@ -111,102 +37,102 @@ func TestAggregateRoot_Should_CreateWithInitialState_When_NewAggregateRootCalled
 func TestAggregateRoot_Should_IncrementVersion_When_IncrementVersionCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	// When
 	aggregate.IncrementVersion()
 
 	// Then
-	assertions.Equal(int64(1), aggregate.GetVersion(), "Version should be incremented to 1")
+	assertions.Equal(int64(1), aggregate.Version(), "Version should be incremented to 1")
 
 	// When - increment again
 	aggregate.IncrementVersion()
 
 	// Then
-	assertions.Equal(int64(2), aggregate.GetVersion(), "Version should be incremented to 2")
+	assertions.Equal(int64(2), aggregate.Version(), "Version should be incremented to 2")
 }
 
 func TestAggregateRoot_Should_SetVersion_When_SetVersionCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	// When
 	aggregate.SetVersion(42)
 
 	// Then
-	assertions.Equal(int64(42), aggregate.GetVersion(), "Version should be set to 42")
+	assertions.Equal(int64(42), aggregate.Version(), "Version should be set to 42")
 
 	// When - set to different value
 	aggregate.SetVersion(100)
 
 	// Then
-	assertions.Equal(int64(100), aggregate.GetVersion(), "Version should be set to 100")
+	assertions.Equal(int64(100), aggregate.Version(), "Version should be set to 100")
 }
 
 func TestAggregateRoot_Should_AddEvent_When_AddEventCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 	event := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 
 	// When
-	aggregate.AddEvent(event)
+	aggregate.AddDomainEvent(event)
 
 	// Then
-	assertions.Equal(1, len(aggregate.GetEvents()), "Should have 1 event")
+	assertions.Equal(1, len(aggregate.DomainEvents()), "Should have 1 event")
 	assertions.True(aggregate.HasUncommittedEvents(), "Should have uncommitted events")
 	assertions.Equal(1, aggregate.GetEventCount(), "Event count should be 1")
 
-	events := aggregate.GetEvents()
-	assertions.Equal(event.GetID(), events[0].GetID(), "Event ID should match")
-	assertions.Equal("OrderCreated", events[0].GetEventType(), "Event type should match")
+	events := aggregate.DomainEvents()
+	assertions.Equal(event.ID(), events[0].ID(), "Event ID should match")
+	assertions.Equal("OrderCreated", events[0].EventType(), "Event type should match")
 }
 
 func TestAggregateRoot_Should_AddMultipleEvents_When_MultipleAddEventsCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	event1 := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 	event2 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "pending", "confirmed")
 	event3 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "confirmed", "shipped")
 
 	// When
-	aggregate.AddEvent(event1)
-	aggregate.AddEvent(event2)
-	aggregate.AddEvent(event3)
+	aggregate.AddDomainEvent(event1)
+	aggregate.AddDomainEvent(event2)
+	aggregate.AddDomainEvent(event3)
 
 	// Then
-	assertions.Equal(3, len(aggregate.GetEvents()), "Should have 3 events")
+	assertions.Equal(3, len(aggregate.DomainEvents()), "Should have 3 events")
 	assertions.True(aggregate.HasUncommittedEvents(), "Should have uncommitted events")
 	assertions.Equal(3, aggregate.GetEventCount(), "Event count should be 3")
 
-	events := aggregate.GetEvents()
-	assertions.Equal("OrderCreated", events[0].GetEventType(), "First event should be OrderCreated")
-	assertions.Equal("OrderStatusChanged", events[1].GetEventType(), "Second event should be OrderStatusChanged")
-	assertions.Equal("OrderStatusChanged", events[2].GetEventType(), "Third event should be OrderStatusChanged")
+	events := aggregate.DomainEvents()
+	assertions.Equal("OrderCreated", events[0].EventType(), "First event should be OrderCreated")
+	assertions.Equal("OrderStatusChanged", events[1].EventType(), "Second event should be OrderStatusChanged")
+	assertions.Equal("OrderStatusChanged", events[2].EventType(), "Third event should be OrderStatusChanged")
 }
 
 func TestAggregateRoot_Should_ClearEvents_When_ClearEventsCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	event1 := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 	event2 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "pending", "confirmed")
 
-	aggregate.AddEvent(event1)
-	aggregate.AddEvent(event2)
+	aggregate.AddDomainEvent(event1)
+	aggregate.AddDomainEvent(event2)
 
 	// Verify events are present
 	assertions.Equal(2, aggregate.GetEventCount(), "Should have 2 events before clear")
 
 	// When
-	aggregate.ClearEvents()
+	aggregate.ClearDomainEvents()
 
 	// Then
-	assertions.Equal(0, len(aggregate.GetEvents()), "Should have 0 events after clear")
+	assertions.Equal(0, len(aggregate.DomainEvents()), "Should have 0 events after clear")
 	assertions.False(aggregate.HasUncommittedEvents(), "Should not have uncommitted events after clear")
 	assertions.Equal(0, aggregate.GetEventCount(), "Event count should be 0 after clear")
 }
@@ -214,18 +140,18 @@ func TestAggregateRoot_Should_ClearEvents_When_ClearEventsCalled(t *testing.T) {
 func TestAggregateRoot_Should_GetEventsCopy_When_GetEventsCalled(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 	event := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 
-	aggregate.AddEvent(event)
+	aggregate.AddDomainEvent(event)
 
 	// When
-	events1 := aggregate.GetEvents()
-	events2 := aggregate.GetEvents()
+	events1 := aggregate.DomainEvents()
+	events2 := aggregate.DomainEvents()
 
 	// Then
 	assertions.Equal(len(events1), len(events2), "Both calls should return same length")
-	assertions.Equal(events1[0].GetID(), events2[0].GetID(), "Events should have same content")
+	assertions.Equal(events1[0].ID(), events2[0].ID(), "Events should have same content")
 
 	// Verify that modifying returned slice doesn't affect aggregate
 	if len(events1) > 0 {
@@ -233,18 +159,18 @@ func TestAggregateRoot_Should_GetEventsCopy_When_GetEventsCalled(t *testing.T) {
 		events1 = events1[:0] // Clear the returned slice
 	}
 
-	events3 := aggregate.GetEvents()
+	events3 := aggregate.DomainEvents()
 	assertions.Equal(1, len(events3), "Original events should be preserved")
 }
 
 func TestAggregateRoot_Should_GetEventsSince_When_EventsAddedAtDifferentTimes(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	// Add first event
 	event1 := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
-	aggregate.AddEvent(event1)
+	aggregate.AddDomainEvent(event1)
 
 	// Wait a small amount to ensure different timestamps
 	time.Sleep(time.Millisecond * 10)
@@ -253,29 +179,29 @@ func TestAggregateRoot_Should_GetEventsSince_When_EventsAddedAtDifferentTimes(t 
 
 	// Add second event after cutoff
 	event2 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "pending", "confirmed")
-	aggregate.AddEvent(event2)
+	aggregate.AddDomainEvent(event2)
 
 	// When
 	recentEvents := aggregate.GetEventsSince(cutoffTime)
 
 	// Then
 	assertions.Equal(1, len(recentEvents), "Should have 1 recent event")
-	assertions.Equal(event2.GetID(), recentEvents[0].GetID(), "Recent event should be event2")
-	assertions.Equal("OrderStatusChanged", recentEvents[0].GetEventType(), "Recent event should be status change")
+	assertions.Equal(event2.ID(), recentEvents[0].ID(), "Recent event should be event2")
+	assertions.Equal("OrderStatusChanged", recentEvents[0].EventType(), "Recent event should be status change")
 }
 
 func TestAggregateRoot_Should_GetEventsOfType_When_MultipleEventTypesPresent(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	event1 := NewTestOrderCreatedEvent(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 	event2 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "pending", "confirmed")
 	event3 := NewTestOrderStatusChangedEvent(TestOrderID("order-123"), "confirmed", "shipped")
 
-	aggregate.AddEvent(event1)
-	aggregate.AddEvent(event2)
-	aggregate.AddEvent(event3)
+	aggregate.AddDomainEvent(event1)
+	aggregate.AddDomainEvent(event2)
+	aggregate.AddDomainEvent(event3)
 
 	// When
 	createdEvents := aggregate.GetEventsOfType("OrderCreated")
@@ -287,15 +213,15 @@ func TestAggregateRoot_Should_GetEventsOfType_When_MultipleEventTypesPresent(t *
 	assertions.Equal(2, len(statusEvents), "Should have 2 OrderStatusChanged events")
 	assertions.Equal(0, len(nonExistentEvents), "Should have 0 NonExistent events")
 
-	assertions.Equal("OrderCreated", createdEvents[0].GetEventType(), "Created event type should match")
-	assertions.Equal("OrderStatusChanged", statusEvents[0].GetEventType(), "First status event type should match")
-	assertions.Equal("OrderStatusChanged", statusEvents[1].GetEventType(), "Second status event type should match")
+	assertions.Equal("OrderCreated", createdEvents[0].EventType(), "Created event type should match")
+	assertions.Equal("OrderStatusChanged", statusEvents[0].EventType(), "First status event type should match")
+	assertions.Equal("OrderStatusChanged", statusEvents[1].EventType(), "Second status event type should match")
 }
 
 func TestAggregateRoot_Should_MaintainEventOrder_When_EventsAddedSequentially(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	// Add events with slight delays to ensure timestamp ordering
 	events := make([]*TestOrderStatusChangedEvent, 5)
@@ -305,19 +231,19 @@ func TestAggregateRoot_Should_MaintainEventOrder_When_EventsAddedSequentially(t 
 			fmt.Sprintf("status-%d", i),
 			fmt.Sprintf("status-%d", i+1),
 		)
-		aggregate.AddEvent(events[i])
+		aggregate.AddDomainEvent(events[i])
 		time.Sleep(time.Millisecond) // Ensure different timestamps
 	}
 
 	// When
-	retrievedEvents := aggregate.GetEvents()
+	retrievedEvents := aggregate.DomainEvents()
 
 	// Then
 	assertions.Equal(5, len(retrievedEvents), "Should have 5 events")
 
 	// Verify order is maintained
 	for i := 0; i < 5; i++ {
-		assertions.Equal(events[i].GetID(), retrievedEvents[i].GetID(), fmt.Sprintf("Event %d should be in correct order", i))
+		assertions.Equal(events[i].ID(), retrievedEvents[i].ID(), fmt.Sprintf("Event %d should be in correct order", i))
 	}
 }
 
@@ -327,14 +253,14 @@ func TestAggregateRoot_Should_HandleVersioningWorkflow_When_BusinessOperationsPe
 	order := NewTestOrder(TestOrderID("order-123"), TestCustomerID("customer-456"), 100.0)
 
 	// Initial state after creation
-	assertions.Equal(int64(0), order.GetVersion(), "Initial version should be 0")
+	assertions.Equal(int64(0), order.Version(), "Initial version should be 0")
 	assertions.Equal(1, order.GetEventCount(), "Should have creation event")
 
 	// When - perform business operation
 	order.ChangeStatus("confirmed")
 
 	// Then
-	assertions.Equal(int64(1), order.GetVersion(), "Version should be incremented")
+	assertions.Equal(int64(1), order.Version(), "Version should be incremented")
 	assertions.Equal(2, order.GetEventCount(), "Should have 2 events")
 	assertions.Equal("confirmed", order.Status, "Status should be updated")
 
@@ -342,21 +268,21 @@ func TestAggregateRoot_Should_HandleVersioningWorkflow_When_BusinessOperationsPe
 	order.ChangeStatus("shipped")
 
 	// Then
-	assertions.Equal(int64(2), order.GetVersion(), "Version should be incremented again")
+	assertions.Equal(int64(2), order.Version(), "Version should be incremented again")
 	assertions.Equal(3, order.GetEventCount(), "Should have 3 events")
 	assertions.Equal("shipped", order.Status, "Status should be updated again")
 
 	// Verify event sequence
-	events := order.GetEvents()
-	assertions.Equal("OrderCreated", events[0].GetEventType(), "First event should be creation")
-	assertions.Equal("OrderStatusChanged", events[1].GetEventType(), "Second event should be status change")
-	assertions.Equal("OrderStatusChanged", events[2].GetEventType(), "Third event should be status change")
+	events := order.DomainEvents()
+	assertions.Equal("OrderCreated", events[0].EventType(), "First event should be creation")
+	assertions.Equal("OrderStatusChanged", events[1].EventType(), "Second event should be status change")
+	assertions.Equal("OrderStatusChanged", events[2].EventType(), "Third event should be status change")
 }
 
 func TestAggregateRoot_Should_HandleConcurrentEventAddition_When_MultipleGoroutinesAddEvents(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	const numGoroutines = 10
 	const eventsPerGoroutine = 5
@@ -376,7 +302,7 @@ func TestAggregateRoot_Should_HandleConcurrentEventAddition_When_MultipleGorouti
 					fmt.Sprintf("g%d-status-%d", goroutineID, j),
 					fmt.Sprintf("g%d-status-%d", goroutineID, j+1),
 				)
-				aggregate.AddEvent(event)
+				aggregate.AddDomainEvent(event)
 			}
 		}(i)
 	}
@@ -387,13 +313,13 @@ func TestAggregateRoot_Should_HandleConcurrentEventAddition_When_MultipleGorouti
 	assertions.Equal(totalEvents, aggregate.GetEventCount(), "Should have all events added")
 	assertions.True(aggregate.HasUncommittedEvents(), "Should have uncommitted events")
 
-	events := aggregate.GetEvents()
+	events := aggregate.DomainEvents()
 	assertions.Equal(totalEvents, len(events), "Retrieved events count should match")
 
 	// Verify all events are present (they might be in different order due to concurrency)
 	eventTypeCount := 0
 	for _, event := range events {
-		if event.GetEventType() == "OrderStatusChanged" {
+		if event.EventType() == "OrderStatusChanged" {
 			eventTypeCount++
 		}
 	}
@@ -403,7 +329,7 @@ func TestAggregateRoot_Should_HandleConcurrentEventAddition_When_MultipleGorouti
 func TestAggregateRoot_Should_HandleConcurrentVersioning_When_MultipleGoroutinesIncrementVersion(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	const numGoroutines = 10
 	const incrementsPerGoroutine = 5
@@ -426,13 +352,13 @@ func TestAggregateRoot_Should_HandleConcurrentVersioning_When_MultipleGoroutines
 	wg.Wait()
 
 	// Then
-	assertions.Equal(int64(totalIncrements), aggregate.GetVersion(), "Version should be incremented correctly")
+	assertions.Equal(int64(totalIncrements), aggregate.Version(), "Version should be incremented correctly")
 }
 
 func TestAggregateRoot_Should_HandleConcurrentReadAndWrite_When_ReadingWhileModifying(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	const duration = 100 * time.Millisecond
 	done := make(chan bool, 2)
@@ -450,7 +376,7 @@ func TestAggregateRoot_Should_HandleConcurrentReadAndWrite_When_ReadingWhileModi
 				"old",
 				"new",
 			)
-			aggregate.AddEvent(event)
+			aggregate.AddDomainEvent(event)
 			aggregate.IncrementVersion()
 			writeOperations++
 			time.Sleep(time.Microsecond) // Small delay to allow reads
@@ -463,8 +389,8 @@ func TestAggregateRoot_Should_HandleConcurrentReadAndWrite_When_ReadingWhileModi
 		start := time.Now()
 
 		for time.Since(start) < duration {
-			_ = aggregate.GetVersion()
-			_ = aggregate.GetEvents()
+			_ = aggregate.Version()
+			_ = aggregate.DomainEvents()
 			_ = aggregate.HasUncommittedEvents()
 			_ = aggregate.GetEventCount()
 			readOperations++
@@ -479,7 +405,7 @@ func TestAggregateRoot_Should_HandleConcurrentReadAndWrite_When_ReadingWhileModi
 	// Then - No panics should occur and state should be consistent
 	assertions.True(writeOperations > 0, "Should have performed write operations")
 	assertions.True(readOperations > 0, "Should have performed read operations")
-	assertions.Equal(int64(writeOperations), aggregate.GetVersion(), "Version should match write operations")
+	assertions.Equal(int64(writeOperations), aggregate.Version(), "Version should match write operations")
 	assertions.Equal(writeOperations, aggregate.GetEventCount(), "Event count should match write operations")
 }
 
@@ -487,9 +413,9 @@ func TestAggregateRoot_Should_PreserveEntityBehavior_When_UsedAsEntity(t *testin
 	// Given
 	assertions := testutils.NewAssertions(t)
 	orderID := TestOrderID("order-123")
-	aggregate1 := domain.NewAggregateRoot(orderID)
-	aggregate2 := domain.NewAggregateRoot(orderID)
-	aggregate3 := domain.NewAggregateRoot(TestOrderID("order-456"))
+	aggregate1 := domain.NewBaseAggregateRoot(orderID)
+	aggregate2 := domain.NewBaseAggregateRoot(orderID)
+	aggregate3 := domain.NewBaseAggregateRoot(TestOrderID("order-456"))
 
 	// When & Then - Entity equality behavior
 	assertions.True(aggregate1.Equals(aggregate2), "Aggregates with same ID should be equal")
@@ -512,10 +438,10 @@ func TestAggregateRoot_Should_PreserveEntityBehavior_When_UsedAsEntity(t *testin
 func TestAggregateRoot_Should_HandleEdgeCases_When_UnusualOperationsPerformed(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	// When - clear events when no events exist
-	aggregate.ClearEvents()
+	aggregate.ClearDomainEvents()
 
 	// Then
 	assertions.Equal(0, aggregate.GetEventCount(), "Event count should remain 0")
@@ -538,13 +464,13 @@ func TestAggregateRoot_Should_HandleEdgeCases_When_UnusualOperationsPerformed(t 
 	aggregate.SetVersion(-1)
 
 	// Then
-	assertions.Equal(int64(-1), aggregate.GetVersion(), "Should accept negative version")
+	assertions.Equal(int64(-1), aggregate.Version(), "Should accept negative version")
 
 	// When - set very large version
 	aggregate.SetVersion(9223372036854775807) // max int64
 
 	// Then
-	assertions.Equal(int64(9223372036854775807), aggregate.GetVersion(), "Should accept large version")
+	assertions.Equal(int64(9223372036854775807), aggregate.Version(), "Should accept large version")
 }
 
 // =============================================================================
@@ -554,7 +480,7 @@ func TestAggregateRoot_Should_HandleEdgeCases_When_UnusualOperationsPerformed(t 
 func TestAggregateRoot_Should_HandleLargeEventCollections_When_ManyEventsAdded(t *testing.T) {
 	// Given
 	assertions := testutils.NewAssertions(t)
-	aggregate := domain.NewAggregateRoot(TestOrderID("order-123"))
+	aggregate := domain.NewBaseAggregateRoot(TestOrderID("order-123"))
 
 	const numEvents = 1000
 
@@ -566,7 +492,7 @@ func TestAggregateRoot_Should_HandleLargeEventCollections_When_ManyEventsAdded(t
 			fmt.Sprintf("status-%d", i),
 			fmt.Sprintf("status-%d", i+1),
 		)
-		aggregate.AddEvent(event)
+		aggregate.AddDomainEvent(event)
 	}
 	addDuration := time.Since(start)
 
@@ -575,7 +501,7 @@ func TestAggregateRoot_Should_HandleLargeEventCollections_When_ManyEventsAdded(t
 
 	// When - retrieve events
 	start = time.Now()
-	events := aggregate.GetEvents()
+	events := aggregate.DomainEvents()
 	retrieveDuration := time.Since(start)
 
 	// Then
@@ -587,7 +513,7 @@ func TestAggregateRoot_Should_HandleLargeEventCollections_When_ManyEventsAdded(t
 
 	// When - clear events
 	start = time.Now()
-	aggregate.ClearEvents()
+	aggregate.ClearDomainEvents()
 	clearDuration := time.Since(start)
 
 	// Then
@@ -610,11 +536,11 @@ func TestAggregateRoot_Should_SupportTypicalBusinessWorkflow_When_OrderProcessin
 	order := NewTestOrder(orderID, customerID, amount)
 
 	// Then - initial state
-	assertions.Equal(orderID, order.GetID(), "Order ID should be set")
+	assertions.Equal(orderID, order.ID(), "Order ID should be set")
 	assertions.Equal(customerID, order.CustomerID, "Customer ID should be set")
 	assertions.Equal(amount, order.Amount, "Amount should be set")
 	assertions.Equal("pending", order.Status, "Initial status should be pending")
-	assertions.Equal(int64(0), order.GetVersion(), "Initial version should be 0")
+	assertions.Equal(int64(0), order.Version(), "Initial version should be 0")
 	assertions.Equal(1, order.GetEventCount(), "Should have creation event")
 
 	// When - confirm order
@@ -622,7 +548,7 @@ func TestAggregateRoot_Should_SupportTypicalBusinessWorkflow_When_OrderProcessin
 
 	// Then
 	assertions.Equal("confirmed", order.Status, "Status should be confirmed")
-	assertions.Equal(int64(1), order.GetVersion(), "Version should be incremented")
+	assertions.Equal(int64(1), order.Version(), "Version should be incremented")
 	assertions.Equal(2, order.GetEventCount(), "Should have 2 events")
 
 	// When - ship order
@@ -630,7 +556,7 @@ func TestAggregateRoot_Should_SupportTypicalBusinessWorkflow_When_OrderProcessin
 
 	// Then
 	assertions.Equal("shipped", order.Status, "Status should be shipped")
-	assertions.Equal(int64(2), order.GetVersion(), "Version should be incremented again")
+	assertions.Equal(int64(2), order.Version(), "Version should be incremented again")
 	assertions.Equal(3, order.GetEventCount(), "Should have 3 events")
 
 	// When - attempt to set same status (no change)
@@ -638,7 +564,7 @@ func TestAggregateRoot_Should_SupportTypicalBusinessWorkflow_When_OrderProcessin
 
 	// Then
 	assertions.Equal("shipped", order.Status, "Status should remain shipped")
-	assertions.Equal(int64(2), order.GetVersion(), "Version should not change")
+	assertions.Equal(int64(2), order.Version(), "Version should not change")
 	assertions.Equal(3, order.GetEventCount(), "Event count should not change")
 
 	// When - deliver order
@@ -646,28 +572,28 @@ func TestAggregateRoot_Should_SupportTypicalBusinessWorkflow_When_OrderProcessin
 
 	// Then
 	assertions.Equal("delivered", order.Status, "Status should be delivered")
-	assertions.Equal(int64(3), order.GetVersion(), "Version should be incremented")
+	assertions.Equal(int64(3), order.Version(), "Version should be incremented")
 	assertions.Equal(4, order.GetEventCount(), "Should have 4 events")
 
 	// Verify complete event history
-	events := order.GetEvents()
-	assertions.Equal("OrderCreated", events[0].GetEventType(), "First event should be creation")
-	assertions.Equal("OrderStatusChanged", events[1].GetEventType(), "Second event should be status change")
-	assertions.Equal("OrderStatusChanged", events[2].GetEventType(), "Third event should be status change")
-	assertions.Equal("OrderStatusChanged", events[3].GetEventType(), "Fourth event should be status change")
+	events := order.DomainEvents()
+	assertions.Equal("OrderCreated", events[0].EventType(), "First event should be creation")
+	assertions.Equal("OrderStatusChanged", events[1].EventType(), "Second event should be status change")
+	assertions.Equal("OrderStatusChanged", events[2].EventType(), "Third event should be status change")
+	assertions.Equal("OrderStatusChanged", events[3].EventType(), "Fourth event should be status change")
 
 	// Verify event chronological order
 	for i := 1; i < len(events); i++ {
-		prev := events[i-1].GetOccurredAt()
-		curr := events[i].GetOccurredAt()
+		prev := events[i-1].OccurredAt()
+		curr := events[i].OccurredAt()
 		assertions.True(curr.After(prev) || curr.Equal(prev), fmt.Sprintf("Event %d should occur after event %d", i, i-1))
 	}
 
 	// When - simulate persistence (clear events)
-	order.ClearEvents()
+	order.ClearDomainEvents()
 
 	// Then
 	assertions.Equal(0, order.GetEventCount(), "Events should be cleared")
-	assertions.Equal(int64(3), order.GetVersion(), "Version should be preserved")
+	assertions.Equal(int64(3), order.Version(), "Version should be preserved")
 	assertions.Equal("delivered", order.Status, "Business state should be preserved")
 }

@@ -10,7 +10,7 @@ import (
 func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 	t.Run("Should_CreateSuccessResult_When_OkCalled", func(t *testing.T) {
 		// Given: Creating a success result
-		result := functional.Ok()
+		result := functional.Ok("test")
 
 		// When: Checking result state
 		// Then: Should be success
@@ -25,7 +25,7 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 	t.Run("Should_CreateFailureResult_When_FailCalled", func(t *testing.T) {
 		// Given: Creating a failure result
 		err := functional.DomainError("TEST_ERROR", "Test error message")
-		result := functional.Fail(err)
+		result := functional.Fail[string](err)
 
 		// When: Checking result state
 		// Then: Should be failure
@@ -42,10 +42,10 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_MapToValue_When_Success", func(t *testing.T) {
 		// Given: A success result
-		result := functional.Ok()
+		result := functional.Ok("test")
 
 		// When: Mapping to value
-		valueResult := result.Map(func() string { return "mapped value" })
+		valueResult := result.Map(func(s string) interface{} { return "mapped value" })
 
 		// Then: Should create success result with value
 		if !valueResult.IsSuccess() {
@@ -59,10 +59,10 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 	t.Run("Should_NotMap_When_Failure", func(t *testing.T) {
 		// Given: A failure result
 		err := functional.DomainError("TEST_ERROR", "Test error")
-		result := functional.Fail(err)
+		result := functional.Fail[string](err)
 
 		// When: Mapping to value
-		valueResult := result.Map(func() string { return "should not execute" })
+		valueResult := result.Map(func(s string) interface{} { return "should not execute" })
 
 		// Then: Should remain failure without executing map function
 		if !valueResult.IsFailure() {
@@ -75,11 +75,11 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_BindOperation_When_Success", func(t *testing.T) {
 		// Given: A success result
-		result := functional.Ok()
+		result := functional.Ok("test")
 
 		// When: Binding to another operation
-		boundResult := result.Bind(func() functional.Result {
-			return functional.Ok()
+		boundResult := result.Bind(func(s string) functional.Result[interface{}] {
+			return functional.Ok[interface{}]("test")
 		})
 
 		// Then: Should execute bind function
@@ -91,11 +91,11 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 	t.Run("Should_NotBind_When_Failure", func(t *testing.T) {
 		// Given: A failure result
 		err := functional.DomainError("TEST_ERROR", "Test error")
-		result := functional.Fail(err)
+		result := functional.Fail[string](err)
 
 		// When: Binding to another operation
-		boundResult := result.Bind(func() functional.Result {
-			return functional.Ok() // Should not execute
+		boundResult := result.Bind(func(s string) functional.Result[interface{}] {
+			return functional.Ok[interface{}]("test") // Should not execute
 		})
 
 		// Then: Should remain failure without executing bind function
@@ -109,18 +109,18 @@ func TestResult_Should_ProvideMonadicOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_MatchBothPaths_When_Called", func(t *testing.T) {
 		// Given: Success and failure results
-		successResult := functional.Ok()
+		successResult := functional.Ok("test")
 		err := functional.DomainError("TEST_ERROR", "Test error")
-		failureResult := functional.Fail(err)
+		failureResult := functional.Fail[string](err)
 
 		// When: Matching both cases
 		successValue := successResult.Match(
-			func() string { return "success path" },
-			func(e functional.Error) string { return "failure path" },
+			func(s string) interface{} { return "success path" },
+			func(e *functional.Error) interface{} { return "failure path" },
 		)
 		failureValue := failureResult.Match(
-			func() string { return "success path" },
-			func(e functional.Error) string { return "failure path" },
+			func(s string) interface{} { return "success path" },
+			func(e *functional.Error) interface{} { return "failure path" },
 		)
 
 		// Then: Should execute correct path
@@ -138,7 +138,7 @@ func TestResultOfT_Should_ProvideTypedOperations_When_Used(t *testing.T) {
 	t.Run("Should_CreateTypedSuccessResult_When_OkCalled", func(t *testing.T) {
 		// Given: Creating a typed success result
 		value := "test value"
-		result := functional.OkWith(value)
+		result := functional.Ok(value)
 
 		// When: Checking result state
 		// Then: Should be success with value
@@ -152,10 +152,10 @@ func TestResultOfT_Should_ProvideTypedOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_MapToNewType_When_Success", func(t *testing.T) {
 		// Given: A success result with string value
-		result := functional.OkWith("123")
+		result := functional.Ok("123")
 
 		// When: Mapping to different type
-		intResult := result.Map(func(s string) int {
+		intResult := result.Map(func(s string) interface{} {
 			return len(s)
 		})
 
@@ -170,14 +170,14 @@ func TestResultOfT_Should_ProvideTypedOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_BindToNewResult_When_Success", func(t *testing.T) {
 		// Given: A success result with integer value
-		result := functional.OkWith(5)
+		result := functional.Ok(5)
 
 		// When: Binding to operation that might fail
-		boundResult := result.Bind(func(i int) functional.Result[string] {
+		boundResult := functional.Bind(result, func(i int) functional.Result[string] {
 			if i > 0 {
-				return functional.OkWith("positive")
+				return functional.Ok("positive")
 			}
-			return functional.FailWith[string](functional.DomainError("NEGATIVE", "Value is negative"))
+			return functional.Fail[string](functional.DomainError("NEGATIVE", "Value is negative"))
 		})
 
 		// Then: Should execute bind function successfully
@@ -191,14 +191,14 @@ func TestResultOfT_Should_ProvideTypedOperations_When_Used(t *testing.T) {
 
 	t.Run("Should_HandleBindFailure_When_Success", func(t *testing.T) {
 		// Given: A success result with negative integer
-		result := functional.OkWith(-5)
+		result := functional.Ok(-5)
 
 		// When: Binding to operation that fails
-		boundResult := result.Bind(func(i int) functional.Result[string] {
+		boundResult := functional.Bind(result, func(i int) functional.Result[string] {
 			if i > 0 {
-				return functional.OkWith("positive")
+				return functional.Ok("positive")
 			}
-			return functional.FailWith[string](functional.DomainError("NEGATIVE", "Value is negative"))
+			return functional.Fail[string](functional.DomainError("NEGATIVE", "Value is negative"))
 		})
 
 		// Then: Should return failure from bind function

@@ -3,6 +3,7 @@ package performance
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/universalddd/architecture-core-go/pkg/functional"
 	testutils "github.com/universalddd/architecture-core-go/internal/testing"
@@ -61,39 +62,39 @@ func BenchmarkMaybe_Map_SingleOperation(b *testing.B) {
 
 	// Map on Some
 	tester.BenchmarkOperation("Map_Some_IntToString", func() {
-		_ = someValue.Map(func(x int) string {
+		_ = functional.MapMaybe(someValue, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
 
 	tester.BenchmarkOperation("Map_Some_Arithmetic", func() {
-		_ = someValue.Map(func(x int) int {
+		_ = functional.MapMaybe(someValue, func(x int) int {
 			return x * 2
 		})
 	})
 
 	// Map on None (should short-circuit)
 	tester.BenchmarkOperation("Map_None_IntToString", func() {
-		_ = noneValue.Map(func(x int) string {
+		_ = functional.MapMaybe(noneValue, func(x int) string {
 			return strconv.Itoa(x) // This should not execute
 		})
 	})
 
 	// Zero allocation tests
 	tester.BenchmarkZeroAlloc("Map_Some_IntToString", func() {
-		_ = someValue.Map(func(x int) string {
+		_ = functional.MapMaybe(someValue, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Map_Some_Arithmetic", func() {
-		_ = someValue.Map(func(x int) int {
+		_ = functional.MapMaybe(someValue, func(x int) int {
 			return x * 2
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Map_None_IntToString", func() {
-		_ = noneValue.Map(func(x int) string {
+		_ = functional.MapMaybe(noneValue, func(x int) string {
 			return strconv.Itoa(x)
 		})
 	})
@@ -108,45 +109,40 @@ func BenchmarkMaybe_Map_ChainedOperations(b *testing.B) {
 
 	// Chain of 3 operations on Some
 	tester.BenchmarkOperation("Map_Some_Chain_3_Operations", func() {
-		_ = someValue.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(someValue, func(x int) int { return x * 2 })
+		step2 := functional.MapMaybe(step1, func(x int) int { return x + 1 })
+		_ = functional.MapMaybe(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Chain of 5 operations on Some
 	tester.BenchmarkOperation("Map_Some_Chain_5_Operations", func() {
-		_ = someValue.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) int { return x - 5 }).
-			Map(func(x int) int { return x / 2 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(someValue, func(x int) int { return x * 2 })
+		step2 := functional.MapMaybe(step1, func(x int) int { return x + 1 })
+		step3 := functional.MapMaybe(step2, func(x int) int { return x - 5 })
+		step4 := functional.MapMaybe(step3, func(x int) int { return x / 2 })
+		_ = functional.MapMaybe(step4, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Chain of operations on None (should short-circuit throughout)
 	tester.BenchmarkOperation("Map_None_Chain_5_Operations", func() {
-		_ = noneValue.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) int { return x - 5 }).
-			Map(func(x int) int { return x / 2 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(noneValue, func(x int) int { return x * 2 })
+		step2 := functional.MapMaybe(step1, func(x int) int { return x + 1 })
+		step3 := functional.MapMaybe(step2, func(x int) int { return x - 5 })
+		step4 := functional.MapMaybe(step3, func(x int) int { return x / 2 })
+		_ = functional.MapMaybe(step4, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Zero allocation tests for chained operations
 	tester.BenchmarkZeroAlloc("Map_Some_Chain_3_Operations", func() {
-		_ = someValue.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(someValue, func(x int) int { return x * 2 })
+		step2 := functional.MapMaybe(step1, func(x int) int { return x + 1 })
+		_ = functional.MapMaybe(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	tester.BenchmarkZeroAlloc("Map_None_Chain_3_Operations", func() {
-		_ = noneValue.
-			Map(func(x int) int { return x * 2 }).
-			Map(func(x int) int { return x + 1 }).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(noneValue, func(x int) int { return x * 2 })
+		step2 := functional.MapMaybe(step1, func(x int) int { return x + 1 })
+		_ = functional.MapMaybe(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 }
 
@@ -159,7 +155,7 @@ func BenchmarkMaybe_Bind_Operations(b *testing.B) {
 
 	// Single bind operation on Some
 	tester.BenchmarkOperation("Bind_Some_Single", func() {
-		_ = someValue.Bind(func(x int) functional.Maybe[string] {
+		_ = functional.BindMaybe(someValue, func(x int) functional.Maybe[string] {
 			if x > 0 {
 				return functional.Some(strconv.Itoa(x))
 			}
@@ -169,47 +165,45 @@ func BenchmarkMaybe_Bind_Operations(b *testing.B) {
 
 	// Single bind operation on None
 	tester.BenchmarkOperation("Bind_None_Single", func() {
-		_ = noneValue.Bind(func(x int) functional.Maybe[string] {
+		_ = functional.BindMaybe(noneValue, func(x int) functional.Maybe[string] {
 			return functional.Some(strconv.Itoa(x)) // Should not execute
 		})
 	})
 
 	// Chained bind operations on Some
 	tester.BenchmarkOperation("Bind_Some_Chain_3", func() {
-		_ = someValue.
-			Bind(func(x int) functional.Maybe[int] {
-				return functional.Some(x * 2)
-			}).
-			Bind(func(x int) functional.Maybe[int] {
-				return functional.Some(x + 1)
-			}).
-			Bind(func(x int) functional.Maybe[string] {
-				return functional.Some(strconv.Itoa(x))
-			})
+		step1 := functional.BindMaybe(someValue, func(x int) functional.Maybe[int] {
+			return functional.Some(x * 2)
+		})
+		step2 := functional.BindMaybe(step1, func(x int) functional.Maybe[int] {
+			return functional.Some(x + 1)
+		})
+		_ = functional.BindMaybe(step2, func(x int) functional.Maybe[string] {
+			return functional.Some(strconv.Itoa(x))
+		})
 	})
 
 	// Mixed Map and Bind operations
 	tester.BenchmarkOperation("Mixed_Map_Bind_Some", func() {
-		_ = someValue.
-			Map(func(x int) int { return x * 2 }).
-			Bind(func(x int) functional.Maybe[int] {
-				if x > 50 {
-					return functional.Some(x)
-				}
-				return functional.None[int]()
-			}).
-			Map(func(x int) string { return strconv.Itoa(x) })
+		step1 := functional.MapMaybe(someValue, func(x int) int { return x * 2 })
+		step2 := functional.BindMaybe(step1, func(x int) functional.Maybe[int] {
+			if x > 50 {
+				return functional.Some(x)
+			}
+			return functional.None[int]()
+		})
+		_ = functional.MapMaybe(step2, func(x int) string { return strconv.Itoa(x) })
 	})
 
 	// Zero allocation tests
 	tester.BenchmarkZeroAlloc("Bind_Some_Single", func() {
-		_ = someValue.Bind(func(x int) functional.Maybe[string] {
+		_ = functional.BindMaybe(someValue, func(x int) functional.Maybe[string] {
 			return functional.Some(strconv.Itoa(x))
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Bind_None_Single", func() {
-		_ = noneValue.Bind(func(x int) functional.Maybe[string] {
+		_ = functional.BindMaybe(noneValue, func(x int) functional.Maybe[string] {
 			return functional.Some(strconv.Itoa(x))
 		})
 	})
@@ -378,7 +372,7 @@ func BenchmarkMaybe_Different_Types(b *testing.B) {
 	// String Maybe
 	stringMaybe := functional.Some("test string")
 	tester.BenchmarkOperation("Map_String", func() {
-		_ = stringMaybe.Map(func(s string) int {
+		_ = functional.MapMaybe(stringMaybe, func(s string) int {
 			return len(s)
 		})
 	})
@@ -386,7 +380,7 @@ func BenchmarkMaybe_Different_Types(b *testing.B) {
 	// Boolean Maybe
 	boolMaybe := functional.Some(true)
 	tester.BenchmarkOperation("Map_Boolean", func() {
-		_ = boolMaybe.Map(func(b bool) string {
+		_ = functional.MapMaybe(boolMaybe, func(b bool) string {
 			if b {
 				return "true"
 			}
@@ -402,20 +396,20 @@ func BenchmarkMaybe_Different_Types(b *testing.B) {
 	}
 	structMaybe := functional.Some(testStruct{ID: 1, Name: "test", Value: 3.14})
 	tester.BenchmarkOperation("Map_Struct", func() {
-		_ = structMaybe.Map(func(s testStruct) string {
+		_ = functional.MapMaybe(structMaybe, func(s testStruct) string {
 			return s.Name
 		})
 	})
 
 	// Zero allocation tests for different types
 	tester.BenchmarkZeroAlloc("Map_String", func() {
-		_ = stringMaybe.Map(func(s string) int {
+		_ = functional.MapMaybe(stringMaybe, func(s string) int {
 			return len(s)
 		})
 	})
 
 	tester.BenchmarkZeroAlloc("Map_Boolean", func() {
-		_ = boolMaybe.Map(func(b bool) string {
+		_ = functional.MapMaybe(boolMaybe, func(b bool) string {
 			if b {
 				return "true"
 			}
@@ -431,7 +425,7 @@ func BenchmarkMaybe_Parallel_Operations(b *testing.B) {
 	b.Run("Map_Parallel", func(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				_ = maybe.Map(func(x int) int {
+				_ = functional.MapMaybe(maybe, func(x int) int {
 					return x * 2
 				})
 			}
@@ -467,56 +461,67 @@ func BenchmarkMaybe_ComprehensiveScenarios(b *testing.B) {
 	// Scenario 1: Data processing pipeline with Maybe
 	tester.BenchmarkOperation("Scenario_DataProcessing", func() {
 		maybe := functional.Some("123")
-		_ = maybe.
-			Map(func(s string) int {
-				val, _ := strconv.Atoi(s)
-				return val
-			}).
-			Filter(func(x int) bool { return x > 0 }).
-			Map(func(x int) float64 { return float64(x) * 1.5 }).
-			Map(func(x float64) string { return strconv.FormatFloat(x, 'f', 2, 64) })
+		// Step 1: string to int
+		intMaybe := functional.MapMaybe(maybe, func(s string) int {
+			val, _ := strconv.Atoi(s)
+			return val
+		})
+		// Step 2: filter positive
+		filteredMaybe := intMaybe.Filter(func(x int) bool { return x > 0 })
+		// Step 3: int to float
+		floatMaybe := functional.MapMaybe(filteredMaybe, func(x int) float64 { return float64(x) * 1.5 })
+		// Step 4: float to string
+		_ = functional.MapMaybe(floatMaybe, func(x float64) string { return strconv.FormatFloat(x, 'f', 2, 64) })
 	})
 
 	// Scenario 2: Safe navigation pattern
 	tester.BenchmarkOperation("Scenario_SafeNavigation", func() {
 		maybe := functional.Some(10)
-		_ = maybe.
-			Filter(func(x int) bool { return x > 5 }).
-			Bind(func(x int) functional.Maybe[int] {
-				if x%2 == 0 {
-					return functional.Some(x / 2)
-				}
-				return functional.None[int]()
-			}).
-			Map(func(x int) string { return "Result: " + strconv.Itoa(x) }).
-			OrElse(functional.Some("Default"))
+		// Step 1: filter
+		filtered := maybe.Filter(func(x int) bool { return x > 5 })
+		// Step 2: bind operation
+		bound := functional.BindMaybe(filtered, func(x int) functional.Maybe[int] {
+			if x%2 == 0 {
+				return functional.Some(x / 2)
+			}
+			return functional.None[int]()
+		})
+		// Step 3: map to string
+		mapped := functional.MapMaybe(bound, func(x int) string { return "Result: " + strconv.Itoa(x) })
+		// Step 4: orElse
+		_ = mapped.OrElse(functional.Some("Default"))
 	})
 
 	// Scenario 3: Complex business logic with optional values
 	tester.BenchmarkOperation("Scenario_BusinessLogic", func() {
 		maybe := functional.Some(100)
-		_ = maybe.
-			Filter(func(x int) bool { return x >= 0 }).
-			Map(func(x int) int { return x * 2 }).
-			Filter(func(x int) bool { return x <= 1000 }).
-			Bind(func(x int) functional.Maybe[int] {
-				if x%10 == 0 {
-					return functional.Some(x + 5)
-				}
-				return functional.Some(x)
-			}).
-			Map(func(x int) string { return "Final: " + strconv.Itoa(x) })
+		// Step 1: filter positive
+		filtered1 := maybe.Filter(func(x int) bool { return x >= 0 })
+		// Step 2: double the value
+		doubled := functional.MapMaybe(filtered1, func(x int) int { return x * 2 })
+		// Step 3: filter <= 1000
+		filtered2 := doubled.Filter(func(x int) bool { return x <= 1000 })
+		// Step 4: conditional transform
+		bound := functional.BindMaybe(filtered2, func(x int) functional.Maybe[int] {
+			if x%10 == 0 {
+				return functional.Some(x + 5)
+			}
+			return functional.Some(x)
+		})
+		// Step 5: final map to string
+		_ = functional.MapMaybe(bound, func(x int) string { return "Final: " + strconv.Itoa(x) })
 	})
 
 	// Zero allocation validation for scenarios
 	tester.BenchmarkZeroAlloc("Scenario_DataProcessing", func() {
 		maybe := functional.Some("123")
-		_ = maybe.
-			Map(func(s string) int {
-				val, _ := strconv.Atoi(s)
-				return val
-			}).
-			Map(func(x int) float64 { return float64(x) * 1.5 })
+		// Step 1: string to int
+		intMaybe := functional.MapMaybe(maybe, func(s string) int {
+			val, _ := strconv.Atoi(s)
+			return val
+		})
+		// Step 2: int to float
+		_ = functional.MapMaybe(intMaybe, func(x int) float64 { return float64(x) * 1.5 })
 	})
 }
 
@@ -532,13 +537,13 @@ func TestMaybe_ZeroAllocations(t *testing.T) {
 
 	// Test Map operations
 	allocs := testutils.MeasureAllocations(func() {
-		_ = maybe.Map(func(x int) int { return x * 2 })
+		_ = functional.MapMaybe(maybe, func(x int) int { return x * 2 })
 	})
 	assertions.Equal(0.0, allocs, "Map operation should have zero allocations")
 
 	// Test Bind operations
 	allocs = testutils.MeasureAllocations(func() {
-		_ = maybe.Bind(func(x int) functional.Maybe[int] {
+		_ = functional.BindMaybe(maybe, func(x int) functional.Maybe[int] {
 			return functional.Some(x + 1)
 		})
 	})
@@ -552,10 +557,12 @@ func TestMaybe_ZeroAllocations(t *testing.T) {
 
 	// Test chained operations
 	allocs = testutils.MeasureAllocations(func() {
-		_ = maybe.
-			Map(func(x int) int { return x * 2 }).
-			Filter(func(x int) bool { return x > 0 }).
-			Map(func(x int) int { return x + 1 })
+		// Step 1: multiply by 2
+		mapped1 := functional.MapMaybe(maybe, func(x int) int { return x * 2 })
+		// Step 2: filter positive
+		filtered := mapped1.Filter(func(x int) bool { return x > 0 })
+		// Step 3: add 1
+		_ = functional.MapMaybe(filtered, func(x int) int { return x + 1 })
 	})
 	assertions.Equal(0.0, allocs, "Chained operations should have zero allocations")
 }
@@ -567,13 +574,13 @@ func TestMaybe_PerformanceThresholds(t *testing.T) {
 	// Test single Map operation
 	testutils.ValidatePerformance(t, "Maybe.Map", expectations, func() {
 		maybe := functional.Some(42)
-		_ = maybe.Map(func(x int) int { return x * 2 })
+		_ = functional.MapMaybe(maybe, func(x int) int { return x * 2 })
 	})
 
 	// Test single Bind operation
 	testutils.ValidatePerformance(t, "Maybe.Bind", expectations, func() {
 		maybe := functional.Some(42)
-		_ = maybe.Bind(func(x int) functional.Maybe[int] {
+		_ = functional.BindMaybe(maybe, func(x int) functional.Maybe[int] {
 			return functional.Some(x + 1)
 		})
 	})

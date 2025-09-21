@@ -2,6 +2,7 @@ package unit
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/universalddd/architecture-core-go/pkg/functional"

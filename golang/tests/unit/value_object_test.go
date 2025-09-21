@@ -2,8 +2,9 @@ package unit
 
 import (
 	"fmt"
-	"sync"
+	"math"
 	"testing"
+	"time"
 
 	"github.com/universalddd/architecture-core-go/pkg/domain"
 	testutils "github.com/universalddd/architecture-core-go/internal/testing"
@@ -16,15 +17,16 @@ import (
 
 // Test value objects
 type Money struct {
-	domain.ValueObject
+	*domain.BaseValueObject
 	Amount   float64
 	Currency string
 }
 
 func NewMoney(amount float64, currency string) *Money {
 	return &Money{
-		Amount:   amount,
-		Currency: currency,
+		BaseValueObject: &domain.BaseValueObject{},
+		Amount:          amount,
+		Currency:        currency,
 	}
 }
 
@@ -32,8 +34,16 @@ func (m *Money) GetEqualityComponents() []interface{} {
 	return []interface{}{m.Amount, m.Currency}
 }
 
+func (m *Money) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(m, other)
+}
+
+func (m *Money) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(m)
+}
+
 type Address struct {
-	domain.ValueObject
+	*domain.BaseValueObject
 	Street     string
 	City       string
 	State      string
@@ -43,11 +53,12 @@ type Address struct {
 
 func NewAddress(street, city, state, postalCode, country string) *Address {
 	return &Address{
-		Street:     street,
-		City:       city,
-		State:      state,
-		PostalCode: postalCode,
-		Country:    country,
+		BaseValueObject: &domain.BaseValueObject{},
+		Street:          street,
+		City:            city,
+		State:           state,
+		PostalCode:      postalCode,
+		Country:         country,
 	}
 }
 
@@ -55,8 +66,16 @@ func (a *Address) GetEqualityComponents() []interface{} {
 	return []interface{}{a.Street, a.City, a.State, a.PostalCode, a.Country}
 }
 
+func (a *Address) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(a, other)
+}
+
+func (a *Address) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(a)
+}
+
 type PersonName struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	FirstName  string
 	MiddleName *string // Nullable field
 	LastName   string
@@ -74,8 +93,16 @@ func (p *PersonName) GetEqualityComponents() []interface{} {
 	return []interface{}{p.FirstName, p.MiddleName, p.LastName}
 }
 
+func (p *PersonName) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(p, other)
+}
+
+func (p *PersonName) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(p)
+}
+
 type ProductTags struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	Tags []string
 }
 
@@ -89,11 +116,22 @@ func NewProductTags(tags []string) *ProductTags {
 }
 
 func (p *ProductTags) GetEqualityComponents() []interface{} {
-	return []interface{}{p.Tags}
+	// Return a copy of the slice to ensure immutability
+	tagsCopy := make([]string, len(p.Tags))
+	copy(tagsCopy, p.Tags)
+	return []interface{}{tagsCopy}
+}
+
+func (p *ProductTags) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(p, other)
+}
+
+func (p *ProductTags) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(p)
 }
 
 type Metadata struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	Properties map[string]interface{}
 }
 
@@ -112,8 +150,16 @@ func (m *Metadata) GetEqualityComponents() []interface{} {
 	return []interface{}{m.Properties}
 }
 
+func (m *Metadata) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(m, other)
+}
+
+func (m *Metadata) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(m)
+}
+
 type ComplexValueObject struct {
-	domain.ValueObject
+	domain.BaseValueObject
 	StringField  string
 	IntField     int
 	FloatField   float64
@@ -166,6 +212,14 @@ func (c *ComplexValueObject) GetEqualityComponents() []interface{} {
 		c.PointerField,
 		c.NestedField,
 	}
+}
+
+func (c *ComplexValueObject) Equals(other domain.ValueObject) bool {
+	return domain.ValueObjectEquals(c, other)
+}
+
+func (c *ComplexValueObject) GetHashCode() uint64 {
+	return domain.ValueObjectHashCode(c)
 }
 
 func TestValueObject_Should_BeEqual_When_SameComponentsProvided(t *testing.T) {
@@ -557,9 +611,9 @@ func TestValueObject_Should_HandleEdgeCases_When_UnusualValuesProvided(t *testin
 	assertions.True(largeMoney.GetHashCode() != 0, "Large values should have non-zero hash")
 
 	// Special float values
-	nanMoney := NewMoney(0.0/0.0, "USD") // NaN
-	infMoney := NewMoney(1.0/0.0, "USD") // +Inf
-	negInfMoney := NewMoney(-1.0/0.0, "USD") // -Inf
+	nanMoney := NewMoney(math.NaN(), "USD") // NaN
+	infMoney := NewMoney(math.Inf(1), "USD") // +Inf
+	negInfMoney := NewMoney(math.Inf(-1), "USD") // -Inf
 
 	// These should not panic
 	_ = nanMoney.GetHashCode()
@@ -757,9 +811,9 @@ func TestValueObject_Should_RemainImmutable_When_ReturnedComponentsModified(t *t
 func TestValueObject_Should_HandleVariousDataTypes_When_DifferentTypesUsed(t *testing.T) {
 	testCases := []struct {
 		name    string
-		obj1    domain.IValueObject
-		obj2    domain.IValueObject
-		obj3    domain.IValueObject
+		obj1    domain.ValueObject
+		obj2    domain.ValueObject
+		obj3    domain.ValueObject
 		equal12 bool
 		equal13 bool
 	}{
