@@ -5,16 +5,16 @@
 // 3. Associativity: m.flatMap(f).flatMap(g) === m.flatMap(x => f(x).flatMap(g))
 // Following TDD: These tests MUST FAIL initially before implementation
 
-import { Result } from '@/functional/result';
+import { Result, ResultOf } from '@/functional/result';
 import { Error } from '@/functional/error';
 
 describe('Result Monadic Laws Contract Tests', () => {
   // Test functions for monadic law verification
-  const double = (x: number): Result<number> => Result.ok(x * 2);
-  const addTen = (x: number): Result<number> => Result.ok(x + 10);
-  const toString = (x: number): Result<string> => Result.ok(x.toString());
-  const safeDivide = (x: number): Result<number> =>
-    x !== 0 ? Result.ok(100 / x) : Error.validation('DIVISION_BY_ZERO', 'Cannot divide by zero');
+  const double = (x: number): ResultOf<number> => ResultOf.ok(x * 2);
+  const addTen = (x: number): ResultOf<number> => ResultOf.ok(x + 10);
+  const toString = (x: number): ResultOf<string> => ResultOf.ok(x.toString());
+  const safeDivide = (x: number): ResultOf<number> =>
+    x !== 0 ? ResultOf.ok(100 / x) : ResultOf.fail(Error.validation('DIVISION_BY_ZERO', 'Cannot divide by zero'));
 
   describe('Result Left Identity Law', () => {
     test('Should_SatisfyLeftIdentity_When_BindingSuccessValue', () => {
@@ -23,7 +23,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const f = double;
 
       // When
-      const leftSide = Result.ok(value).bind(f);
+      const leftSide = ResultOf.ok(value).bind(f);
       const rightSide = f(value);
 
       // Then
@@ -39,7 +39,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const f = safeDivide;
 
       // When
-      const leftSide = Result.ok(value).bind(f);
+      const leftSide = ResultOf.ok(value).bind(f);
       const rightSide = f(value);
 
       // Then
@@ -57,7 +57,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const f = toString;
 
       // When
-      const leftSide = Result.ok(value).bind(f);
+      const leftSide = ResultOf.ok(value).bind(f);
       const rightSide = f(value);
 
       // Then
@@ -71,11 +71,11 @@ describe('Result Monadic Laws Contract Tests', () => {
     test('Should_SatisfyLeftIdentity_When_BindingComplexFunction', () => {
       // Given
       const value = 'hello';
-      const complexF = (s: string): Result<{ length: number; upper: string }> =>
-        Result.ok({ length: s.length, upper: s.toUpperCase() });
+      const complexF = (s: string): ResultOf<{ length: number; upper: string }> =>
+        ResultOf.ok({ length: s.length, upper: s.toUpperCase() });
 
       // When
-      const leftSide = Result.ok(value).bind(complexF);
+      const leftSide = ResultOf.ok(value).bind(complexF);
       const rightSide = complexF(value);
 
       // Then
@@ -89,7 +89,7 @@ describe('Result Monadic Laws Contract Tests', () => {
   describe('Result Right Identity Law', () => {
     test('Should_SatisfyRightIdentity_When_BindingWithResultOk', () => {
       // Given
-      const successResult = Result.ok(42);
+      const successResult = ResultOf.ok(42);
 
       // When
       const leftSide = successResult.bind(Result.ok);
@@ -121,7 +121,7 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyRightIdentity_When_BindingStringResult', () => {
       // Given
-      const stringResult = Result.ok('test string');
+      const stringResult = ResultOf.ok('test string');
 
       // When
       const leftSide = stringResult.bind(Result.ok);
@@ -137,7 +137,7 @@ describe('Result Monadic Laws Contract Tests', () => {
     test('Should_SatisfyRightIdentity_When_BindingComplexObjectResult', () => {
       // Given
       const complexObject = { id: 1, data: [1, 2, 3], nested: { prop: 'value' } };
-      const complexResult = Result.ok(complexObject);
+      const complexResult = ResultOf.ok(complexObject);
 
       // When
       const leftSide = complexResult.bind(Result.ok);
@@ -154,9 +154,9 @@ describe('Result Monadic Laws Contract Tests', () => {
   describe('Result Associativity Law', () => {
     test('Should_SatisfyAssociativity_When_ChainingSuccessfulOperations', () => {
       // Given
-      const result = Result.ok(5);
-      const f = double;  // x => Result.ok(x * 2)
-      const g = addTen;  // x => Result.ok(x + 10)
+      const result = ResultOf.ok(5);
+      const f = double;  // x => ResultOf.ok(x * 2)
+      const g = addTen;  // x => ResultOf.ok(x + 10)
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -172,7 +172,7 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyAssociativity_When_FirstOperationFails', () => {
       // Given
-      const result = Result.ok(0); // Will cause safeDivide to fail
+      const result = ResultOf.ok(0); // Will cause safeDivide to fail
       const f = safeDivide; // Will fail with division by zero
       const g = addTen;
 
@@ -191,10 +191,10 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyAssociativity_When_SecondOperationFails', () => {
       // Given
-      const result = Result.ok(5);
-      const f = double; // x => Result.ok(x * 2) = Result.ok(10)
-      const g = (x: number): Result<number> =>
-        x > 15 ? Result.ok(x) : Error.validation('TOO_SMALL', 'Value too small');
+      const result = ResultOf.ok(5);
+      const f = double; // x => ResultOf.ok(x * 2) = ResultOf.ok(10)
+      const g = (x: number): ResultOf<number> =>
+        x > 15 ? ResultOf.ok(x) : Error.validation('TOO_SMALL', 'Value too small');
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -230,9 +230,9 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyAssociativity_When_ChainingTypeTransformations', () => {
       // Given
-      const result = Result.ok(42);
+      const result = ResultOf.ok(42);
       const f = toString;     // number => Result<string>
-      const g = (s: string): Result<number> => Result.ok(s.length); // string => Result<number>
+      const g = (s: string): ResultOf<number> => ResultOf.ok(s.length); // string => Result<number>
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -248,11 +248,11 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyAssociativity_When_ChainingComplexOperations', () => {
       // Given
-      const result = Result.ok({ count: 5, multiplier: 2 });
-      const f = (obj: { count: number; multiplier: number }): Result<number> =>
-        Result.ok(obj.count * obj.multiplier);
-      const g = (n: number): Result<string> =>
-        n > 0 ? Result.ok(`Count: ${n}`) : Error.validation('INVALID_COUNT', 'Count must be positive');
+      const result = ResultOf.ok({ count: 5, multiplier: 2 });
+      const f = (obj: { count: number; multiplier: number }): ResultOf<number> =>
+        ResultOf.ok(obj.count * obj.multiplier);
+      const g = (n: number): ResultOf<string> =>
+        n > 0 ? ResultOf.ok(`Count: ${n}`) : Error.validation('INVALID_COUNT', 'Count must be positive');
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -276,29 +276,29 @@ describe('Result Monadic Laws Contract Tests', () => {
         age: number;
       }
 
-      const validateUser = (user: User): Result<User> => {
+      const validateUser = (user: User): ResultOf<User> => {
         if (!user.email.includes('@')) {
           return Error.validation('INVALID_EMAIL', 'Email must contain @');
         }
         if (user.age < 0 || user.age > 120) {
           return Error.validation('INVALID_AGE', 'Age must be between 0 and 120');
         }
-        return Result.ok(user);
+        return ResultOf.ok(user);
       };
 
-      const normalizeEmail = (user: User): Result<User> =>
-        Result.ok({ ...user, email: user.email.toLowerCase() });
+      const normalizeEmail = (user: User): ResultOf<User> =>
+        ResultOf.ok({ ...user, email: user.email.toLowerCase() });
 
-      const calculateCategory = (user: User): Result<string> => {
-        if (user.age < 18) return Result.ok('Minor');
-        if (user.age < 65) return Result.ok('Adult');
-        return Result.ok('Senior');
+      const calculateCategory = (user: User): ResultOf<string> => {
+        if (user.age < 18) return ResultOf.ok('Minor');
+        if (user.age < 65) return ResultOf.ok('Adult');
+        return ResultOf.ok('Senior');
       };
 
       const validUser: User = { id: 1, email: 'John@Example.COM', age: 30 };
 
       // When - Apply all three laws in a realistic chain
-      const result1 = Result.ok(validUser);
+      const result1 = ResultOf.ok(validUser);
       const result2 = result1.bind(validateUser).bind(normalizeEmail).bind(calculateCategory);
       const result3 = result1.bind(u => validateUser(u).bind(nu => normalizeEmail(nu).bind(calculateCategory)));
 
@@ -310,7 +310,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       }
 
       // Left Identity
-      const leftIdentityResult1 = Result.ok(validUser).bind(validateUser);
+      const leftIdentityResult1 = ResultOf.ok(validUser).bind(validateUser);
       const leftIdentityResult2 = validateUser(validUser);
       expect(leftIdentityResult1.isSuccess).toBe(leftIdentityResult2.isSuccess);
 
@@ -324,23 +324,23 @@ describe('Result Monadic Laws Contract Tests', () => {
 
     test('Should_SatisfyAllLaws_When_HandlingErrorScenarios', () => {
       // Given - Error scenarios that should still follow monadic laws
-      const parseNumber = (s: string): Result<number> => {
+      const parseNumber = (s: string): ResultOf<number> => {
         const parsed = parseInt(s, 10);
         return isNaN(parsed)
           ? Error.validation('INVALID_NUMBER', 'Cannot parse number')
-          : Result.ok(parsed);
+          : ResultOf.ok(parsed);
       };
 
-      const makePositive = (n: number): Result<number> =>
-        n >= 0 ? Result.ok(n) : Error.validation('NEGATIVE_NUMBER', 'Number must be positive');
+      const makePositive = (n: number): ResultOf<number> =>
+        n >= 0 ? ResultOf.ok(n) : Error.validation('NEGATIVE_NUMBER', 'Number must be positive');
 
-      const doubleIt = (n: number): Result<number> => Result.ok(n * 2);
+      const doubleIt = (n: number): ResultOf<number> => ResultOf.ok(n * 2);
 
       const invalidInput = 'not-a-number';
 
       // When - Chain operations with error
-      const chainResult1 = Result.ok(invalidInput).bind(parseNumber).bind(makePositive).bind(doubleIt);
-      const chainResult2 = Result.ok(invalidInput).bind(s =>
+      const chainResult1 = ResultOf.ok(invalidInput).bind(parseNumber).bind(makePositive).bind(doubleIt);
+      const chainResult2 = ResultOf.ok(invalidInput).bind(s =>
         parseNumber(s).bind(n =>
           makePositive(n).bind(doubleIt)
         )
@@ -359,12 +359,12 @@ describe('Result Monadic Laws Contract Tests', () => {
     test('Should_MaintainPerformance_When_ChainingManyOperations', () => {
       // Given
       const operations = Array.from({ length: 100 }, (_, i) =>
-        (x: number): Result<number> => Result.ok(x + i)
+        (x: number): ResultOf<number> => ResultOf.ok(x + i)
       );
 
       // When
       const startTime = performance.now();
-      let result = Result.ok(0);
+      let result = ResultOf.ok(0);
       for (const op of operations) {
         result = result.bind(op);
       }

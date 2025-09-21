@@ -32,7 +32,7 @@ describe('Maybe Contract Tests', () => {
       const value = 42;
 
       // When
-      const maybe: Maybe<number> = value;
+      const maybe: Maybe<number> = Maybe.fromValue(value);
 
       // Then
       expect(maybe.hasValue).toBe(true);
@@ -163,10 +163,9 @@ describe('Maybe Contract Tests', () => {
       const maybe = Maybe.some(10);
 
       // When
-      const result = maybe
-        .bind(n => n > 0 ? Maybe.some(n * 2) : Maybe.none())
-        .bind(n => n < 100 ? Maybe.some(n.toString()) : Maybe.none())
-        .bind(s => s.length > 0 ? Maybe.some(s.toUpperCase()) : Maybe.none());
+      const step1 = maybe.bind((n: number) => n > 0 ? Maybe.some(n * 2) : Maybe.none<number>());
+      const step2 = step1.bind((n: number) => n < 100 ? Maybe.some(n.toString()) : Maybe.none<string>());
+      const result = step2.bind((s: string) => s.length > 0 ? Maybe.some(s.toUpperCase()) : Maybe.none<string>());
 
       // Then
       expect(result.hasValue).toBe(true);

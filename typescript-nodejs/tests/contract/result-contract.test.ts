@@ -33,7 +33,7 @@ describe('Result Contract Tests', () => {
       const error = Error.validation('INVALID', 'Invalid input');
 
       // When
-      const result: Result = error;
+      const result: Result = Result.fromError(error);
 
       // Then
       expect(result.isSuccess).toBe(false);

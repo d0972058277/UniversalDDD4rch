@@ -105,6 +105,13 @@ export class Result {
   public static fromError(error: Error): Result {
     return new Result(false, error);
   }
+
+  /**
+   * Creates a Result from an Error (for implicit conversions).
+   */
+  public static from(error: Error): Result {
+    return new Result(false, error);
+  }
 }
 
 /**
@@ -120,6 +127,20 @@ export class ResultOf<T> {
     this._value = value;
     this._error = error;
     Object.freeze(this);
+  }
+
+  /**
+   * Creates a successful ResultOf<T> with a value.
+   */
+  public static ok<T>(value: T): ResultOf<T> {
+    return new ResultOf<T>(true, value);
+  }
+
+  /**
+   * Creates a failed ResultOf<T> with an error.
+   */
+  public static fail<T>(error: Error): ResultOf<T> {
+    return new ResultOf<T>(false, undefined, error);
   }
 
   /** True if the operation succeeded */

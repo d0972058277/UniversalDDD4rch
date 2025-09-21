@@ -45,7 +45,8 @@
       "Bash(npx ts-node:*)",
       "Bash(dir:*)",
       "Bash(npm run test:contract:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []
