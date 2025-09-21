@@ -583,8 +583,15 @@ describe('Memory Leak Detection Tests', () => {
 
             // Then
             // Memory should stabilize (not grow continuously)
-            const initialMemory = snapshots[0].heapUsed;
-            const finalMemory = snapshots[snapshots.length - 1].heapUsed;
+            const initialSnapshot = snapshots[0];
+            const finalSnapshot = snapshots[snapshots.length - 1];
+
+            if (!initialSnapshot || !finalSnapshot) {
+                throw new Error('Failed to capture memory snapshots');
+            }
+
+            const initialMemory = initialSnapshot.heapUsed;
+            const finalMemory = finalSnapshot.heapUsed;
             const memoryGrowthMB = (finalMemory - initialMemory) / 1024 / 1024;
 
             expect(memoryGrowthMB).toBeLessThan(10); // Should not grow more than 10MB
@@ -592,7 +599,14 @@ describe('Memory Leak Detection Tests', () => {
             // Check for continuous growth (warning sign of memory leak)
             const growthRates: number[] = [];
             for (let i = 1; i < snapshots.length; i++) {
-                const growth = snapshots[i].heapUsed - snapshots[i - 1].heapUsed;
+                const currentSnapshot = snapshots[i];
+                const previousSnapshot = snapshots[i - 1];
+
+                if (!currentSnapshot || !previousSnapshot) {
+                    continue;
+                }
+
+                const growth = currentSnapshot.heapUsed - previousSnapshot.heapUsed;
                 growthRates.push(growth);
             }
 

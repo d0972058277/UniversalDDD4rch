@@ -95,7 +95,7 @@ function createComplexValueObjects(count: number): ComplexValueObject[] {
     const objects: ComplexValueObject[] = [];
     for (let i = 0; i < count; i++) {
         const tags = [`tag${i}`, `category${i % 10}`, `type${i % 5}`];
-        const metadata = new Map([
+        const metadata = new Map<string, any>([
             ['created', new Date(2025, 0, 1, 0, 0, i)],
             ['version', i],
             ['flags', { enabled: i % 2 === 0, priority: i % 3 }],
@@ -121,10 +121,17 @@ function createNestedValueObjects(count: number): NestedValueObject[] {
     const complexObjects = createComplexValueObjects(count);
 
     for (let i = 0; i < count; i++) {
+        const simpleObject = simpleObjects[i];
+        const complexObject = complexObjects[i];
+
+        if (!simpleObject || !complexObject) {
+            continue;
+        }
+
         const arrayElements = simpleObjects.slice(0, i % 5 + 1);
         objects.push(new NestedValueObject(
-            simpleObjects[i],
-            complexObjects[i],
+            simpleObject,
+            complexObject,
             arrayElements
         ));
     }
@@ -161,12 +168,18 @@ function measureHashCodePerformance(name: string, objects: ValueObject[], iterat
 } {
     // Warm up
     for (let i = 0; i < 100; i++) {
-        objects[i % objects.length].getHashCode();
+        const obj = objects[i % objects.length];
+        if (obj) {
+            obj.getHashCode();
+        }
     }
 
     const start = performance.now();
     for (let i = 0; i < iterations; i++) {
-        objects[i % objects.length].getHashCode();
+        const obj = objects[i % objects.length];
+        if (obj) {
+            obj.getHashCode();
+        }
     }
     const end = performance.now();
 

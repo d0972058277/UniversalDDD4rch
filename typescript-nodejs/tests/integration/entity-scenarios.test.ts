@@ -90,11 +90,11 @@ describe('Entity Identity and Invariants Integration Tests', () => {
             // When & Then - Invalid unit price
             expect(() => {
                 new OrderItem(itemId, 'Product A', new Money(0, 'USD'), 2);
-            }).toThrow('Amount cannot be negative');
+            }).toThrow('Unit price must be positive');
 
             expect(() => {
                 new OrderItem(itemId, 'Product A', new Money(-5, 'USD'), 2);
-            }).toThrow('Amount cannot be negative');
+            }).toThrow('Unit price must be positive');
         });
 
         it('should enforce business rules during updates', () => {
@@ -132,11 +132,11 @@ describe('Entity Identity and Invariants Integration Tests', () => {
             // When & Then - Invalid unit price update
             expect(() => {
                 item.updateUnitPrice(new Money(0, 'USD'));
-            }).toThrow('Amount cannot be negative');
+            }).toThrow('Unit price must be positive');
 
             expect(() => {
                 item.updateUnitPrice(new Money(-5, 'USD'));
-            }).toThrow('Amount cannot be negative');
+            }).toThrow('Unit price must be positive');
 
             expect(() => {
                 item.updateUnitPrice(new Money(10, 'EUR'));
