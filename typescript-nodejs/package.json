@@ -26,7 +26,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node build.config.js",
+    "build": "node build.config.mjs",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:watch": "tsc -p tsconfig.build.json --watch",
     "build:production": "npm run clean && npm run build",

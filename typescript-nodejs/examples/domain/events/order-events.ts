@@ -180,8 +180,8 @@ export class OrderShippedEvent extends DomainEventBase {
         super(correlationId, causationId, metadata);
         this.orderId = orderId;
         this.customerId = customerId;
-        this.shippingAddress = shippingAddress;
-        this.trackingNumber = trackingNumber;
+        if (shippingAddress !== undefined) this.shippingAddress = shippingAddress;
+        if (trackingNumber !== undefined) this.trackingNumber = trackingNumber;
     }
 }
 
@@ -207,7 +207,7 @@ export class OrderDeliveredEvent extends DomainEventBase {
         this.orderId = orderId;
         this.customerId = customerId;
         this.deliveredAt = deliveredAt;
-        this.deliveredBy = deliveredBy;
+        if (deliveredBy !== undefined) this.deliveredBy = deliveredBy;
     }
 }
 
@@ -234,9 +234,9 @@ export class OrderCancelledEvent extends DomainEventBase {
         super(correlationId, causationId, metadata);
         this.orderId = orderId;
         this.customerId = customerId;
-        this.reason = reason;
-        this.refundAmount = refundAmount;
-        this.refundCurrency = refundCurrency;
+        if (reason !== undefined) this.reason = reason;
+        if (refundAmount !== undefined) this.refundAmount = refundAmount;
+        if (refundCurrency !== undefined) this.refundCurrency = refundCurrency;
     }
 }
 

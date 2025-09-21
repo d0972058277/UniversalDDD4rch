@@ -271,9 +271,13 @@ describe('Repository Async Patterns Integration Tests', () => {
 
             // Verify orders are sorted by creation date (most recent first)
             for (let i = 1; i < result.value.length; i++) {
-                expect(result.value[i - 1].createdAt.getTime()).toBeGreaterThanOrEqual(
-                    result.value[i].createdAt.getTime()
-                );
+                const prevOrder = result.value[i - 1];
+                const currentOrder = result.value[i];
+                if (prevOrder && currentOrder) {
+                    expect(prevOrder.createdAt.getTime()).toBeGreaterThanOrEqual(
+                        currentOrder.createdAt.getTime()
+                    );
+                }
             }
         });
 

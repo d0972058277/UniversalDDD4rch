@@ -188,17 +188,17 @@ describe('Quickstart Example Validation Integration Tests', () => {
 
                     const validateResult = validateOrder(order);
                     if (validateResult.isFailure) {
-                        return validateResult.error;
+                        return ResultOf.fail(validateResult.error);
                     }
 
                     const confirmResult = order.confirm();
                     if (confirmResult.isFailure) {
-                        return confirmResult.error;
+                        return ResultOf.fail(confirmResult.error);
                     }
 
-                    return Result.ok(order.id.value);
+                    return ResultOf.ok(order.id.value);
                 } catch (ex) {
-                    return Result.fail(Error.infrastructure('Order.ProcessingFailed',
+                    return ResultOf.fail(Error.infrastructure('Order.ProcessingFailed',
                         ex instanceof Error ? ex.message : 'Unknown error'));
                 }
             };

@@ -3,8 +3,13 @@
  * Optimizes bundle size, tree-shaking, and module output
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Build configuration
 const buildConfig = {
@@ -121,7 +126,7 @@ async function cleanOutputDir(outDir) {
 async function runTypeScriptCompilation() {
   console.log('🔨 Compiling TypeScript...');
 
-  const { spawn } = require('child_process');
+  // spawn already imported above
 
   return new Promise((resolve, reject) => {
     const tsc = spawn('npx', ['tsc', '--project', 'tsconfig.build.json'], {
@@ -227,7 +232,7 @@ async function generateBuildReport() {
 
   const report = {
     timestamp: new Date().toISOString(),
-    version: require('./package.json').version,
+    version: JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8')).version,
     target: 'production',
     files: [],
     totalSize: 0,
@@ -287,8 +292,8 @@ function getAllFiles(dir) {
 }
 
 // Export configuration and run build if called directly
-module.exports = buildConfig;
+export default buildConfig;
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   build();
 }

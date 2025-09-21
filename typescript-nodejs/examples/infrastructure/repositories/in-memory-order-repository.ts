@@ -22,24 +22,18 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async getByIdAsync(
         id: OrderId,
         cancellationToken?: AbortSignal
-    ): Promise<ResultOf<Maybe<Order>>> {
+    ): Promise<Maybe<Order>> {
         try {
             this.checkCancellation(cancellationToken);
 
             const order = this.orders.get(id.value);
-            return Result.ok(order ? Maybe.some(order) : Maybe.none());
+            return order ? Maybe.some(order) : Maybe.none();
 
         } catch (error) {
             if (error instanceof Error && (error as any).name === 'AbortError') {
-                return Result.fail(DomainError.infrastructure(
-                    'Repository.OperationCancelled',
-                    'Operation was cancelled'
-                ));
+                throw error; // Re-throw cancellation errors
             }
-            return Result.fail(DomainError.infrastructure(
-                'Repository.GetByIdFailed',
-                error instanceof Error ? error.message : 'Unknown error'
-            ));
+            throw new Error(`Failed to get order by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
