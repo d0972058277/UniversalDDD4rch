@@ -297,7 +297,7 @@ describe('AggregateRoot Event Collection Integration Tests', () => {
             expect(order.totalAmount.amount).toBe(50); // (10*3) + (20*1)
 
             // Then - Verify event count
-            const expectedEvents = 8; // Created + Add1 + Add2 + Update1 + Remove2 + Add3 + Confirm + Ship + Deliver
+            const expectedEvents = 9; // Created + Add1 + Add2 + Update1 + Remove2 + Add3 + Confirm + Ship + Deliver
             expect(order.events).toHaveLength(expectedEvents);
 
             // Then - Verify version

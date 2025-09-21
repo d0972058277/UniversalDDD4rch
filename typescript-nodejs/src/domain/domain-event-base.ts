@@ -36,7 +36,7 @@ export abstract class DomainEventBase implements IDomainEvent {
     this._occurredAt = new Date();
     this._correlationId = correlationId;
     this._causationId = causationId;
-    this._metadata = Object.freeze({ ...(metadata || {}) });
+    this._metadata = Object.freeze(this.deepClone(metadata || {}));
   }
 
   /**
@@ -153,6 +153,22 @@ export abstract class DomainEventBase implements IDomainEvent {
   }
 
   /**
+   * JSON serialization method used by JSON.stringify().
+   * @returns Plain object representation for JSON serialization
+   */
+  public toJSON(): Record<string, unknown> {
+    return {
+      id: this.id,
+      occurredAt: this.occurredAt.toISOString(),
+      correlationId: this.correlationId,
+      causationId: this.causationId,
+      metadata: this.metadata,
+      // Include all own properties from derived classes
+      ...this.getEventData()
+    };
+  }
+
+  /**
    * Gets the specific event data from derived classes.
    * Override this method in derived classes to include specific event properties.
    * @returns Event-specific data
@@ -173,5 +189,34 @@ export abstract class DomainEventBase implements IDomainEvent {
     }
 
     return data;
+  }
+
+  /**
+   * Deep clones an object to ensure immutability.
+   * @param obj Object to clone
+   * @returns Deep cloned object
+   */
+  private deepClone<T>(obj: T): T {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (obj instanceof Date) {
+      return new Date(obj.getTime()) as unknown as T;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.deepClone(item)) as unknown as T;
+    }
+
+    if (typeof obj === 'object') {
+      const cloned: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(obj)) {
+        cloned[key] = this.deepClone(value);
+      }
+      return Object.freeze(cloned) as T;
+    }
+
+    return obj;
   }
 }

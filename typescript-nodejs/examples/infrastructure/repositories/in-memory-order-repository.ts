@@ -48,7 +48,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
             this.checkCancellation(cancellationToken);
 
             if (this.orders.has(aggregate.id.value)) {
-                return ResultOf.fail(DomainError.infrastructure(
+                return Result.fail(DomainError.infrastructure(
                     'Repository.DuplicateId',
                     `Order with ID ${aggregate.id.value} already exists`
                 ));
@@ -399,8 +399,8 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             // Calculate statistics
             const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount.amount, 0);
-            const currency = orders[0].totalAmount.currency;
-            const averageOrderValue = totalAmount / orders.length;
+            const currency = orders.length > 0 ? orders[0]!.totalAmount.currency : 'USD';
+            const averageOrderValue = orders.length > 0 ? totalAmount / orders.length : 0;
 
             // Group by status
             const ordersByStatus: Record<string, number> = {};
@@ -434,8 +434,8 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             // Get date range
             const sortedOrders = orders.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-            const firstOrderDate = sortedOrders[0].createdAt;
-            const lastOrderDate = sortedOrders[sortedOrders.length - 1].createdAt;
+            const firstOrderDate = sortedOrders.length > 0 ? sortedOrders[0]!.createdAt : undefined;
+            const lastOrderDate = sortedOrders.length > 0 ? sortedOrders[sortedOrders.length - 1]!.createdAt : undefined;
 
             return ResultOf.ok({
                 customerId: customerId.value,
@@ -699,7 +699,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
                     }
                 }
 
-                return Result.ok();
+                return ResultOf.ok(undefined);
 
             } catch (error) {
                 // Rollback on error

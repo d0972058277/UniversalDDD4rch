@@ -1,5 +1,5 @@
 import { IRepository } from '../../../src/domain/interfaces/i-repository';
-import { Result, Maybe } from '../../../src/functional';
+import { Result, ResultOf, Maybe } from '../../../src/functional';
 import { Order, OrderId, CustomerId } from '../../domain/entities/order';
 import { OrderStatus } from '../../domain/value-objects/order-status';
 
@@ -14,7 +14,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     findByCustomerIdAsync(
         customerId: CustomerId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Find orders by status
@@ -22,7 +22,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     findByStatusAsync(
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Find orders by customer and status
@@ -31,7 +31,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
         customerId: CustomerId,
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Find orders created within a date range
@@ -40,7 +40,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
         startDate: Date,
         endDate: Date,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Find orders by total amount range
@@ -50,7 +50,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
         maxAmount: number,
         currency: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Get order statistics for a customer
@@ -58,7 +58,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     getCustomerStatisticsAsync(
         customerId: CustomerId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<OrderStatistics>>;
+    ): Promise<ResultOf<OrderStatistics>>;
 
     /**
      * Find recent orders (last N orders)
@@ -66,7 +66,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     findRecentOrdersAsync(
         limit: number,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Find orders with specific product
@@ -74,7 +74,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     findOrdersWithProductAsync(
         productName: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Count orders by status
@@ -82,7 +82,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     countByStatusAsync(
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>>;
+    ): Promise<ResultOf<number>>;
 
     /**
      * Get total sales amount for a date range
@@ -92,7 +92,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
         endDate: Date,
         currency: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>>;
+    ): Promise<ResultOf<number>>;
 
     /**
      * Find pending orders older than specified days
@@ -100,7 +100,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     findStaleOrdersAsync(
         daysOld: number,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>>;
+    ): Promise<ResultOf<Order[]>>;
 
     /**
      * Bulk update order status (for administrative operations)
@@ -109,7 +109,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
         orderIds: OrderId[],
         newStatus: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>>;
+    ): Promise<ResultOf<number>>;
 
     /**
      * Save multiple orders in a transaction
@@ -117,7 +117,7 @@ export interface IOrderRepository extends IRepository<Order, OrderId> {
     saveAllAsync(
         orders: Order[],
         cancellationToken?: AbortSignal
-    ): Promise<Result<void>>;
+    ): Promise<ResultOf<void>>;
 }
 
 /**
@@ -183,7 +183,7 @@ export interface IAdvancedOrderRepository extends IOrderRepository {
     searchAsync(
         criteria: OrderSearchCriteria,
         cancellationToken?: AbortSignal
-    ): Promise<Result<OrderSearchResult>>;
+    ): Promise<ResultOf<OrderSearchResult>>;
 
     /**
      * Get order aggregations for reporting
@@ -193,7 +193,7 @@ export interface IAdvancedOrderRepository extends IOrderRepository {
         startDate?: Date,
         endDate?: Date,
         cancellationToken?: AbortSignal
-    ): Promise<Result<OrderAggregation[]>>;
+    ): Promise<ResultOf<OrderAggregation[]>>;
 
     /**
      * Get performance metrics
@@ -201,7 +201,7 @@ export interface IAdvancedOrderRepository extends IOrderRepository {
     getPerformanceMetricsAsync(
         period: 'day' | 'week' | 'month' | 'year',
         cancellationToken?: AbortSignal
-    ): Promise<Result<PerformanceMetrics>>;
+    ): Promise<ResultOf<PerformanceMetrics>>;
 }
 
 /**

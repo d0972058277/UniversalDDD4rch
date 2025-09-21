@@ -170,6 +170,7 @@ export class Order extends AggregateRoot<OrderId> {
             item.unitPrice.currency
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 
@@ -202,6 +203,7 @@ export class Order extends AggregateRoot<OrderId> {
             item.productName
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 
@@ -238,6 +240,7 @@ export class Order extends AggregateRoot<OrderId> {
                 newQuantity
             ));
 
+            this.incrementVersion();
             return Result.ok();
         } catch (error) {
             return Result.fail(Error.validation(
@@ -275,6 +278,7 @@ export class Order extends AggregateRoot<OrderId> {
             this._status.value
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 
@@ -299,6 +303,7 @@ export class Order extends AggregateRoot<OrderId> {
             this._status.value
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 
@@ -323,6 +328,7 @@ export class Order extends AggregateRoot<OrderId> {
             this._status.value
         ));
 
+        this.incrementVersion();
         return Result.ok();
     }
 
