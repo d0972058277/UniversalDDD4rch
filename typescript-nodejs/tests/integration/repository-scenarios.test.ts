@@ -234,8 +234,8 @@ describe('Repository Async Patterns Integration Tests', () => {
             expect(result.value.length).toBe(10); // All orders should be in this range
 
             for (const order of result.value) {
-                expect(order.createdAt).toBeGreaterThanOrEqual(oneHourAgo);
-                expect(order.createdAt).toBeLessThanOrEqual(oneHourFromNow);
+                expect(order.createdAt.getTime()).toBeGreaterThanOrEqual(oneHourAgo.getTime());
+                expect(order.createdAt.getTime()).toBeLessThanOrEqual(oneHourFromNow.getTime());
             }
         });
 
@@ -297,12 +297,12 @@ describe('Repository Async Patterns Integration Tests', () => {
             const customers = ['customer-A', 'customer-B'];
 
             for (let i = 0; i < 6; i++) {
-                const customerId = new CustomerId(customers[i % 2]);
+                const customerId = new CustomerId(customers[i % 2]!);
                 const order = Order.create(customerId);
 
                 // Add different products
                 const products = ['Laptop', 'Mouse', 'Keyboard'];
-                const product = products[i % 3];
+                const product = products[i % 3]!;
                 const item = OrderItem.create(product, new Money(100 + i * 50, 'USD'), 1);
                 order.addItem(item);
 

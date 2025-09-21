@@ -4,7 +4,7 @@ import { Money } from '../../examples/domain/value-objects/money';
 import { OrderStatus } from '../../examples/domain/value-objects/order-status';
 import { OrderService, StandardPricingStrategy } from '../../examples/domain/services/order-service';
 import { InMemoryOrderRepository } from '../../examples/infrastructure/repositories/in-memory-order-repository';
-import { Result, Maybe, Error } from '../../src/functional';
+import { Result, ResultOf, Maybe, Error } from '../../src/functional';
 
 /**
  * Quickstart example validation integration tests
@@ -181,7 +181,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             // Example 5: Operation chaining example
             console.log('\n=== Operation Chaining Example ===');
 
-            const processOrderAsync = async (order: Order): Promise<Result<string>> => {
+            const processOrderAsync = async (order: Order): Promise<ResultOf<string>> => {
                 try {
                     // Simulate async processing
                     await new Promise(resolve => setTimeout(resolve, 10));
@@ -221,7 +221,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
 
             const processResult = await processOrderAsync(order);
             processResult.match(
-                orderId => console.log(`Order ${orderId} processed successfully`),
+                (orderId: string) => console.log(`Order ${orderId} processed successfully`),
                 (error: any) => console.log(`Processing failed: ${error.message}`)
             );
 

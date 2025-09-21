@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Universal DDD Architecture Core - Domain-driven design abstractions and functional types for TypeScript/Node.js",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "type": "module",
+  "sideEffects": false,
   "keywords": [
     "ddd",
     "domain-driven-design",
@@ -23,8 +26,10 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node build.config.js",
+    "build:tsc": "tsc -p tsconfig.build.json",
     "build:watch": "tsc -p tsconfig.build.json --watch",
+    "build:production": "npm run clean && npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -37,15 +42,50 @@
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"examples/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\" \"examples/**/*.ts\"",
     "clean": "rimraf dist",
-    "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "benchmark": "ts-node benchmarks/run-benchmarks.ts"
+    "prepublishOnly": "npm run build:production && npm run test && npm run lint",
+    "prepack": "npm run build:production",
+    "benchmark": "ts-node benchmarks/run-benchmarks.ts",
+    "docs": "typedoc --out docs src/index.ts",
+    "docs:serve": "npx http-server docs -p 8080"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./functional": {
+      "import": "./dist/functional/index.mjs",
+      "require": "./dist/functional/index.js",
+      "types": "./dist/functional/index.d.ts"
+    },
+    "./domain": {
+      "import": "./dist/domain/index.mjs",
+      "require": "./dist/domain/index.js",
+      "types": "./dist/domain/index.d.ts"
+    },
+    "./infrastructure": {
+      "import": "./dist/infrastructure/index.mjs",
+      "require": "./dist/infrastructure/index.js",
+      "types": "./dist/infrastructure/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
-  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/universal-ddd/architecture-core.git",
+    "directory": "typescript-nodejs"
+  },
+  "bugs": {
+    "url": "https://github.com/universal-ddd/architecture-core/issues"
+  },
+  "homepage": "https://github.com/universal-ddd/architecture-core#readme",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^22.0.0",
@@ -59,6 +99,7 @@
     "rimraf": "^5.0.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.0",
+    "typedoc": "^0.28.13",
     "typescript": "^5.9.0"
   }
 }

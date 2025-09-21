@@ -4,7 +4,7 @@
  * A comprehensive TypeScript/Node.js library providing domain-driven design abstractions
  * and functional programming types for building robust, maintainable applications.
  *
- * @version 1.0.0
+ * @packageVersion 1.0.0
  * @author Universal DDD Architecture
  * @license MIT
  */

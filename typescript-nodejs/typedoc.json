@@ -1,0 +1,58 @@
+{
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "tsconfig": "tsconfig.typedoc.json",
+  "out": "docs",
+  "name": "Architecture.Core - TypeScript API Documentation",
+  "readme": "README.md",
+  "theme": "default",
+  "navigationLinks": {
+    "GitHub": "https://github.com/universal-ddd/architecture-core",
+    "NPM": "https://www.npmjs.com/package/@universal-ddd/architecture-core"
+  },
+  "categorizeByGroup": true,
+  "groupOrder": [
+    "Functional Types",
+    "Domain Abstractions",
+    "Infrastructure",
+    "*"
+  ],
+  "sort": ["kind", "instance-first", "alphabetical"],
+  "kindSortOrder": [
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Enum",
+    "Function",
+    "Variable"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/tests/**/*",
+    "**/examples/**/*",
+    "**/benchmarks/**/*"
+  ],
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "includeVersion": true,
+  "searchInComments": true,
+  "treatWarningsAsErrors": false,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "emit": "docs",
+  "json": "docs/api.json",
+  "pretty": true,
+  "sourceLinkTemplate": "https://github.com/universal-ddd/architecture-core/blob/main/typescript-nodejs/{path}#L{line}",
+  "gitRevision": "main",
+  "titleLink": "https://github.com/universal-ddd/architecture-core",
+  "plugin": [],
+  "lightHighlightTheme": "light-plus",
+  "darkHighlightTheme": "dark-plus"
+}

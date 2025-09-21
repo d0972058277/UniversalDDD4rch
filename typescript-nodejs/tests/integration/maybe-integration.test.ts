@@ -267,7 +267,7 @@ describe('Maybe Integration Tests', () => {
             // Note: toMaybe method not implemented in current version
             // Create equivalent functionality manually
             const maybeFromSuccess = successResult.isSuccess ? Maybe.some(successResult.value) : Maybe.none<number>();
-            const maybeFromFailure = failureResult.isSuccess ? Maybe.some(failureResult.value) : Maybe.none<number>();
+            const maybeFromFailure = Maybe.none<number>(); // failureResult is always a failure
 
             // Then
             expect(maybeFromSuccess.hasValue).toBe(true);

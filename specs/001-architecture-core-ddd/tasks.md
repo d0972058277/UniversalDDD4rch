@@ -185,14 +185,14 @@ Implementation tasks for Architecture.Core TypeScript Node.js library providing 
 - [X] **T077** [P] Generic constraints validation tests in `typescript-nodejs/tests/unit/generic-constraints.test.ts`
 
 ### Build and Packaging
-- [ ] **T078** Production build configuration and optimization in `typescript-nodejs/build.config.js`
-- [ ] **T079** [P] Package.json preparation for npm publishing in `typescript-nodejs/package.json`
-- [ ] **T080** [P] TypeScript declaration files generation and validation in `typescript-nodejs/tsconfig.build.json`
+- [X] **T078** Production build configuration and optimization in `typescript-nodejs/build.config.js`
+- [X] **T079** [P] Package.json preparation for npm publishing in `typescript-nodejs/package.json`
+- [X] **T080** [P] TypeScript declaration files generation and validation in `typescript-nodejs/tsconfig.build.json`
 
 ### Documentation and Examples
-- [ ] **T081** [P] API documentation generation from TSDoc comments in `typescript-nodejs/docs/`
-- [ ] **T082** [P] README.md with installation and usage examples in `typescript-nodejs/README.md`
-- [ ] **T083** [P] Migration guide from C# implementation in `typescript-nodejs/docs/migration-guide.md`
+- [X] **T081** [P] API documentation generation from TSDoc comments in `typescript-nodejs/docs/`
+- [X] **T082** [P] README.md with installation and usage examples in `typescript-nodejs/README.md`
+- [X] **T083** [P] Migration guide from C# implementation in `typescript-nodejs/docs/migration-guide.md`
 
 ### Final Validation
 - [ ] **T084** Run all tests and ensure 100% pass rate across all test categories

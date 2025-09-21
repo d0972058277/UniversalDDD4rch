@@ -94,7 +94,7 @@ export class OrderStatus extends ValueObject {
         return !this.isFinal();
     }
 
-    public toString(): string {
+    public override toString(): string {
         return this.value;
     }
 
