@@ -142,7 +142,7 @@ export class OrderCommandHandler {
                 };
             }
 
-            const order = orderResult.value.value;
+            const order = orderResult.value;
 
             // Check optimistic concurrency
             if (order.version !== command.expectedVersion) {
@@ -506,7 +506,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    error: orderResult.error,
+                    validationErrors: orderResult.validationErrors
+                };
             }
 
             const order = orderResult.data;
@@ -566,21 +570,14 @@ export class OrderCommandHandler {
         const orderIdValue = OrderId.fromString(orderId);
         const orderResult = await this.orderRepository.getByIdAsync(orderIdValue, cancellationToken);
 
-        if (orderResult.isFailure) {
-            return {
-                success: false,
-                error: orderResult.error.message
-            };
-        }
-
-        if (!orderResult.value.hasValue) {
+        if (!orderResult.hasValue) {
             return {
                 success: false,
                 error: `Order ${orderId} not found`
             };
         }
 
-        const order = orderResult.value.value;
+        const order = orderResult.value;
 
         // Check optimistic concurrency
         if (order.version !== expectedVersion) {

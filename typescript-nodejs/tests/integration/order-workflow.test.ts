@@ -72,9 +72,9 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             // Verify order state
             const orderResult = await repository.getByIdAsync(OrderId.fromString(orderId));
-            expect(orderResult.isSuccess).toBe(true);
+            expect(orderResult.hasValue).toBe(true);
 
-            const order = orderResult.value.value;
+            const order = orderResult.value;
             expect(order.customerId.value).toBe(customerId);
             expect(order.status).toBe(OrderStatus.PENDING);
             expect(order.itemCount).toBe(2);
@@ -103,7 +103,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(addItemResult.success).toBe(true);
 
             const updatedOrderResult = await repository.getByIdAsync(OrderId.fromString(orderId));
-            const updatedOrder = updatedOrderResult.value.value;
+            const updatedOrder = updatedOrderResult.value;
             expect(updatedOrder.itemCount).toBe(3);
             expect(updatedOrder.totalAmount.amount).toBe(1079.96); // Previous + 19.99
 
@@ -141,7 +141,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(confirmResult.success).toBe(true);
 
             const confirmedOrderResult = await repository.getByIdAsync(OrderId.fromString(orderId));
-            const confirmedOrder = confirmedOrderResult.value.value;
+            const confirmedOrder = confirmedOrderResult.value;
             expect(confirmedOrder.status).toBe(OrderStatus.CONFIRMED);
 
             // Phase 6: Ship Order
@@ -156,7 +156,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             // Final Verification
             const finalOrderResult = await repository.getByIdAsync(OrderId.fromString(orderId));
-            const finalOrder = finalOrderResult.value.value;
+            const finalOrder = finalOrderResult.value;
 
             expect(finalOrder.status).toBe(OrderStatus.DELIVERED);
             expect(finalOrder.itemCount).toBe(3);
@@ -200,7 +200,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             const createResult = await commandHandler.handleCreateOrderAsync(createCommand);
             const orderId = createResult.data!;
 
-            let order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            let order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.totalAmount.amount).toBe(65.00); // (25*2) + (5*3)
 
             // Phase 2: Update item quantity
@@ -214,7 +214,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             expect(updateResult.success).toBe(true);
 
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.totalAmount.amount).toBe(40.00); // (25*1) + (5*3)
 
             // Phase 3: Remove item
@@ -227,7 +227,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             expect(removeResult.success).toBe(true);
 
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.totalAmount.amount).toBe(25.00); // (25*1) only
             expect(order.itemCount).toBe(1);
 
@@ -243,7 +243,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             expect(addResult.success).toBe(true);
 
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.totalAmount.amount).toBe(50.00); // 25 + (12.50*2)
             expect(order.itemCount).toBe(2);
 
@@ -256,7 +256,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(confirmResult.success).toBe(true);
 
             // Verify final state
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.status).toBe(OrderStatus.CONFIRMED);
             expect(order.hasProduct('Book')).toBe(true);
             expect(order.hasProduct('Magazine')).toBe(true);
@@ -328,7 +328,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             const createResult = await commandHandler.handleCreateOrderAsync(createCommand);
             const orderId = createResult.data!;
 
-            const order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            const order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
 
             // When - Try to confirm with old version (simulate concurrent modification)
             const confirmCommand: ConfirmOrderCommand = {
@@ -361,7 +361,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             const createResult = await commandHandler.handleCreateOrderAsync(createCommand);
             const orderId = createResult.data!;
 
-            let order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            let order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
 
             const confirmResult = await commandHandler.handleConfirmOrderAsync({
                 orderId,
@@ -371,7 +371,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(confirmResult.success).toBe(true);
 
             // When - Cancel order
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
 
             const cancelCommand: CancelOrderCommand = {
                 orderId,
@@ -386,7 +386,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             // Then - Cancellation successful
             expect(cancelResult.success).toBe(true);
 
-            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+            order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
             expect(order.status).toBe(OrderStatus.CANCELLED);
 
             // When - Try to add item to cancelled order
@@ -431,7 +431,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             // Confirm all orders
             for (const orderId of orderIds) {
-                const order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value.value;
+                const order = (await repository.getByIdAsync(OrderId.fromString(orderId))).value;
 
                 const confirmResult = await commandHandler.handleConfirmOrderAsync({
                     orderId,
@@ -490,8 +490,8 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             const result1 = await commandHandler.handleCreateOrderAsync(order1Command);
             const result2 = await commandHandler.handleCreateOrderAsync(order2Command);
 
-            const order1 = (await repository.getByIdAsync(OrderId.fromString(result1.data!))).value.value;
-            const order2 = (await repository.getByIdAsync(OrderId.fromString(result2.data!))).value.value;
+            const order1 = (await repository.getByIdAsync(OrderId.fromString(result1.data!))).value;
+            const order2 = (await repository.getByIdAsync(OrderId.fromString(result2.data!))).value;
 
             // When - Check if orders can be merged
             const canMergeResult = orderService.canMergeOrders(order1, order2);
@@ -532,7 +532,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             };
 
             const createResult = await commandHandler.handleCreateOrderAsync(createCommand);
-            const order = (await repository.getByIdAsync(OrderId.fromString(createResult.data!))).value.value;
+            const order = (await repository.getByIdAsync(OrderId.fromString(createResult.data!))).value;
 
             expect(order.itemCount).toBe(12);
 
@@ -544,9 +544,9 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             // Then - Should have 3 orders (5 + 5 + 2 items)
             expect(splitOrders.length).toBe(3);
-            expect(splitOrders[0].itemCount).toBe(5);
-            expect(splitOrders[1].itemCount).toBe(5);
-            expect(splitOrders[2].itemCount).toBe(2);
+            expect(splitOrders[0]?.itemCount).toBe(5);
+            expect(splitOrders[1]?.itemCount).toBe(5);
+            expect(splitOrders[2]?.itemCount).toBe(2);
 
             // Verify total amount is preserved
             const totalAmount = splitOrders.reduce(

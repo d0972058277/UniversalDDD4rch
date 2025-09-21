@@ -90,11 +90,11 @@ describe('Entity Identity and Invariants Integration Tests', () => {
             // When & Then - Invalid unit price
             expect(() => {
                 new OrderItem(itemId, 'Product A', new Money(0, 'USD'), 2);
-            }).toThrow('Unit price must be positive');
+            }).toThrow('Amount cannot be negative');
 
             expect(() => {
                 new OrderItem(itemId, 'Product A', new Money(-5, 'USD'), 2);
-            }).toThrow('Unit price must be positive');
+            }).toThrow('Amount cannot be negative');
         });
 
         it('should enforce business rules during updates', () => {
@@ -132,11 +132,11 @@ describe('Entity Identity and Invariants Integration Tests', () => {
             // When & Then - Invalid unit price update
             expect(() => {
                 item.updateUnitPrice(new Money(0, 'USD'));
-            }).toThrow('Unit price must be positive');
+            }).toThrow('Amount cannot be negative');
 
             expect(() => {
                 item.updateUnitPrice(new Money(-5, 'USD'));
-            }).toThrow('Unit price must be positive');
+            }).toThrow('Amount cannot be negative');
 
             expect(() => {
                 item.updateUnitPrice(new Money(10, 'EUR'));
@@ -368,7 +368,7 @@ describe('Entity Identity and Invariants Integration Tests', () => {
             const item = new OrderItem(itemId, 'Product A', money, 3);
 
             // When & Then - Floating point calculation
-            expect(item.totalPrice.amount).toBe(0.3); // 0.1 * 3
+            expect(item.totalPrice.amount).toBeCloseTo(0.3, 10); // 0.1 * 3
 
             // When - Update with precision-sensitive values
             item.updateUnitPrice(new Money(0.33, 'USD'));

@@ -108,7 +108,7 @@ export class OrderService {
             const subtotal = order.totalAmount;
 
             if (subtotal.isZero()) {
-                return Result.fail(Error.validation(
+                return ResultOf.fail(Error.validation(
                     'OrderService.EmptyOrder',
                     'Cannot calculate totals for empty order'
                 ));
@@ -134,7 +134,7 @@ export class OrderService {
                 total
             });
         } catch (error) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.CalculationError',
                 error instanceof Error ? error.message : 'Failed to calculate order totals'
             ));
@@ -244,7 +244,7 @@ export class OrderService {
     public canMergeOrders(order1: Order, order2: Order): ResultOf<boolean> {
         // Orders must be for the same customer
         if (!order1.customerId.equals(order2.customerId)) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.DifferentCustomers',
                 'Cannot merge orders from different customers'
             ));
@@ -252,7 +252,7 @@ export class OrderService {
 
         // Orders must be in pending status
         if (order1.status !== OrderStatus.PENDING || order2.status !== OrderStatus.PENDING) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.InvalidStatusForMerge',
                 'Can only merge orders in pending status'
             ));
@@ -260,7 +260,7 @@ export class OrderService {
 
         // Check currency compatibility
         if (order1.totalAmount.currency !== order2.totalAmount.currency) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.CurrencyMismatch',
                 'Cannot merge orders with different currencies'
             ));
@@ -269,7 +269,7 @@ export class OrderService {
         // Check if merged order would exceed limits
         const combinedAmount = order1.totalAmount.add(order2.totalAmount);
         if (combinedAmount.amount > 50000) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.ExceedsMaxAmount',
                 'Merged order would exceed maximum order amount'
             ));
@@ -277,13 +277,13 @@ export class OrderService {
 
         const combinedItemCount = order1.itemCount + order2.itemCount;
         if (combinedItemCount > 100) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.TooManyItems',
                 'Merged order would have too many items'
             ));
         }
 
-        return Result.ok(true);
+        return ResultOf.ok(true);
     }
 
     /**
@@ -292,7 +292,7 @@ export class OrderService {
     public mergeOrders(order1: Order, order2: Order): ResultOf<Order> {
         const canMergeResult = this.canMergeOrders(order1, order2);
         if (canMergeResult.isFailure) {
-            return canMergeResult.error;
+            return ResultOf.fail(canMergeResult.error);
         }
 
         try {
@@ -302,20 +302,20 @@ export class OrderService {
             for (const item of order1.items) {
                 const addResult = mergedOrder.addItem(item);
                 if (addResult.isFailure) {
-                    return addResult.error;
+                    return ResultOf.fail(addResult.error);
                 }
             }
 
             for (const item of order2.items) {
                 const addResult = mergedOrder.addItem(item);
                 if (addResult.isFailure) {
-                    return addResult.error;
+                    return ResultOf.fail(addResult.error);
                 }
             }
 
-            return Result.ok(mergedOrder);
+            return ResultOf.ok(mergedOrder);
         } catch (error) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.MergeError',
                 error instanceof Error ? error.message : 'Failed to merge orders'
             ));
@@ -327,14 +327,14 @@ export class OrderService {
      */
     public splitOrderByQuantity(order: Order, maxItemsPerOrder: number): ResultOf<Order[]> {
         if (maxItemsPerOrder <= 0) {
-            return Result.fail(Error.validation(
+            return ResultOf.fail(Error.validation(
                 'OrderService.InvalidSplitCriteria',
                 'Max items per order must be positive'
             ));
         }
 
         if (order.itemCount <= maxItemsPerOrder) {
-            return Result.ok([order]); // No need to split
+            return ResultOf.ok([order]); // No need to split
         }
 
         try {
@@ -350,7 +350,7 @@ export class OrderService {
 
                 const addResult = currentOrder.addItem(item);
                 if (addResult.isFailure) {
-                    return addResult.error;
+                    return ResultOf.fail(addResult.error);
                 }
             }
 
@@ -359,9 +359,9 @@ export class OrderService {
                 orders.push(currentOrder);
             }
 
-            return Result.ok(orders);
+            return ResultOf.ok(orders);
         } catch (error) {
-            return Result.fail(Error.domain(
+            return ResultOf.fail(Error.domain(
                 'OrderService.SplitError',
                 error instanceof Error ? error.message : 'Failed to split order'
             ));
