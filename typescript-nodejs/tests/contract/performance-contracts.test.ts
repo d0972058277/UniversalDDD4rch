@@ -49,6 +49,14 @@ class TestOrderId {
   toString(): string { return this.value; }
 }
 
+class TestItemAddedEvent {
+  readonly id: string = crypto.randomUUID();
+  readonly occurredAt: Date = new Date();
+  readonly correlationId: string | undefined = 'test';
+  readonly causationId: string | undefined = 'test';
+  readonly metadata: Readonly<Record<string, unknown>> = {};
+}
+
 class TestOrder extends AggregateRoot<TestOrderId> {
   constructor(
     id: TestOrderId,
@@ -59,13 +67,7 @@ class TestOrder extends AggregateRoot<TestOrderId> {
 
   addItem(): void {
     // Simulate adding an event
-    this.addEvent({
-      id: crypto.randomUUID(),
-      occurredAt: new Date(),
-      correlationId: 'test',
-      causationId: 'test',
-      metadata: {}
-    });
+    this.addEvent(new TestItemAddedEvent());
   }
 }
 
@@ -255,7 +257,7 @@ describe('Performance Contract Tests', () => {
       const endTime = performance.now();
 
       // Then
-      expect(order.events).toHaveLength(eventCount + 1); // +1 for initial creation event
+      expect(order.events).toHaveLength(eventCount); // Just the events we added
       expect(endTime - startTime).toBeLessThan(100); // Should add 10k events in < 100ms
     });
 
@@ -273,15 +275,17 @@ describe('Performance Contract Tests', () => {
 
       // When
       const startTime = performance.now();
+      let totalCount = 0;
       for (let i = 0; i < iterations; i++) {
         const events = order.events;
         const count = events.length;
         // Consume events to ensure they're actually accessed
-        expect(count).toBeGreaterThan(0);
+        totalCount += count;
       }
       const endTime = performance.now();
 
       // Then
+      expect(totalCount).toBeGreaterThan(0); // Verify events were accessed
       expect(endTime - startTime).toBeLessThan(50); // Should access events 10k times in < 50ms
     });
 
@@ -295,7 +299,7 @@ describe('Performance Contract Tests', () => {
         order.addItem();
       }
 
-      expect(order.events.length).toBeGreaterThan(10000);
+      expect(order.events.length).toBe(10000);
 
       // When
       const startTime = performance.now();

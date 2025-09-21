@@ -125,7 +125,7 @@ export abstract class RepositoryBase<
       if (this.isCancellationError(error)) {
         throw error;
       }
-      return ResultOf.fail<boolean>(this.handleError('EXISTS_FAILED', 'Failed to check existence', error).error);
+      return new ResultOf<boolean>(false, undefined, this.handleError('EXISTS_FAILED', 'Failed to check existence', error).error);
     }
   }
 

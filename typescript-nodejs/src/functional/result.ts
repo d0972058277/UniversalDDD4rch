@@ -1,11 +1,12 @@
 import { Error } from './error';
-import { IResult, IResultOf } from './interfaces/i-result';
 
 /**
- * Represents the result of an operation that can either succeed or fail without returning a value.
- * Implements functional programming patterns for error handling without exceptions.
+ * Represents the result of an operation that can either succeed or fail.
+ * Supports both void operations (Result) and value-returning operations (Result<T>).
  */
-export class Result implements IResult {
+
+// Non-generic Result for operations without return value
+export class Result {
   private readonly _isSuccess: boolean;
   private readonly _error: Error | undefined;
 
@@ -36,15 +37,31 @@ export class Result implements IResult {
   /**
    * Creates a successful Result.
    */
-  public static ok(): Result {
-    return new Result(true);
+  public static ok(): Result;
+  /**
+   * Creates a successful Result<T> with a value.
+   */
+  public static ok<T>(value: T): ResultOf<T>;
+  public static ok<T>(value?: T): Result | ResultOf<T> {
+    if (arguments.length === 0) {
+      return new Result(true);
+    } else {
+      return new ResultOf<T>(true, value);
+    }
   }
 
   /**
    * Creates a failed Result with an error.
    */
-  public static fail(error: Error): Result {
-    return new Result(false, error);
+  public static fail(error: Error): Result;
+  /**
+   * Creates a failed Result<T> with an error.
+   */
+  public static fail<T>(error: Error): ResultOf<T>;
+  public static fail<T>(error: Error): Result | ResultOf<T> {
+    // TypeScript can't determine the type at runtime, so we need a way to distinguish
+    // For now, we'll always return ResultOf<T> and let type inference handle it
+    return new ResultOf<T>(false, undefined, error);
   }
 
   /**
@@ -53,12 +70,12 @@ export class Result implements IResult {
   public map<T>(func: () => T): ResultOf<T> {
     if (this._isSuccess) {
       try {
-        return ResultOf.ok(func());
+        return new ResultOf<T>(true, func());
       } catch (err) {
-        return ResultOf.fail<T>(Error.infrastructure('MAP_ERROR', `Map operation failed: ${err}`));
+        return new ResultOf<T>(false, undefined, Error.infrastructure('MAP_ERROR', `Map operation failed: ${err}`));
       }
     }
-    return ResultOf.fail<T>(this._error!);
+    return new ResultOf<T>(false, undefined, this._error!);
   }
 
   /**
@@ -69,7 +86,7 @@ export class Result implements IResult {
       try {
         return func();
       } catch (err) {
-        return Result.fail(Error.infrastructure('BIND_ERROR', `Bind operation failed: ${err}`));
+        return new Result(false, Error.infrastructure('BIND_ERROR', `Bind operation failed: ${err}`));
       }
     }
     return this;
@@ -81,13 +98,19 @@ export class Result implements IResult {
   public match<T>(onSuccess: () => T, onFailure: (error: Error) => T): T {
     return this._isSuccess ? onSuccess() : onFailure(this._error!);
   }
+
+  /**
+   * Implicit conversion from Error to Result (failed).
+   */
+  public static fromError(error: Error): Result {
+    return new Result(false, error);
+  }
 }
 
 /**
- * Represents the result of an operation that can either succeed with a value or fail with an error.
- * Implements functional programming patterns for error handling without exceptions.
+ * Generic Result<T> for operations that return a value.
  */
-export class ResultOf<T> implements IResultOf<T> {
+export class ResultOf<T> {
   private readonly _isSuccess: boolean;
   private readonly _value: T | undefined;
   private readonly _error: Error | undefined;
@@ -126,38 +149,17 @@ export class ResultOf<T> implements IResultOf<T> {
   }
 
   /**
-   * Creates a successful Result<T> with a value.
-   */
-  public static ok<T>(value: T): ResultOf<T> {
-    return new ResultOf<T>(true, value);
-  }
-
-  /**
-   * Creates a failed Result<T> with an error.
-   */
-  public static fail<T>(error: Error): ResultOf<T> {
-    return new ResultOf<T>(false, undefined, error);
-  }
-
-  /**
-   * Creates a Result<T> from a Maybe<T>, using the provided error when Maybe is None.
-   */
-  public static fromMaybe<T>(maybe: { hasValue: boolean; value: T }, errorWhenNone: Error): ResultOf<T> {
-    return maybe.hasValue ? ResultOf.ok(maybe.value) : ResultOf.fail<T>(errorWhenNone);
-  }
-
-  /**
    * Transforms a successful Result<T> into Result<TResult> using the provided mapping function.
    */
   public map<TResult>(func: (value: T) => TResult): ResultOf<TResult> {
     if (this._isSuccess) {
       try {
-        return ResultOf.ok(func(this._value!));
+        return new ResultOf<TResult>(true, func(this._value!));
       } catch (err) {
-        return ResultOf.fail<TResult>(Error.infrastructure('MAP_ERROR', `Map operation failed: ${err}`));
+        return new ResultOf<TResult>(false, undefined, Error.infrastructure('MAP_ERROR', `Map operation failed: ${err}`));
       }
     }
-    return ResultOf.fail<TResult>(this._error!);
+    return new ResultOf<TResult>(false, undefined, this._error!);
   }
 
   /**
@@ -168,10 +170,10 @@ export class ResultOf<T> implements IResultOf<T> {
       try {
         return func(this._value!);
       } catch (err) {
-        return ResultOf.fail<TResult>(Error.infrastructure('BIND_ERROR', `Bind operation failed: ${err}`));
+        return new ResultOf<TResult>(false, undefined, Error.infrastructure('BIND_ERROR', `Bind operation failed: ${err}`));
       }
     }
-    return ResultOf.fail<TResult>(this._error!);
+    return new ResultOf<TResult>(false, undefined, this._error!);
   }
 
   /**
@@ -179,5 +181,14 @@ export class ResultOf<T> implements IResultOf<T> {
    */
   public match<TOut>(onSuccess: (value: T) => TOut, onFailure: (error: Error) => TOut): TOut {
     return this._isSuccess ? onSuccess(this._value!) : onFailure(this._error!);
+  }
+
+  /**
+   * Creates a Result<T> from a Maybe<T>, using the provided error when Maybe is None.
+   */
+  public static fromMaybe<T>(maybe: { hasValue: boolean; value: T }, errorWhenNone: Error): ResultOf<T> {
+    return maybe.hasValue
+      ? new ResultOf<T>(true, maybe.value)
+      : new ResultOf<T>(false, undefined, errorWhenNone);
   }
 }

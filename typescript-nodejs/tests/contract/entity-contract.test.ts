@@ -11,6 +11,10 @@ class TestOrderId {
   toString(): string {
     return this.value;
   }
+
+  equals(other: TestOrderId): boolean {
+    return this.value === other.value;
+  }
 }
 
 class TestOrder extends Entity<TestOrderId> {
@@ -28,6 +32,10 @@ class TestCustomerId {
 
   toString(): string {
     return this.value;
+  }
+
+  equals(other: TestCustomerId): boolean {
+    return this.value === other.value;
   }
 }
 
@@ -86,7 +94,7 @@ describe('Entity Contract Tests', () => {
 
       // When/Then
       expect(order1.equals(order2)).toBe(true);
-      expect(order1 == order2).toBe(true);
+      expect(Entity.equals(order1, order2)).toBe(true);
     });
 
     test('Should_BeEqual_When_SameIdValueButDifferentInstances', () => {
@@ -98,7 +106,7 @@ describe('Entity Contract Tests', () => {
 
       // When/Then
       expect(order1.equals(order2)).toBe(true);
-      expect(order1 == order2).toBe(true);
+      expect(Entity.equals(order1, order2)).toBe(true);
     });
 
     test('Should_NotBeEqual_When_DifferentIds', () => {
@@ -215,7 +223,7 @@ describe('Entity Contract Tests', () => {
       const order2 = new TestOrder(orderId, 'CUST-002', 200);
 
       // When/Then
-      expect(order1 != order2).toBe(false);
+      expect(Entity.notEquals(order1, order2)).toBe(false);
     });
 
     test('Should_ReturnTrue_When_UsingNotEqualOperatorOnDifferentEntities', () => {

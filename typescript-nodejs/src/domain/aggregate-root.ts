@@ -15,6 +15,7 @@ export abstract class AggregateRoot<TId extends object>
 
   private _version: number = 0;
   private readonly _events: IDomainEvent[] = [];
+  private _cachedEvents: readonly IDomainEvent[] | undefined;
 
   /**
    * Creates a new aggregate root with the specified identifier.
@@ -31,7 +32,10 @@ export abstract class AggregateRoot<TId extends object>
 
   /** Collection of domain events that occurred within this aggregate */
   public get events(): readonly IDomainEvent[] {
-    return Object.freeze([...this._events]);
+    if (!this._cachedEvents) {
+      this._cachedEvents = Object.freeze([...this._events]);
+    }
+    return this._cachedEvents;
   }
 
   /**
@@ -46,6 +50,7 @@ export abstract class AggregateRoot<TId extends object>
     }
 
     this._events.push(domainEvent);
+    this._cachedEvents = undefined; // Invalidate cache
   }
 
   /**
@@ -54,6 +59,7 @@ export abstract class AggregateRoot<TId extends object>
    */
   public clearEvents(): void {
     this._events.splice(0, this._events.length);
+    this._cachedEvents = undefined; // Invalidate cache
   }
 
   /**

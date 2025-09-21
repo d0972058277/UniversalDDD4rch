@@ -104,7 +104,9 @@ export class Maybe<T> implements IMaybe<T> {
    * Converts Maybe<T> to Result<T>, using the provided error when Maybe is None.
    */
   public toResult(errorWhenNone: Error): ResultOf<T> {
-    return this._hasValue ? ResultOf.ok(this._value!) : ResultOf.fail<T>(errorWhenNone);
+    return this._hasValue
+      ? new ResultOf<T>(true, this._value!)
+      : new ResultOf<T>(false, undefined, errorWhenNone);
   }
 
   /**

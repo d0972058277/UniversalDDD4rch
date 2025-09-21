@@ -1,6 +1,9 @@
 import { ErrorCategory } from './error-category';
 import { IError } from './interfaces/i-error';
 
+// Re-export ErrorCategory for convenience
+export { ErrorCategory };
+
 /**
  * Immutable error representation for functional programming patterns.
  * Provides structured error information with categorization and metadata.
