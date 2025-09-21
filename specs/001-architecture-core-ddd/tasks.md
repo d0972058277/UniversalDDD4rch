@@ -1,335 +1,244 @@
-# Tasks: Architecture.Core - DDD Abstractions and Functional Types (TypeScript)
+# Tasks: Architecture.Core - DDD Abstractions and Functional Types (Go)
 
-**Input**: Design documents from `/specs/001-architecture-core-ddd/`
-**Prerequisites**: plan.md ✅, research-typescript.md ✅, data-model-typescript.md ✅, contracts-typescript/ ✅, quickstart-typescript.md ✅
+**Input**: Design documents from `specs/001-architecture-core-ddd/`
+**Prerequisites**: plan.md, research.md, data-model-go.md, contracts/, quickstart-go.md
 
 ## Execution Flow (main)
 ```
-1. Load plan.md from feature directory ✅
-   → Tech stack: TypeScript 5.9+ with Node.js 22 LTS, pure Node.js standard library
-   → Structure: Single project DDD architecture
-2. Load design documents ✅:
-   → data-model-typescript.md: 8 core types identified for TypeScript
-   → contracts-typescript/: TypeScript contract definitions with interfaces and classes
-   → research-typescript.md: Technical decisions for zero-dependency implementation
-   → quickstart-typescript.md: Complete order domain example with Express.js integration
-3. Generate tasks by category ✅:
-   → Setup: Project structure, TypeScript configuration, testing framework
-   → Tests: Contract tests, monadic law tests, integration tests
-   → Core: Functional types, DDD abstractions, repositories
-   → Integration: Examples, Express.js middleware, performance benchmarks
-   → Polish: Documentation, validation, cross-language consistency
-4. Apply task rules ✅:
-   → Different files = [P] for parallel execution
-   → TDD approach: Tests before implementation
-   → Dependency order: Functional types → Base classes → Aggregates
-5. Tasks numbered T001-T087 ✅
-6. Dependencies and parallel execution defined ✅
+1. Load plan.md from feature directory
+   → Extract: Go 1.21+, pure standard library, zero external dependencies
+2. Load design documents:
+   → data-model-go.md: Extract 8 core types → model tasks
+   → contracts/core-types-contract.go: Generate contract tests
+   → quickstart-go.md: Extract integration scenarios
+3. Generate tasks by category:
+   → Setup: Go module, directory structure, tools
+   → Tests: Contract tests [P], integration tests [P]
+   → Core: Domain types [P], functional types [P]
+   → Integration: Optional packages (chi, gin, gorm)
+   → Polish: Unit tests [P], benchmarks [P], docs
+4. Apply task rules:
+   → Independent packages = [P] for parallel execution
+   → TDD: Tests before implementation
+5. Number tasks sequentially (T001-T050)
+6. Go-specific structure: pkg/domain/, pkg/functional/, tests/
 ```
 
-## Summary
- ✅ **IMPLEMENTATION COMPLETED** - Architecture.Core TypeScript Node.js library fully implemented providing DDD abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional programming types (Result, Maybe, Error) with zero external runtime dependencies. **100% test success rate (573/573 passing tests)** with comprehensive TypeScript strict mode compliance and all critical compilation issues resolved. Core TypeScript generic constraints properly implemented with TId extends object requirement.
-
-**Key Fixes Applied**:
-- ✅ AggregateRoot version control initialization and increment logic corrected
-- ✅ Order cancellation workflow status transition business rules aligned
-- ✅ Floating point precision in Money multiply operations improved
-- ✅ Error handling in workflow failure scenarios standardized
-- ✅ Command validation vs business error handling distinction clarified
-
-All major bugs fixed including AggregateRoot version control, ValueObject Map/Set/NaN equality handling, repository cancellation handling, memory test constraints, order cancellation business rules, tax calculation logic, domain event performance thresholds, and TypeScript @ts-expect-error directive issues. All test failures resolved achieving 100% test success rate suitable for production use.
-
-**Technology Stack**:
-- TypeScript 5.9+ with Node.js 22 LTS
-- Pure Node.js standard library (core)
-- Jest for testing
-- Optional integrations: Express.js, TypeORM, class-validator
-
-**Project Structure**: Single DDD core library with layered architecture
-
 ## Format: `[ID] [P?] Description`
-- **[P]**: Can run in parallel (different files, no dependencies)
-- All paths use absolute file paths from repository root
+- **[P]**: Can run in parallel (different packages, no dependencies)
+- Go module structure with pkg/ for public APIs
 
-## Path Conventions (DDD Architecture - TypeScript Single Project)
-- **Source**: `typescript-nodejs/src/`
-- **Tests**: `typescript-nodejs/tests/`
-- **Examples**: `typescript-nodejs/examples/`
-- **Benchmarks**: `typescript-nodejs/benchmarks/`
+## Path Conventions (Go DDD Architecture)
+```
+golang/
+├── pkg/
+│   ├── domain/              # Domain abstractions
+│   └── functional/          # Functional types (Result, Maybe, Error)
+├── examples/                # Usage examples
+├── internal/                # Internal utilities
+└── tests/
+    ├── unit/               # Unit tests by package
+    ├── integration/        # Integration scenarios
+    ├── contract/           # Contract compliance tests
+    └── performance/        # Benchmarks and performance tests
+```
 
 ## Phase 3.1: Setup
 
-- [X] **T001** Create TypeScript Node.js project structure with DDD architecture at `typescript-nodejs/`
-- [X] **T002** Initialize package.json with TypeScript 5.9+, Node.js 22 LTS, and zero runtime dependencies at `typescript-nodejs/package.json`
-- [X] **T003** [P] Configure TypeScript compiler with strict settings in `typescript-nodejs/tsconfig.json`
-- [X] **T004** [P] Configure Jest testing framework with TypeScript support in `typescript-nodejs/jest.config.js`
-- [X] **T005** [P] Configure ESLint and Prettier for code quality in `typescript-nodejs/.eslintrc.js` and `typescript-nodejs/.prettierrc`
-- [X] **T006** [P] Create npm scripts for build, test, lint, and format in `typescript-nodejs/package.json`
+- [ ] **T001** Create Go module and project structure following plan.md specifications at `golang/`
+- [ ] **T002** Initialize go.mod with module `github.com/universalddd/architecture-core-go` requiring Go 1.21+
+- [ ] **T003** [P] Create directory structure: pkg/domain/, pkg/functional/, examples/, internal/, tests/ with all subdirectories
+- [ ] **T004** [P] Setup Go tooling: configure gofmt, golint, go vet, and staticcheck for code quality
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-**Test naming: Should_ExpectedBehavior_When_StateUnderTest**
+**Test naming: TestType_Should_ExpectedBehavior_When_StateUnderTest**
 **Test structure: Given-When-Then blocks with explicit comments**
 
-### Functional Types Contract Tests
-- [X] **T007** [P] Error contract tests in `typescript-nodejs/tests/contract/error-contract.test.ts`
-- [X] **T008** [P] Result contract tests in `typescript-nodejs/tests/contract/result-contract.test.ts`
-- [X] **T009** [P] Maybe contract tests in `typescript-nodejs/tests/contract/maybe-contract.test.ts`
+### Contract Compliance Tests [P]
+- [ ] **T005** [P] Contract test for EntityID interface compliance in `tests/contract/entity_id_contract_test.go`
+- [ ] **T006** [P] Contract test for AggregateRoot[TID] interface compliance in `tests/contract/aggregate_root_contract_test.go`
+- [ ] **T007** [P] Contract test for Entity[TID] interface compliance in `tests/contract/entity_contract_test.go`
+- [ ] **T008** [P] Contract test for ValueObject interface compliance in `tests/contract/value_object_contract_test.go`
+- [ ] **T009** [P] Contract test for DomainEvent interface compliance in `tests/contract/domain_event_contract_test.go`
+- [ ] **T010** [P] Contract test for Repository[TAggregate, TID] interface compliance in `tests/contract/repository_contract_test.go`
+- [ ] **T011** [P] Contract test for Result[T] interface compliance in `tests/contract/result_contract_test.go`
+- [ ] **T012** [P] Contract test for Maybe[T] interface compliance in `tests/contract/maybe_contract_test.go`
+- [ ] **T013** [P] Contract test for Error interface compliance in `tests/contract/error_contract_test.go`
 
-### DDD Abstractions Contract Tests
-- [X] **T010** [P] ValueObject contract tests in `typescript-nodejs/tests/contract/value-object-contract.test.ts`
-- [X] **T011** [P] Entity contract tests in `typescript-nodejs/tests/contract/entity-contract.test.ts`
-- [X] **T012** [P] AggregateRoot contract tests in `typescript-nodejs/tests/contract/aggregate-root-contract.test.ts`
-- [X] **T013** [P] DomainEventBase contract tests in `typescript-nodejs/tests/contract/domain-event-contract.test.ts`
-- [X] **T014** [P] Repository contract tests in `typescript-nodejs/tests/contract/repository-contract.test.ts`
+### Monadic Laws Tests [P]
+- [ ] **T014** [P] Monadic laws test for Result[T] (Left Identity, Right Identity, Associativity) in `tests/contract/result_monadic_laws_test.go`
+- [ ] **T015** [P] Monadic laws test for Maybe[T] (Left Identity, Right Identity, Associativity) in `tests/contract/maybe_monadic_laws_test.go`
 
-### Monadic Laws Contract Tests
-- [X] **T015** [P] Result monadic laws tests (left identity, right identity, associativity) in `typescript-nodejs/tests/contract/result-monadic-laws.test.ts`
-- [X] **T016** [P] Maybe monadic laws tests (left identity, right identity, associativity) in `typescript-nodejs/tests/contract/maybe-monadic-laws.test.ts`
-
-### Performance Contract Tests
-- [X] **T017** [P] ValueObject equality performance contract tests in `typescript-nodejs/tests/contract/performance-contracts.test.ts`
-- [X] **T018** [P] Repository async operations performance tests in `typescript-nodejs/tests/contract/performance-contracts.test.ts`
+### Integration Scenario Tests [P]
+- [ ] **T016** [P] Integration test for Order domain scenario (create, confirm, ship) in `tests/integration/order_workflow_test.go`
+- [ ] **T017** [P] Integration test for Money value object operations in `tests/integration/value_object_scenarios_test.go`
+- [ ] **T018** [P] Integration test for repository CRUD operations in `tests/integration/repository_scenarios_test.go`
+- [ ] **T019** [P] Integration test for aggregate event collection/clearing in `tests/integration/aggregate_scenarios_test.go`
+- [ ] **T020** [P] Integration test for Result/Maybe composition scenarios in `tests/integration/result_integration_test.go`
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-**DDD Layer Implementation Order: Domain → Application → Infrastructure → Presentation**
+**DDD Layer Implementation Order: Functional Types → Domain Types**
 
-### Core Functional Types Implementation
-- [X] **T019** [P] ErrorCategory enum in `typescript-nodejs/src/functional/error-category.ts`
-- [X] **T020** [P] IError interface in `typescript-nodejs/src/functional/interfaces/i-error.ts`
-- [X] **T021** [P] Error class implementation in `typescript-nodejs/src/functional/error.ts`
-- [X] **T022** [P] IResult interfaces in `typescript-nodejs/src/functional/interfaces/i-result.ts`
-- [X] **T023** [P] Result base class implementation in `typescript-nodejs/src/functional/result.ts`
-- [X] **T024** [P] Result<T> generic class implementation in `typescript-nodejs/src/functional/result.ts` (combined with T023)
-- [X] **T025** [P] SuccessResult and FailureResult implementations (integrated in T023/T024)
-- [X] **T026** [P] IMaybe interface in `typescript-nodejs/src/functional/interfaces/i-maybe.ts`
-- [X] **T027** [P] Maybe<T> base class implementation in `typescript-nodejs/src/functional/maybe.ts`
-- [X] **T028** [P] SomeMaybe and NoneMaybe implementations (integrated in T027)
+### Functional Types Package [P]
+- [ ] **T021** [P] Error type with categorization (Domain, Validation, Infrastructure, Concurrency, Security) in `pkg/functional/error.go`
+- [ ] **T022** [P] Result[T] type with monadic operations (Map, Bind, Match, Ensure) in `pkg/functional/result.go`
+- [ ] **T023** [P] Maybe[T] type with monadic operations (Map, Bind, Filter, OrElse) in `pkg/functional/maybe.go`
 
-### Type Guards and Utilities
-- [X] **T029** [P] Type guard functions (isSuccess, isFailure, isSome, isNone) in `typescript-nodejs/src/functional/type-guards.ts`
-- [X] **T030** [P] Functional types barrel export in `typescript-nodejs/src/functional/index.ts`
+### Domain Abstractions Package [P]
+- [ ] **T024** [P] EntityID constraint and AggregateRoot[TID] interface with base implementation in `pkg/domain/aggregate.go`
+- [ ] **T025** [P] Entity[TID] interface with base implementation and identity-based equality in `pkg/domain/entity.go`
+- [ ] **T026** [P] ValueObject interface with base implementation and structural equality in `pkg/domain/valueobject.go`
+- [ ] **T027** [P] DomainEvent interface with base implementation and metadata support in `pkg/domain/event.go`
+- [ ] **T028** [P] Repository[TAggregate, TID] interface with base implementation in `pkg/domain/repository.go`
 
-### DDD Base Classes Implementation
-- [X] **T031** [P] IEntity interface in `typescript-nodejs/src/domain/interfaces/i-entity.ts`
-- [X] **T032** [P] ValueObject abstract base class in `typescript-nodejs/src/domain/value-object.ts`
-- [X] **T033** [P] Entity<TId> abstract base class in `typescript-nodejs/src/domain/entity.ts`
-- [X] **T034** [P] IAggregateRoot interface in `typescript-nodejs/src/domain/interfaces/i-aggregate-root.ts`
-- [X] **T035** [P] IDomainEvent interface in `typescript-nodejs/src/domain/interfaces/i-domain-event.ts`
-- [X] **T036** [P] DomainEventBase abstract class in `typescript-nodejs/src/domain/domain-event-base.ts`
-- [X] **T037** AggregateRoot<TId> abstract base class in `typescript-nodejs/src/domain/aggregate-root.ts`
+### Example Implementations [P]
+- [ ] **T029** [P] OrderID, Order aggregate, Money value object, OrderCreatedEvent in `examples/quickstart/domain.go`
+- [ ] **T030** [P] InMemoryOrderRepository implementation in `examples/quickstart/repository.go`
+- [ ] **T031** [P] OrderService application service with Create/Confirm operations in `examples/quickstart/service.go`
+- [ ] **T032** [P] Main quickstart application demonstrating full workflow in `examples/quickstart/main.go`
 
-### Repository Abstractions
-- [X] **T038** [P] IRepository interface in `typescript-nodejs/src/domain/interfaces/i-repository.ts`
-- [X] **T039** [P] RepositoryBase abstract class in `typescript-nodejs/src/infrastructure/repository-base.ts`
+## Phase 3.4: Integration
+- [ ] **T033** Internal test utilities and fixtures for common test scenarios in `internal/testing/`
 
-### Module Exports and Barrel Files
-- [X] **T040** [P] Domain layer barrel export in `typescript-nodejs/src/domain/index.ts`
-- [X] **T041** [P] Infrastructure layer barrel export in `typescript-nodejs/src/infrastructure/index.ts`
-- [X] **T042** Main library barrel export in `typescript-nodejs/src/index.ts`
+## Phase 3.5: Polish
 
-## Phase 3.4: Integration Examples and Quickstart Validation
+### Performance Tests [P]
+- [ ] **T034** [P] Benchmark tests for Result[T] Map/Bind operations ensuring zero allocations in `tests/performance/result_benchmarks_test.go`
+- [ ] **T035** [P] Benchmark tests for Maybe[T] operations and ValueObject equality in `tests/performance/maybe_benchmarks_test.go`
+- [ ] **T036** [P] Benchmark tests for AggregateRoot event collection performance in `tests/performance/aggregate_benchmarks_test.go`
 
-### Order Domain Example Implementation
-- [X] **T043** [P] Money value object example in `typescript-nodejs/examples/domain/value-objects/money.ts`
-- [X] **T044** [P] OrderStatus value object example in `typescript-nodejs/examples/domain/value-objects/order-status.ts`
-- [X] **T045** [P] OrderItem entity example in `typescript-nodejs/examples/domain/entities/order-item.ts`
-- [X] **T046** Order aggregate root example in `typescript-nodejs/examples/domain/entities/order.ts`
-- [X] **T047** [P] Order domain events examples in `typescript-nodejs/examples/domain/events/order-events.ts`
-- [X] **T048** [P] OrderService domain service example in `typescript-nodejs/examples/domain/services/order-service.ts`
+### Unit Tests [P]
+- [ ] **T037** [P] Unit tests for Error type construction and categorization in `tests/unit/error_test.go`
+- [ ] **T038** [P] Unit tests for Result[T] success/failure scenarios and edge cases in `tests/unit/result_test.go`
+- [ ] **T039** [P] Unit tests for Maybe[T] Some/None scenarios and edge cases in `tests/unit/maybe_test.go`
+- [ ] **T040** [P] Unit tests for AggregateRoot version control and event management in `tests/unit/aggregate_test.go`
+- [ ] **T041** [P] Unit tests for Entity identity-based equality and hash code in `tests/unit/entity_test.go`
+- [ ] **T042** [P] Unit tests for ValueObject structural equality with multi-field, collections, nulls in `tests/unit/value_object_test.go`
+- [ ] **T043** [P] Unit tests for DomainEvent metadata and correlation/causation IDs in `tests/unit/domain_event_test.go`
+- [ ] **T044** [P] Unit tests for Repository interface with cancellation and error handling in `tests/unit/repository_test.go`
 
-### Application Layer Examples
-- [X] **T049** [P] IOrderRepository interface in `typescript-nodejs/examples/application/interfaces/order-repository.ts`
-- [X] **T050** [P] CreateOrderCommand interface in `typescript-nodejs/examples/application/commands/create-order-command.ts`
-- [X] **T051** OrderCommandHandler implementation in `typescript-nodejs/examples/application/handlers/order-command-handler.ts`
-
-### Infrastructure Examples
-- [X] **T052** InMemoryOrderRepository implementation in `typescript-nodejs/examples/infrastructure/repositories/in-memory-order-repository.ts`
-
-### Express.js Integration Examples
-- [X] **T053** [P] Result middleware for Express.js in `typescript-nodejs/examples/presentation/middleware/result-middleware.ts`
-- [X] **T054** OrderController with Result handling in `typescript-nodejs/examples/presentation/controllers/order-controller.ts`
-- [X] **T055** Express.js application setup in `typescript-nodejs/examples/presentation/app.ts`
-
-## Phase 3.5: Integration Tests
-
-### Functional Types Integration Tests
-- [X] **T056** [P] Error chaining and categorization tests in `typescript-nodejs/tests/integration/error-integration.test.ts`
-- [X] **T057** [P] Result chaining and combinators tests in `typescript-nodejs/tests/integration/result-integration.test.ts`
-- [X] **T058** [P] Maybe operations and conversions tests in `typescript-nodejs/tests/integration/maybe-integration.test.ts`
-
-### DDD Components Integration Tests
-- [X] **T059** [P] ValueObject equality scenarios tests in `typescript-nodejs/tests/integration/value-object-scenarios.test.ts`
-- [X] **T060** [P] Entity identity and invariants tests in `typescript-nodejs/tests/integration/entity-scenarios.test.ts`
-- [X] **T061** [P] AggregateRoot event collection tests in `typescript-nodejs/tests/integration/aggregate-scenarios.test.ts`
-- [X] **T062** [P] Repository async patterns tests in `typescript-nodejs/tests/integration/repository-scenarios.test.ts`
-
-### End-to-End Workflow Tests
-- [X] **T063** Complete order lifecycle workflow test in `typescript-nodejs/tests/integration/order-workflow.test.ts`
-- [X] **T064** [P] Quickstart example validation tests in `typescript-nodejs/tests/integration/quickstart-validation.test.ts`
-
-## Phase 3.6: Performance and Benchmarks
-
-### Performance Benchmarks
-- [X] **T065** [P] ValueObject equality performance benchmarks in `typescript-nodejs/benchmarks/value-object-performance.bench.ts`
-- [X] **T066** [P] Result/Maybe memory allocation benchmarks in `typescript-nodejs/benchmarks/functional-types-performance.bench.ts`
-- [X] **T067** [P] AggregateRoot event collection benchmarks in `typescript-nodejs/benchmarks/aggregate-performance.bench.ts`
-- [X] **T068** [P] Repository async operations benchmarks in `typescript-nodejs/benchmarks/repository-performance.bench.ts`
-
-### Memory and GC Analysis
-- [X] **T069** [P] Memory leak detection tests in `typescript-nodejs/tests/performance/memory-tests.test.ts`
-- [X] **T070** [P] Hash code stability performance tests in `typescript-nodejs/tests/performance/hash-performance.test.ts`
-
-## Phase 3.7: Polish and Documentation
-
-### Unit Tests for Complex Scenarios
-- [X] **T071** [P] ValueObject multi-field equality unit tests in `typescript-nodejs/tests/unit/value-object-edge-cases.test.ts`
-- [X] **T072** [P] Entity invariant enforcement unit tests in `typescript-nodejs/tests/unit/entity-invariants.test.ts`
-- [X] **T073** [P] AggregateRoot version control unit tests in `typescript-nodejs/tests/unit/aggregate-versioning.test.ts`
-- [X] **T074** [P] DomainEvent metadata handling unit tests in `typescript-nodejs/tests/unit/domain-event-metadata.test.ts`
-- [X] **T075** [P] Repository cancellation handling unit tests in `typescript-nodejs/tests/unit/repository-cancellation.test.ts`
-
-### Type Safety and Compilation Tests
-- [X] **T076** [P] TypeScript strict mode compilation tests in `typescript-nodejs/tests/unit/type-safety.test.ts`
-- [X] **T077** [P] Generic constraints validation tests in `typescript-nodejs/tests/unit/generic-constraints.test.ts`
-
-### Build and Packaging
-- [X] **T078** Production build configuration and optimization in `typescript-nodejs/build.config.js`
-- [X] **T079** [P] Package.json preparation for npm publishing in `typescript-nodejs/package.json`
-- [X] **T080** [P] TypeScript declaration files generation and validation in `typescript-nodejs/tsconfig.build.json`
-
-### Documentation and Examples
-- [X] **T081** [P] API documentation generation from TSDoc comments in `typescript-nodejs/docs/`
-- [X] **T082** [P] README.md with installation and usage examples in `typescript-nodejs/README.md`
-- [X] **T083** [P] Migration guide from C# implementation in `typescript-nodejs/docs/migration-guide.md`
-
-### Final Validation
-- [X] **T084** Run all tests and ensure 100% pass rate across all test categories ✅ (573/573 passing = 100% success rate - all test failures resolved and production ready)
-- [X] **T085** Cross-language consistency validation with C# implementation ✅ (Error, ErrorCategory, Result, Maybe, Entity, AggregateRoot, ValueObject, DomainEvent interfaces all consistent, TId constraint compatibility resolved)
-- [X] **T086** Performance benchmarks validation against targets ✅ (Performance tests passing with adjusted thresholds for realistic CI environments, hash distribution test fixed)
-- [X] **T087** Code coverage report generation and 100% domain logic coverage verification ✅ (Core functionality 100% tested with 573/573 tests passing, all critical business logic paths validated, TypeScript compilation successful, all type issues resolved)
+### Documentation and Validation
+- [ ] **T045** [P] Generate comprehensive Go documentation with examples using godoc
+- [ ] **T046** Run all tests with race detection and verify 100% pass rate: `go test -race ./...`
+- [ ] **T047** Run benchmark tests and verify performance targets: `go test -bench=. ./tests/performance/`
+- [ ] **T048** Execute quickstart example and validate output matches expected workflow
+- [ ] **T049** Validate zero external dependencies in go.mod (only Go standard library)
+- [ ] **T050** Final code review for Go idioms, DDD compliance, and constitutional adherence
 
 ## Dependencies
 
 ### Phase Dependencies
-- Setup (T001-T006) before all other phases
-- Contract Tests (T007-T018) before Core Implementation (T019-T042)
-- Core Implementation before Integration Examples (T043-T055)
-- Core Implementation before Integration Tests (T056-T064)
-- All Implementation before Performance (T065-T070)
-- All Implementation before Polish (T071-T087)
+- Setup (T001-T004) before all other phases
+- Tests (T005-T020) before Core Implementation (T021-T032)
+- Core Implementation before Integration (T033)
+- Integration before Polish (T034-T050)
 
-### Critical Path Dependencies
-1. **Functional Types Foundation**: T019-T030 → All other implementation tasks
-2. **Domain Base Classes**: T031-T037 → Examples and Integration tests
-3. **Repository Abstractions**: T038-T039 → Repository examples and tests
-4. **Core Implementation Complete**: T019-T042 → Integration examples T043-T055
-5. **Examples Working**: T043-T055 → Integration tests T056-T064
+### Package Dependencies
+- Functional types (T021-T023) before Domain types (T024-T028)
+- Core packages before Examples (T029-T032)
+- Implementation before Unit tests (T037-T044)
 
-### Specific Task Dependencies
-- T021 (Error) → T023-T025 (Result implementation)
-- T023-T025 (Result) → T027-T028 (Maybe implementation)
-- T032 (ValueObject) → T033 (Entity) → T037 (AggregateRoot)
-- T035-T036 (Domain Events) → T037 (AggregateRoot)
-- T037 (AggregateRoot) → T038-T039 (Repository)
-- T040-T042 (Exports) → T043-T055 (Examples)
+### Test Dependencies
+- Contract tests (T005-T013) before implementation
+- Monadic laws tests (T014-T015) before functional type implementation
+- Integration tests (T016-T020) before example implementations
 
 ## Parallel Execution Examples
 
-### Contract Tests (Phase 3.2)
-```typescript
-// These can all run in parallel - different test files
-Task: "Error contract tests in typescript-nodejs/tests/contract/error-contract.test.ts"
-Task: "Result contract tests in typescript-nodejs/tests/contract/result-contract.test.ts"
-Task: "Maybe contract tests in typescript-nodejs/tests/contract/maybe-contract.test.ts"
-Task: "ValueObject contract tests in typescript-nodejs/tests/contract/value-object-contract.test.ts"
+### Contract Tests (Run Together)
+```bash
+# Launch T005-T013 in parallel:
+go test ./tests/contract/entity_id_contract_test.go
+go test ./tests/contract/aggregate_root_contract_test.go
+go test ./tests/contract/entity_contract_test.go
+go test ./tests/contract/value_object_contract_test.go
+go test ./tests/contract/domain_event_contract_test.go
+go test ./tests/contract/repository_contract_test.go
+go test ./tests/contract/result_contract_test.go
+go test ./tests/contract/maybe_contract_test.go
+go test ./tests/contract/error_contract_test.go
 ```
 
-### Core Implementation (Phase 3.3)
-```typescript
-// Functional types can be implemented in parallel
-Task: "ErrorCategory enum in typescript-nodejs/src/functional/error-category.ts"
-Task: "IError interface in typescript-nodejs/src/functional/interfaces/i-error.ts"
-Task: "IResult interfaces in typescript-nodejs/src/functional/interfaces/i-result.ts"
-Task: "IMaybe interface in typescript-nodejs/src/functional/interfaces/i-maybe.ts"
+### Core Implementation (Run Together)
+```bash
+# Launch T021-T028 in parallel (different packages):
+# Functional package
+Task: "Error type in pkg/functional/error.go"
+Task: "Result[T] type in pkg/functional/result.go"
+Task: "Maybe[T] type in pkg/functional/maybe.go"
+
+# Domain package
+Task: "AggregateRoot interface in pkg/domain/aggregate.go"
+Task: "Entity interface in pkg/domain/entity.go"
+Task: "ValueObject interface in pkg/domain/valueobject.go"
+Task: "DomainEvent interface in pkg/domain/event.go"
+Task: "Repository interface in pkg/domain/repository.go"
 ```
 
-### Examples (Phase 3.4)
-```typescript
-// Value objects can be implemented in parallel
-Task: "Money value object example in typescript-nodejs/examples/domain/value-objects/money.ts"
-Task: "OrderStatus value object example in typescript-nodejs/examples/domain/value-objects/order-status.ts"
-Task: "Order domain events examples in typescript-nodejs/examples/domain/events/order-events.ts"
+### Unit Tests (Run Together)
+```bash
+# Launch T037-T044 in parallel:
+go test ./tests/unit/error_test.go
+go test ./tests/unit/result_test.go
+go test ./tests/unit/maybe_test.go
+go test ./tests/unit/aggregate_test.go
+go test ./tests/unit/entity_test.go
+go test ./tests/unit/value_object_test.go
+go test ./tests/unit/domain_event_test.go
+go test ./tests/unit/repository_test.go
 ```
+
+## Notes
+- **[P] tasks** = different files/packages, no shared dependencies
+- **TDD**: Verify all tests fail before implementing (T005-T020 before T021-T032)
+- **Go idioms**: Follow Go naming conventions, use interfaces, explicit error handling
+- **Zero allocations**: Functional types must use value semantics for performance
+- **Generics**: Use Go 1.21+ generic constraints for type safety
+- **Testing**: Table-driven tests with Given-When-Then structure
 
 ## Task Generation Rules Applied
 
-### From Contracts (contracts-typescript/core-types-contract.ts)
-- Each interface/class → Contract test task [P]
-- Each abstract method → Implementation task
-- Each type guard → Utility implementation task [P]
+1. **From Contracts**: Each interface → contract test task [P] (T005-T013)
+2. **From Data Model**: Each type → implementation task [P] (T021-T028)
+3. **From Quickstart**: Each scenario → integration test [P] (T016-T020)
+4. **Dependencies**: Tests before implementation, functional before domain
+5. **Parallel**: Independent packages marked [P] for concurrent execution
 
-### From Data Model (data-model-typescript.md)
-- Each core type → Implementation task [P]
-- Each relationship → Integration task
-- Each validation rule → Unit test task [P]
+## Validation Checklist ✅
 
-### From Quickstart (quickstart-typescript.md)
-- Each code example → Example implementation task [P]
-- Each usage scenario → Integration test task [P]
-- Each workflow → End-to-end test task
-
-### TDD Ordering
-- All contract tests before any implementation
-- Unit tests for edge cases after implementation
-- Integration tests after all components complete
+- [x] All contracts have corresponding tests (T005-T013)
+- [x] All entities have model tasks (T024-T028)
+- [x] All tests come before implementation (T005-T020 before T021-T032)
+- [x] Parallel tasks are truly independent (different packages/files)
+- [x] Each task specifies exact file path
+- [x] No [P] task modifies same file as another [P] task
+- [x] TDD order enforced (failing tests before implementation)
+- [x] Go-specific structure and conventions followed
+- [x] Performance and monadic law compliance included
+- [x] Zero external dependencies maintained
 
 ## Key Implementation Notes
 
 ### Constitutional Compliance
-- **TDD Mandatory**: All tests (T007-T018) MUST be written and failing before implementation (T019-T042)
+- **TDD Mandatory**: All tests (T005-T020) MUST be written and failing before implementation (T021-T032)
 - **Given-When-Then**: All test methods must include explicit comment blocks for each section
 - **Monadic Laws**: Result and Maybe types must pass Left Identity, Right Identity, and Associativity tests
-- **Pure Node.js**: Zero external runtime dependencies in core library
+- **Pure Go**: Zero external runtime dependencies in core library
 
 ### Performance Requirements
-- **Class-based Optimization**: Result, Maybe, and Error optimized for memory efficiency
-- **Equality Optimization**: ValueObject equality must use component enumeration with hash code caching
-- **Async Patterns**: Repository interface must follow Node.js async best practices with AbortSignal
+- **Value Types**: Result, Maybe, and Error optimized for stack allocation
+- **Zero Allocations**: Functional types must minimize GC pressure
+- **Context Integration**: Repository interface must follow Go async patterns with context.Context
 
-### Multi-Language Consistency
-- **API Contracts**: Maintain identical behavioral contracts with C# implementation
-- **Error Categories**: Use consistent error categorization (Domain, Validation, Infrastructure, Concurrency, Security)
-- **Naming Conventions**: Follow TypeScript conventions while maintaining architectural alignment
-
-## Validation Checklist ✅
-
-- [x] All contract interfaces have corresponding test tasks
-- [x] All data model entities have implementation tasks
-- [x] All contract tests come before implementation tasks
-- [x] Parallel tasks are truly independent (different files)
-- [x] Each task specifies exact file path
-- [x] No task modifies same file as another [P] task
-- [x] TDD principle maintained (tests before implementation)
-- [x] Dependencies properly mapped
-- [x] Critical path identified
-- [x] Performance and polish phases included
-- [x] Express.js integration examples included
-- [x] Quickstart scenario validation included
-- [x] Cross-language consistency verification included
-
-## Notes
-
-- **[P] tasks** = Different files, no dependencies, can run in parallel
-- **Tests must fail first** - Write failing tests before any implementation
-- **Commit after each task** - Atomic commits for better tracking
-- **Zero runtime dependencies** - Core library uses only Node.js standard library
-- **Type safety** - Leverage TypeScript's strict mode for compile-time guarantees
-- **Constitutional compliance** - All tasks align with DDD, CQRS, TDD, and functional programming principles
-- **Cross-language consistency** - Maintain API compatibility with C# implementation
+### Go-Specific Patterns
+- **Interface Design**: Small, focused interfaces following Go conventions
+- **Error Handling**: Explicit error-as-values with structured Error types
+- **Generics**: Type constraints with comparable interface for type safety
+- **Testing**: Table-driven tests with t.Run for comprehensive coverage
 
 ---
 
-**Total Tasks**: 87
-**Estimated Effort**: 25-30 development days
-**Critical Path**: T001 → T007-T018 → T019-T030 → T031-T037 → T038-T042 → T043-T055 → T084-T087
+**Total Tasks**: 50
+**Estimated Effort**: 15-20 development days
+**Critical Path**: T001 → T005-T020 → T021-T028 → T029-T032 → T046-T050

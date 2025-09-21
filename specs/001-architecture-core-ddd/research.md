@@ -1,181 +1,289 @@
-# Research Findings: Architecture.Core .NET 8 Implementation
+# Go Research: DDD Abstractions and Functional Types
 
-## 1. .NET 8 LTS BCL Best Practices for Generic Constraints and Performance
+**Date**: 2025-09-21
+**Context**: Architecture.Core implementation for Go
+**Status**: Complete
 
-**Decision**: Use strict generic constraints with `where T : class` for identity types, leverage `IEqualityComparer<T>` for performance, and utilize .NET 8 performance improvements.
+## 1. Go Generics Best Practices for DDD Types
 
-**Rationale**:
-- .NET 8 LTS provides improved JIT optimizations for generics
-- Strong constraints prevent misuse and enable compile-time safety
-- Built-in equality comparers are highly optimized
-- LTS ensures 3-year support lifecycle
+### Decision: Type Constraints with Interface Definitions
+Use Go generics with domain-specific type constraints, leveraging the `comparable` built-in constraint and custom constraints for entity IDs and aggregate types.
 
-**Alternatives Considered**:
-- Weak constraints with runtime checks (rejected: performance overhead)
-- Third-party constraint libraries (rejected: external dependency)
-- Custom constraint implementations (rejected: BCL provides better optimizations)
+```go
+// Type constraints for entity identifiers
+type EntityID interface {
+    comparable
+    fmt.Stringer
+}
 
-**Performance Considerations**:
-- Use `EqualityComparer<T>.Default` for optimal performance
-- Leverage `RuntimeHelpers.GetHashCode()` for reference equality
-- Utilize span-based operations where applicable in .NET 8
+// Generic aggregate root with type-safe ID
+type AggregateRoot[TID EntityID] interface {
+    ID() TID
+    Version() int64
+    DomainEvents() []DomainEvent
+}
 
-## 2. Monadic Patterns Implementation in C# Without External Dependencies
-
-**Decision**: Implement Result<T> and Maybe<T> using readonly struct with discriminated union pattern, leveraging C# 12 features.
-
-**Rationale**:
-- Readonly structs minimize allocations
-- Pattern matching provides clean syntax
-- No heap allocations for success cases
-- Full monadic laws support with Map/Bind/Match
-
-**Alternatives Considered**:
-- Class-based approach (rejected: heap allocation overhead)
-- Using System.ValueTuple (rejected: unclear semantics)
-- OneOf library pattern (rejected: external dependency)
-
-**Performance Considerations**:
-- Struct implementation avoids GC pressure
-- Method inlining for hot paths
-- Avoid boxing through generic constraints
-
-**BCL-Only Implementation**:
-```csharp
-public readonly struct Result<T>
-{
-    private readonly T? _value;
-    private readonly Error? _error;
-    private readonly bool _isSuccess;
-
-    public bool IsSuccess => _isSuccess;
-    public bool IsFailure => !_isSuccess;
-
-    public Result<TResult> Map<TResult>(Func<T, TResult> func) { /* */ }
-    public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> func) { /* */ }
-    public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<Error, TResult> onFailure) { /* */ }
+// Generic entity with identity-based equality
+type Entity[TID EntityID] interface {
+    ID() TID
+    Equals(other Entity[TID]) bool
 }
 ```
 
-## 3. Reflection-Based ValueObject Equality Optimization
+### Rationale
+- **Type Safety**: Compile-time verification of ID types across the domain
+- **Performance**: Zero-cost abstractions with generic specialization
+- **Go Idioms**: Follows Go's preference for small interfaces and explicit types
+- **Multi-language Consistency**: Maintains same type safety as C# and TypeScript implementations
 
-**Decision**: Use component-based equality with reflection caching and optional C# records integration for simple value objects.
+### Alternatives Considered
+- **interface{} with type assertions**: Rejected due to runtime type checking and lack of type safety
+- **Code generation**: Rejected due to build complexity and poor IDE support
+- **Reflection-based approaches**: Rejected due to performance overhead and runtime errors
 
-**Rationale**:
-- Abstract `GetEqualityComponents()` method provides flexibility
-- Reflection caching eliminates performance penalties
-- Records provide built-in structural equality for simple cases
-- Maintains immutability guarantees
+## 2. Go Interface Design Patterns for Repository Abstraction
 
-**Alternatives Considered**:
-- Pure reflection approach (rejected: runtime performance cost)
-- Source generators (rejected: build-time complexity)
-- Manual equality implementation (rejected: boilerplate and error-prone)
+### Decision: Small, Focused Interfaces with Dependency Inversion
+Place repository interfaces in the domain package, implement in infrastructure, following Go's implicit interface satisfaction.
 
-**Performance Considerations**:
-- Cache PropertyInfo/FieldInfo using static ConcurrentDictionary
-- Use GetEqualityComponents() enumeration for complex equality
-- Leverage C# records for simple value objects
+```go
+// Domain package defines the interface
+type OrderRepository interface {
+    GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error)
+    Save(ctx context.Context, order *Order) error
+    Delete(ctx context.Context, id OrderID) error
+    Exists(ctx context.Context, id OrderID) (bool, error)
+}
 
-**BCL-Only Implementation**:
-```csharp
-public abstract class ValueObject
-{
-    protected abstract IEnumerable<object?> GetEqualityComponents();
+// Infrastructure package implements
+type sqlOrderRepository struct {
+    db *sql.DB
+}
 
-    public override bool Equals(object? obj) =>
-        obj is ValueObject other && GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
-
-    public override int GetHashCode() =>
-        GetEqualityComponents().Aggregate(0, (hash, component) =>
-            HashCode.Combine(hash, component?.GetHashCode() ?? 0));
+func (r *sqlOrderRepository) GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error) {
+    // Implementation
 }
 ```
 
-## 4. Domain Event Correlation/Causation ID Patterns
+### Rationale
+- **Dependency Inversion**: Domain defines contracts, infrastructure implements
+- **Testability**: Easy to create test doubles and mocks
+- **Go Conventions**: Leverages implicit interface satisfaction
+- **Context Integration**: Proper cancellation and timeout support
 
-**Decision**: Implement hierarchical correlation chain with structured metadata using IDictionary<string, object>.
+### Alternatives Considered
+- **Generic repository pattern**: Rejected due to loss of domain-specific operations
+- **Single large interface**: Rejected due to Interface Segregation Principle violations
+- **Concrete types in domain**: Rejected due to tight coupling to infrastructure
 
-**Rationale**:
-- Correlation ID tracks request flow across boundaries
-- Causation ID tracks direct event relationships
-- Metadata dictionary provides extensibility
-- DateTimeOffset ensures timezone handling
+## 3. Memory Allocation Optimization for Functional Types
 
-**Alternatives Considered**:
-- Simple string properties (rejected: lacks structure)
-- Custom metadata class (rejected: over-engineering)
-- JSON serialization approach (rejected: serialization dependency)
+### Decision: Value Types with Zero-Allocation Patterns
+Implement Result[T] and Maybe[T] as structs with value semantics, using sync.Pool for high-frequency allocations.
 
-**Performance Considerations**:
-- Use guid-based IDs for uniqueness and performance
-- Lazy initialization of metadata dictionary
-- Immutable event instances
-
-**BCL-Only Implementation**:
-```csharp
-public interface IDomainEvent
-{
-    Guid Id { get; }
-    DateTimeOffset OccurredAt { get; }
-    string? CorrelationId { get; }
-    string? CausationId { get; }
-    IReadOnlyDictionary<string, object> Metadata { get; }
+```go
+// Zero-allocation Result type
+type Result[T any] struct {
+    value T
+    err   *Error
+    isOk  bool
 }
 
-public abstract class DomainEventBase : IDomainEvent
-{
-    public Guid Id { get; } = Guid.NewGuid();
-    public DateTimeOffset OccurredAt { get; } = DateTimeOffset.UtcNow;
-    public string? CorrelationId { get; init; }
-    public string? CausationId { get; init; }
-    public IReadOnlyDictionary<string, object> Metadata { get; init; } =
-        new Dictionary<string, object>();
+// Stack-friendly constructor
+func Ok[T any](value T) Result[T] {
+    return Result[T]{value: value, isOk: true}
 }
-```
 
-## 5. Repository Interface Design for Async/Cancellation Best Practices
+// Maybe type with zero allocations for Some/None
+type Maybe[T any] struct {
+    value    T
+    hasValue bool
+}
 
-**Decision**: Aggregate-focused repository pattern with comprehensive async/cancellation support and Maybe/Result return types.
-
-**Rationale**:
-- Aggregate-centric aligns with DDD principles
-- Consistent CancellationToken usage prevents hanging operations
-- Maybe<T> for not-found scenarios eliminates null reference issues
-- Result<T> for operations that can fail gracefully
-
-**Alternatives Considered**:
-- Generic repository (rejected: violates DDD aggregate boundaries)
-- Synchronous methods (rejected: blocking I/O concerns)
-- Nullable return types (rejected: unclear null semantics)
-
-**Performance Considerations**:
-- ConfigureAwait(false) for library code
-- ValueTask for high-frequency operations
-- Async enumerable for large result sets
-
-**BCL-Only Implementation**:
-```csharp
-public interface IRepository<TAggregate, TId>
-    where TAggregate : class, IAggregateRoot<TId>
-    where TId : class
-{
-    Task<Maybe<TAggregate>> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
-    Task<Result> AddAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
-    Task<Result> UpdateAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
-    Task<Result> DeleteAsync(TId id, CancellationToken cancellationToken = default);
-    Task<Result<bool>> ExistsAsync(TId id, CancellationToken cancellationToken = default);
+var errorPool = sync.Pool{
+    New: func() interface{} {
+        return &Error{}
+    },
 }
 ```
 
-## Summary
+### Rationale
+- **Performance**: Stack allocation for small types, minimal GC pressure
+- **Memory Efficiency**: No boxing/unboxing overhead
+- **Zero-Cost Abstractions**: Compiles to efficient machine code
+- **Go Patterns**: Value semantics align with Go conventions
 
-All research findings support a pure BCL implementation targeting .NET 8 LTS with:
-- Zero external runtime dependencies
-- Optimal performance through modern .NET features
-- Strong type safety with generic constraints
-- Comprehensive async/cancellation support
-- Monadic error handling patterns
-- Enterprise-grade reliability and maintainability
+### Alternatives Considered
+- **Pointer-based approach**: Rejected due to heap allocations and GC pressure
+- **Interface-based design**: Rejected due to boxing overhead and indirection
+- **Channel-based Maybe**: Rejected due to complexity and allocation overhead
 
-The implementation will follow TDD principles with comprehensive test coverage for all monadic laws and edge cases.
+## 4. Go Error Handling vs Exception-Based Languages
+
+### Decision: Explicit Error-as-Values with Domain Context
+Embrace Go's explicit error handling while providing structured error types with business context.
+
+```go
+// Structured error with business context
+type Error struct {
+    Code     string
+    Message  string
+    Category ErrorCategory
+    Metadata map[string]interface{}
+    Inner    error
+}
+
+// Domain-specific error patterns
+func (r *OrderRepository) GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error) {
+    // Database operation
+    if err := db.QueryRow(query, id).Scan(&order); err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return Maybe[Order]{}, nil // None case, not an error
+        }
+        return nil, &Error{
+            Code:     "Infrastructure.Database.QueryFailed",
+            Message:  "Failed to retrieve order",
+            Category: Infrastructure,
+            Inner:    err,
+        }
+    }
+    return Some(order), nil
+}
+```
+
+### Rationale
+- **Predictability**: Explicit error handling forces consideration of failure cases
+- **Business Context**: Structured errors preserve domain knowledge
+- **Performance**: No stack unwinding overhead
+- **Go Idioms**: Works naturally with Go's error handling patterns
+
+### Alternatives Considered
+- **Panic/recover for business logic**: Rejected as anti-pattern in Go
+- **Result-only pattern (no error)**: Rejected due to loss of standard library integration
+- **Error interface implementation only**: Rejected due to limited structure and context
+
+## 5. Go Testing Patterns and Benchmarking
+
+### Decision: Table-Driven Tests with Given-When-Then Structure
+Use Go's built-in testing with table-driven patterns, explicit Given-When-Then comments, and comprehensive benchmarking.
+
+```go
+func TestResult_Should_ChainOperations_When_AllSucceed(t *testing.T) {
+    tests := []struct {
+        name     string
+        input    int
+        expected string
+    }{
+        {"positive number", 5, "10"},
+        {"zero", 0, "0"},
+        {"negative number", -3, "-6"},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            // Given
+            result := Ok(tt.input)
+
+            // When
+            mapped := result.
+                Map(func(x int) int { return x * 2 }).
+                Map(func(x int) string { return strconv.Itoa(x) })
+
+            // Then
+            if !mapped.IsOk() {
+                t.Errorf("Expected success, got error: %v", mapped.Error())
+            }
+            if mapped.Value() != tt.expected {
+                t.Errorf("Expected %s, got %s", tt.expected, mapped.Value())
+            }
+        })
+    }
+}
+
+func BenchmarkResult_Map_Chain(b *testing.B) {
+    result := Ok(42)
+    b.ResetTimer()
+
+    for i := 0; i < b.N; i++ {
+        _ = result.
+            Map(func(x int) int { return x * 2 }).
+            Map(func(x int) int { return x + 1 }).
+            Map(func(x int) string { return strconv.Itoa(x) })
+    }
+}
+```
+
+### Rationale
+- **Comprehensive Coverage**: Table-driven tests cover edge cases systematically
+- **Performance Validation**: Benchmarks ensure zero-allocation goals are met
+- **TDD Support**: Clear test structure supports test-first development
+- **Monadic Law Testing**: Property-based testing ensures mathematical correctness
+
+### Alternatives Considered
+- **External testing frameworks**: Rejected to maintain zero external dependencies
+- **BDD frameworks**: Rejected due to dependency overhead and complexity
+- **Property-based testing only**: Rejected due to learning curve and complexity
+
+## 6. Go Version Compatibility Strategy
+
+### Decision: Go 1.21 Minimum with Go 1.25 Optimizations
+Target Go 1.21 as minimum version with conditional compilation for Go 1.25+ features using toolchain management.
+
+```go
+//go:build go1.25
+// +build go1.25
+
+package functional
+
+// Use Go 1.25+ optimizations when available
+func (r Result[T]) optimize() {
+    // Advanced optimization features
+}
+```
+
+```go
+//go:build !go1.25
+// +build !go1.25
+
+package functional
+
+// Fallback implementation for Go 1.21-1.24
+func (r Result[T]) optimize() {
+    // Compatible implementation
+}
+```
+
+### Rationale
+- **Stability**: Go 1.21 provides stable generics and proven performance
+- **Forward Compatibility**: Toolchain management enables new feature adoption
+- **Team Consistency**: Single go.mod version prevents toolchain conflicts
+- **Progressive Enhancement**: New features adopted without breaking compatibility
+
+### Alternatives Considered
+- **Go 1.18 minimum**: Rejected due to early generics implementation issues
+- **Latest-only strategy**: Rejected due to enterprise adoption lag
+- **Version-specific modules**: Rejected due to maintenance complexity
+
+## Summary of Key Decisions
+
+| Area | Decision | Impact |
+|------|----------|---------|
+| **Generics** | Type constraints with comparable interface | Type-safe, performant DDD abstractions |
+| **Interfaces** | Small interfaces in domain package | Clean architecture, easy testing |
+| **Memory** | Value types with zero-allocation patterns | High performance, low GC pressure |
+| **Errors** | Explicit error-as-values with context | Predictable, business-aware error handling |
+| **Testing** | Table-driven tests with benchmarking | Comprehensive coverage, performance validation |
+| **Versions** | Go 1.21+ with conditional compilation | Stability with progressive enhancement |
+
+## Implementation Readiness
+
+All technical unknowns have been resolved. The research provides sufficient detail to:
+
+1. **Design data models** using Go generics and interfaces
+2. **Implement functional types** with zero-allocation patterns
+3. **Create repository contracts** following dependency inversion
+4. **Write comprehensive tests** using table-driven patterns
+5. **Optimize performance** through benchmarking and profiling
+6. **Maintain compatibility** across Go versions
+
+**Status**: ✅ Ready for Phase 1 (Design & Contracts)

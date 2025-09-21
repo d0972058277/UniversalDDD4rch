@@ -1,7 +1,7 @@
 # Implementation Plan: Architecture.Core - DDD Abstractions and Functional Types
 
 **Branch**: `001-architecture-core-ddd` | **Date**: 2025-09-21 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-architecture-core-ddd/spec.md`
+**Input**: Feature specification from `specs/001-architecture-core-ddd/spec.md`
 
 ## Execution Flow (/plan command scope)
 ```
@@ -30,18 +30,18 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Architecture.Core provides essential DDD abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional programming types (Result, Maybe, Error) for building domain-driven applications. The implementation follows pure Node.js standard library approach with zero external runtime dependencies, targeting Node.js 22 LTS with optional integration packages for Express.js, TypeORM, Jest, and class-validator.
+Architecture.Core for Go implements minimal viable DDD core abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional types (Result, Error, Maybe) using pure Go standard library with zero external runtime dependencies. Supports optional integration packages: chi/gin for HTTP routing, GORM for ORM, and testify for enhanced testing capabilities.
 
 ## Technical Context
-**Language/Version**: TypeScript 5.9+ with Node.js 22 LTS (Active LTS, supported until April 2027)
-**Primary Dependencies**: Pure Node.js standard library only (core), optional Express.js, TypeORM, Jest, class-validator
-**Storage**: N/A (abstractions only, Repository interface)
-**Testing**: Jest with Given-When-Then structure and Should_ExpectedBehavior_When_StateUnderTest naming
-**Target Platform**: Node.js 22+ applications (Express web apps, microservices, CLI tools)
-**Project Type**: single - DDD core library
-**Performance Goals**: Minimal memory allocations, optimized equality operations for ValueObject, async/await best practices
-**Constraints**: Zero external runtime dependencies in core library, pure Node.js standard library only
-**Scale/Scope**: Foundation library for enterprise DDD applications, multi-language consistency with C# implementation
+**Language/Version**: Go 1.24+ or Go 1.25 (current releases in 2025, rolling support model)
+**Primary Dependencies**: Pure Go standard library (no external runtime dependencies)
+**Storage**: Optional GORM integration for SQL databases, interface-based for testability
+**Testing**: Go standard testing package + optional testify for enhanced assertions
+**Target Platform**: Cross-platform (Linux, Windows, macOS) via Go compilation
+**Project Type**: Single library project with DDD architecture
+**Performance Goals**: Minimal allocations for functional types, optimized equality operations
+**Constraints**: Zero external runtime dependencies in core, optional integration packages only
+**Scale/Scope**: Core library for DDD applications, designed for enterprise-scale domain modeling
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -63,8 +63,8 @@ Architecture.Core provides essential DDD abstractions (AggregateRoot, Entity, Va
 
 **Functional Programming Principles**:
 - [x] Result/Error/Maybe monads used for error handling
-- [x] Exceptions only for unrecoverable errors
-- [x] Language-appropriate error handling patterns
+- [x] Exceptions only for unrecoverable errors (Go uses explicit error handling)
+- [x] Language-appropriate error handling patterns (Go's explicit error returns)
 
 **Multi-Language Consistency**:
 - [x] Same domain model structure across all language implementations
@@ -86,61 +86,101 @@ specs/001-architecture-core-ddd/
 
 ### Source Code (repository root)
 ```
-# Option 1: Single project (DEFAULT) - DDD Architecture
-src/
-├── domain/              # Business logic layer
-│   ├── entities/
-│   ├── value-objects/
-│   ├── services/
-│   └── events/
-├── application/         # Use cases and application services
-│   ├── commands/
-│   ├── queries/
-│   ├── handlers/
-│   └── dtos/
-├── infrastructure/     # External concerns
-│   ├── repositories/
-│   ├── messaging/
-│   └── persistence/
-└── presentation/       # Controllers and APIs
-    ├── controllers/
-    ├── middleware/
-    └── serializers/
+# Single project (DEFAULT) - DDD Architecture for Go
+golang/
+├── pkg/
+│   ├── domain/              # Business logic layer
+│   │   ├── aggregate.go     # AggregateRoot interface and base
+│   │   ├── entity.go        # Entity interface and base
+│   │   ├── valueobject.go   # ValueObject interface and base
+│   │   ├── event.go         # DomainEvent interface and base
+│   │   └── repository.go    # Repository interface
+│   ├── functional/          # Functional programming types
+│   │   ├── result.go        # Result and Result[T] types
+│   │   ├── maybe.go         # Maybe[T] type
+│   │   └── error.go         # Error type with categorization
+│   └── integration/         # Optional framework integrations
+│       ├── chi/             # Chi router integration
+│       ├── gin/             # Gin router integration
+│       └── gorm/            # GORM repository implementations
+├── examples/                # Usage examples and quickstart
+│   ├── quickstart/          # Basic usage example
+│   ├── ecommerce/           # E-commerce domain example
+│   └── banking/             # Banking domain example
+├── internal/                # Internal utilities and test helpers
+│   └── testing/             # Test utilities and fixtures
+└── tests/
+    ├── unit/               # Domain and functional type tests
+    ├── integration/        # Integration tests with optional packages
+    ├── contract/           # API contract compliance tests
+    └── performance/        # Performance and benchmark tests
 
-tests/
-├── unit/              # Domain and application layer tests
-├── integration/       # Infrastructure integration tests
-└── contract/          # API contract tests
+# Go module files
+go.mod                      # Go module definition
+go.sum                      # Dependency checksums
 ```
 
-**Structure Decision**: Option 1 (Single project) - Core library with DDD architecture separation
+**Structure Decision**: Single library project following Go conventions with pkg/ for public APIs
 
 ## Phase 0: Outline & Research
-*✅ COMPLETED*
+1. **Extract unknowns from Technical Context** above:
+   - Go version compatibility strategy (1.24+ vs 1.25 specific features)
+   - Go generics best practices for DDD types (Go 1.18+ features)
+   - Go interface design patterns for repository abstraction
+   - Error handling patterns in Go vs other languages (no exceptions)
+   - Memory allocation optimization for functional types
+   - Go testing patterns and benchmarking approaches
 
-**Research Tasks Completed**:
-1. ✅ .NET 8 LTS BCL best practices for generic constraints and performance
-2. ✅ Monadic patterns implementation in C# without external dependencies
-3. ✅ Reflection-based ValueObject equality optimization techniques
-4. ✅ Domain event correlation/causation ID patterns
-5. ✅ Repository interface design for async/cancellation best practices
+2. **Generate and dispatch research agents**:
+   ```
+   For each unknown in Technical Context:
+     Task: "Research Go generics best practices for DDD type design"
+     Task: "Research Go interface patterns for repository abstraction"
+     Task: "Research Go memory optimization for functional types"
+     Task: "Research Go error handling patterns vs exceptions"
+     Task: "Research Go testing and benchmarking best practices"
+   ```
 
-**Output**: research-typescript.md with all technical decisions documented and justified for TypeScript implementation
+3. **Consolidate findings** in `research.md` using format:
+   - Decision: [what was chosen]
+   - Rationale: [why chosen]
+   - Alternatives considered: [what else evaluated]
+
+**Output**: research.md with all technical decisions documented
 
 ## Phase 1: Design & Contracts
-*✅ COMPLETED*
+*Prerequisites: research.md complete*
 
-**Artifacts Generated**:
-1. ✅ `data-model-typescript.md`: Core types, relationships, validation rules for TypeScript
-2. ✅ `contracts-typescript/core-types-contract.ts`: Public API contracts and interfaces for TypeScript
-3. ✅ `quickstart-typescript.md`: Usage examples with Order domain demonstration for TypeScript
-4. ✅ `CLAUDE.md`: Agent context file updated with TypeScript project overview and current status
+1. **Extract entities from feature spec** → `data-model.md`:
+   - Go struct definitions for AggregateRoot, Entity, ValueObject
+   - Interface definitions for DomainEvent, Repository
+   - Generic type constraints and relationships
+   - Validation patterns using Go's type system
 
-**Phase 1 Validation**:
-- All entities extracted from feature specification
-- API contracts follow functional programming principles
-- Contract tests framework outlined (implementation in Phase 3)
-- Quickstart provides comprehensive usage examples
+2. **Generate API contracts** from functional requirements:
+   - Go interface definitions for all core types
+   - Method signatures with proper error handling
+   - Generic type constraints and bounds
+   - Output Go interface definitions to `/contracts/`
+
+3. **Generate contract tests** from contracts:
+   - One test file per interface/type
+   - Assert interface compliance and behavior
+   - Tests must fail (no implementation yet)
+   - Use Go's testing.T and benchmarking
+
+4. **Extract test scenarios** from user stories:
+   - Each story → integration test scenario
+   - Quickstart test = story validation steps
+   - Performance benchmarks for critical paths
+
+5. **Update agent file incrementally** (O(1) operation):
+   - Run `.specify/scripts/powershell/update-agent-context.ps1 -AgentType claude` for Claude Code
+   - Add Go-specific technical context
+   - Update recent changes and status
+   - Keep under 150 lines for token efficiency
+
+**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, CLAUDE.md
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
@@ -148,49 +188,46 @@ tests/
 **Task Generation Strategy**:
 - Load `.specify/templates/tasks-template.md` as base
 - Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
-- Each contract interface → unit test task [P]
-- Each abstract base class → implementation task [P]
-- Each functional type → monadic laws test task
-- Each user story from quickstart → integration test task
-- Performance optimization tasks for ValueObject equality
-- Documentation tasks for API reference
+- Each interface → interface definition task [P]
+- Each type → implementation task with TDD [P]
+- Each user story → integration test task
+- Performance benchmarking tasks for critical paths
+- Optional integration package tasks (chi, gin, gorm)
 
 **Ordering Strategy**:
-- TDD order: Tests before implementation
-- Dependency order: Functional types → Base classes → Aggregates
-- Mark [P] for parallel execution (independent implementations)
-- Critical path: Result/Maybe → ValueObject → Entity → AggregateRoot
+- TDD order: Interface definitions → Tests → Implementation
+- Dependency order: Functional types → Domain types → Repository → Integrations
+- Mark [P] for parallel execution (independent packages)
 
-**Estimated Output**: 35-40 numbered, ordered tasks in tasks.md
-
-**Key Task Categories**:
-1. **Core Functional Types** (8-10 tasks): Result, Maybe, Error with monadic operations
-2. **DDD Base Classes** (12-15 tasks): ValueObject, Entity, AggregateRoot, DomainEventBase
-3. **Repository Interfaces** (3-5 tasks): IRepository with async patterns
-4. **Test Infrastructure** (5-8 tasks): Test helpers, builders, assertion extensions
-5. **Performance Tests** (3-5 tasks): Benchmarks for equality operations
-6. **Integration Examples** (3-5 tasks): Quickstart validation, sample implementations
+**Estimated Output**: 30-35 numbered, ordered tasks in tasks.md
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
-## Complexity Tracking
-*No constitutional violations identified*
+## Phase 3+: Future Implementation
+*These phases are beyond the scope of the /plan command*
 
-All architectural decisions align with constitutional requirements:
-- Pure DDD patterns with clear layer separation
-- Functional error handling throughout
-- TDD approach mandated for all implementations
-- Multi-language consistency maintained through shared contracts
-- Zero external dependencies in core library
+**Phase 3**: Task execution (/tasks command creates tasks.md)
+**Phase 4**: Implementation (execute tasks.md following constitutional principles)
+**Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
+
+## Complexity Tracking
+*Fill ONLY if Constitution Check has violations that must be justified*
+
+No constitutional violations detected. The Go implementation follows all required principles:
+- Pure DDD architecture with clear layer separation
+- CQRS through interface design
+- TDD with Go testing conventions
+- Functional error handling using Result types instead of exceptions
+- Multi-language consistency through identical domain contracts
 
 ## Progress Tracking
-*✅ All /plan command phases completed successfully*
+*This checklist is updated during execution flow*
 
 **Phase Status**:
 - [x] Phase 0: Research complete (/plan command)
 - [x] Phase 1: Design complete (/plan command)
-- [x] Phase 2: Task planning approach documented (/plan command)
-- [ ] Phase 3: Tasks generated (/tasks command - NEXT)
+- [x] Phase 2: Task planning complete (/plan command - describe approach only)
+- [x] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
@@ -198,6 +235,7 @@ All architectural decisions align with constitutional requirements:
 - [x] Initial Constitution Check: PASS
 - [x] Post-Design Constitution Check: PASS
 - [x] All NEEDS CLARIFICATION resolved
-- [x] Complexity deviations documented (none required)
+- [x] Complexity deviations documented
 
-**Ready for Next Command**: `/tasks` - Generate implementation tasks from design artifacts
+---
+*Based on Constitution v1.0.0 - See `.specify/memory/constitution.md`*
