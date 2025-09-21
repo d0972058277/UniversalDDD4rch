@@ -364,9 +364,9 @@ describe('Quickstart Example Validation Integration Tests', () => {
 
             const splitOrders = splitResult.value;
             expect(splitOrders.length).toBe(3); // 3 + 3 + 2 items
-            expect(splitOrders[0].itemCount).toBe(3);
-            expect(splitOrders[1].itemCount).toBe(3);
-            expect(splitOrders[2].itemCount).toBe(2);
+            expect(splitOrders[0]?.itemCount).toBe(3);
+            expect(splitOrders[1]?.itemCount).toBe(3);
+            expect(splitOrders[2]?.itemCount).toBe(2);
 
             // Verify total amount preserved
             const totalAmount = splitOrders.reduce(

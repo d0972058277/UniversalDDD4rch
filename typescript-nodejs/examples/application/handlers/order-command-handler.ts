@@ -126,23 +126,16 @@ export class OrderCommandHandler {
 
             // Get the order
             const orderId = OrderId.fromString(command.orderId);
-            const orderResult = await this.orderRepository.getByIdAsync(orderId, cancellationToken);
+            const orderMaybe = await this.orderRepository.getByIdAsync(orderId, cancellationToken);
 
-            if (orderResult.isFailure) {
-                return {
-                    success: false,
-                    error: orderResult.error.message
-                };
-            }
-
-            if (!orderResult.value.hasValue) {
+            if (!orderMaybe.hasValue) {
                 return {
                     success: false,
                     error: `Order ${command.orderId} not found`
                 };
             }
 
-            const order = orderResult.value;
+            const order = orderMaybe.value;
 
             // Check optimistic concurrency
             if (order.version !== command.expectedVersion) {
@@ -198,7 +191,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
+                };
             }
 
             const order = orderResult.data;
@@ -249,7 +246,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
+                };
             }
 
             const order = orderResult.data;
@@ -312,7 +313,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
+                };
             }
 
             const order = orderResult.data;
@@ -378,7 +383,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
+                };
             }
 
             const order = orderResult.data;
@@ -442,7 +451,11 @@ export class OrderCommandHandler {
             );
 
             if (!orderResult.success || !orderResult.data) {
-                return orderResult;
+                return {
+                    success: false,
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
+                };
             }
 
             const order = orderResult.data;
@@ -508,8 +521,8 @@ export class OrderCommandHandler {
             if (!orderResult.success || !orderResult.data) {
                 return {
                     success: false,
-                    error: orderResult.error,
-                    validationErrors: orderResult.validationErrors
+                    ...(orderResult.error && { error: orderResult.error }),
+                    ...(orderResult.validationErrors && { validationErrors: orderResult.validationErrors })
                 };
             }
 

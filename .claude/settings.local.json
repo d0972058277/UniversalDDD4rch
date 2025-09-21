@@ -54,7 +54,8 @@
       "Bash(npm install:*)",
       "Bash(npx typedoc:*)",
       "Bash(npm run test:coverage:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

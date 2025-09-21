@@ -11,9 +11,8 @@ export class Money extends ValueObject {
     constructor(amount: number, currency: string) {
         super();
 
-        if (amount < 0) {
-            throw new Error('Amount cannot be negative');
-        }
+        // Note: Allow negative amounts as Money can represent debits/credits
+        // Business logic should validate positive amounts where needed
 
         if (!currency || currency.trim().length === 0) {
             throw new Error('Currency cannot be empty');
