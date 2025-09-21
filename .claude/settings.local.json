@@ -58,7 +58,8 @@
       "Bash(npx tsc:*)",
       "Bash(npm run test:integration:*)",
       "Bash(findstr:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(go mod init:*)"
     ],
     "deny": [],
     "ask": []
