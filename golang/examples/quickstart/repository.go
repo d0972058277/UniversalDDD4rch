@@ -11,7 +11,7 @@ import (
 // IOrderRepository defines the interface for order repository
 type IOrderRepository interface {
 	domain.IRepository[*Order, string]
-	GetOrdersByStatusAsync(ctx context.Context, status OrderStatus) functional.Result[[]Order]
+	GetOrdersByStatusAsync(ctx context.Context, status OrderStatus) functional.ResultOf[[]Order]
 	GetByCustomerIDAsync(ctx context.Context, customerID string) functional.Maybe[Order]
 }
 
@@ -28,7 +28,7 @@ func NewInMemoryOrderRepository() *InMemoryOrderRepository {
 }
 
 // GetOrdersByStatusAsync retrieves orders by status
-func (r *InMemoryOrderRepository) GetOrdersByStatusAsync(ctx context.Context, status OrderStatus) functional.Result[[]Order] {
+func (r *InMemoryOrderRepository) GetOrdersByStatusAsync(ctx context.Context, status OrderStatus) functional.ResultOf[[]Order] {
 	// Check for cancellation
 	select {
 	case <-ctx.Done():

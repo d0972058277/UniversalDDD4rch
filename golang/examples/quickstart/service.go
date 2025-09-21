@@ -28,7 +28,7 @@ func NewOrderServiceWithRepository(repository IOrderRepository) *OrderService {
 }
 
 // CreateOrder creates a new order
-func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amount Money, correlationID string) functional.Result[string] {
+func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amount Money, correlationID string) functional.ResultOf[string] {
 	// Validate input
 	validationResult := s.validateCreateOrderInput(customerID, amount)
 	if validationResult.IsFailure() {
@@ -123,7 +123,7 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderID string) function
 }
 
 // GetOrdersByStatus retrieves orders by status
-func (s *OrderService) GetOrdersByStatus(ctx context.Context, status OrderStatus) functional.Result[[]Order] {
+func (s *OrderService) GetOrdersByStatus(ctx context.Context, status OrderStatus) functional.ResultOf[[]Order] {
 	return s.repository.GetOrdersByStatusAsync(ctx, status)
 }
 
@@ -133,12 +133,12 @@ func (s *OrderService) GetOrderByCustomer(ctx context.Context, customerID string
 }
 
 // ProcessOrderWorkflow executes a complete order workflow
-func (s *OrderService) ProcessOrderWorkflow(ctx context.Context, customerID string, amount Money, correlationID string) functional.Result[string] {
+func (s *OrderService) ProcessOrderWorkflow(ctx context.Context, customerID string, amount Money, correlationID string) functional.ResultOf[string] {
 	return s.CreateOrder(ctx, customerID, amount, correlationID).
-		Bind(func(orderID string) functional.Result[string] {
+		Bind(func(orderID string) functional.ResultOf[string] {
 			return s.ConfirmOrder(ctx, orderID).Map(func() string { return orderID })
 		}).
-		Bind(func(orderID string) functional.Result[string] {
+		Bind(func(orderID string) functional.ResultOf[string] {
 			return s.ShipOrder(ctx, orderID).Map(func() string { return orderID })
 		})
 }
@@ -165,7 +165,7 @@ func (s *OrderService) ValidateOrder(ctx context.Context, orderID string) functi
 }
 
 // GetOrderEvents retrieves events for an order
-func (s *OrderService) GetOrderEvents(ctx context.Context, orderID string) functional.Result[[]domain.IDomainEvent] {
+func (s *OrderService) GetOrderEvents(ctx context.Context, orderID string) functional.ResultOf[[]domain.IDomainEvent] {
 	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
 	if !maybeOrder.HasValue() {
 		return functional.FailWith[[]domain.IDomainEvent](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
@@ -217,7 +217,7 @@ type OrderSummary struct {
 }
 
 // GetOrderSummary retrieves a summary of an order
-func (s *OrderService) GetOrderSummary(ctx context.Context, orderID string) functional.Result[OrderSummary] {
+func (s *OrderService) GetOrderSummary(ctx context.Context, orderID string) functional.ResultOf[OrderSummary] {
 	maybeOrder := s.repository.GetByIDAsync(ctx, orderID)
 	if !maybeOrder.HasValue() {
 		return functional.FailWith[OrderSummary](functional.DomainError("ORDER_NOT_FOUND", "Order not found"))
@@ -237,7 +237,7 @@ func (s *OrderService) GetOrderSummary(ctx context.Context, orderID string) func
 }
 
 // BatchCreateOrders creates multiple orders in a batch
-func (s *OrderService) BatchCreateOrders(ctx context.Context, requests []CreateOrderRequest) functional.Result[[]string] {
+func (s *OrderService) BatchCreateOrders(ctx context.Context, requests []CreateOrderRequest) functional.ResultOf[[]string] {
 	var orderIDs []string
 	var errors []functional.Error
 
@@ -276,7 +276,7 @@ type OrderStatistics struct {
 }
 
 // GetOrderStatistics retrieves order statistics
-func (s *OrderService) GetOrderStatistics(ctx context.Context) functional.Result[OrderStatistics] {
+func (s *OrderService) GetOrderStatistics(ctx context.Context) functional.ResultOf[OrderStatistics] {
 	stats := OrderStatistics{}
 
 	// Get all orders for each status

@@ -59,7 +59,12 @@
       "Bash(npm run test:integration:*)",
       "Bash(findstr:*)",
       "Bash(npm run lint)",
-      "Bash(go mod init:*)"
+      "Bash(go mod init:*)",
+      "Bash(go test:*)",
+      "Bash(where go)",
+      "Bash(go build:*)",
+      "Bash(go mod:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

@@ -12,7 +12,7 @@ type IRepository[TAggregate any, TID EntityID] interface {
 	AddAsync(ctx context.Context, aggregate TAggregate) functional.Result
 	UpdateAsync(ctx context.Context, aggregate TAggregate) functional.Result
 	DeleteAsync(ctx context.Context, id TID) functional.Result
-	ExistsAsync(ctx context.Context, id TID) functional.Result[bool]
+	ExistsAsync(ctx context.Context, id TID) functional.ResultOf[bool]
 }
 
 // RepositoryBase provides base functionality for repositories
@@ -142,7 +142,7 @@ func (r *InMemoryRepository[TAggregate, TID]) DeleteAsync(ctx context.Context, i
 }
 
 // ExistsAsync checks if an aggregate exists
-func (r *InMemoryRepository[TAggregate, TID]) ExistsAsync(ctx context.Context, id TID) functional.Result[bool] {
+func (r *InMemoryRepository[TAggregate, TID]) ExistsAsync(ctx context.Context, id TID) functional.ResultOf[bool] {
 	// Check for cancellation
 	select {
 	case <-ctx.Done():
@@ -155,7 +155,7 @@ func (r *InMemoryRepository[TAggregate, TID]) ExistsAsync(ctx context.Context, i
 }
 
 // GetAllAsync retrieves all aggregates (useful for testing)
-func (r *InMemoryRepository[TAggregate, TID]) GetAllAsync(ctx context.Context) functional.Result[[]TAggregate] {
+func (r *InMemoryRepository[TAggregate, TID]) GetAllAsync(ctx context.Context) functional.ResultOf[[]TAggregate] {
 	// Check for cancellation
 	select {
 	case <-ctx.Done():
@@ -172,7 +172,7 @@ func (r *InMemoryRepository[TAggregate, TID]) GetAllAsync(ctx context.Context) f
 }
 
 // CountAsync returns the number of aggregates
-func (r *InMemoryRepository[TAggregate, TID]) CountAsync(ctx context.Context) functional.Result[int] {
+func (r *InMemoryRepository[TAggregate, TID]) CountAsync(ctx context.Context) functional.ResultOf[int] {
 	// Check for cancellation
 	select {
 	case <-ctx.Done():

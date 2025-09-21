@@ -1,4 +1,4 @@
-package main
+package quickstart
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/universalddd/architecture-core-go/examples/quickstart"
 	"github.com/universalddd/architecture-core-go/pkg/functional"
 )
 
@@ -15,7 +14,7 @@ func main() {
 	fmt.Println()
 
 	// Create the order service
-	service := quickstart.NewOrderService()
+	service := NewOrderService()
 	ctx := context.Background()
 
 	// Example 1: Value Objects
@@ -58,9 +57,9 @@ func main() {
 
 func demonstrateValueObjects() {
 	// Money value objects
-	money1 := quickstart.NewMoney(100.50, "USD")
-	money2 := quickstart.NewMoney(100.50, "USD")
-	money3 := quickstart.NewMoney(100.50, "EUR")
+	money1 := NewMoney(100.50, "USD")
+	money2 := NewMoney(100.50, "USD")
+	money3 := NewMoney(100.50, "EUR")
 
 	fmt.Printf("money1: %s\n", money1)
 	fmt.Printf("money2: %s\n", money2)
@@ -74,14 +73,14 @@ func demonstrateValueObjects() {
 	fmt.Printf("money1 + money2 = %s\n", sum)
 
 	// Address value object
-	address1 := quickstart.NewAddress("123 Main St", "Anytown", "12345", "USA")
-	address2 := quickstart.NewAddress("123 Main St", "Anytown", "12345", "USA")
+	address1 := NewAddress("123 Main St", "Anytown", "12345", "USA")
+	address2 := NewAddress("123 Main St", "Anytown", "12345", "USA")
 	fmt.Printf("address1 == address2: %t\n", address1.Equals(&address2))
 }
 
-func demonstrateBasicWorkflow(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateBasicWorkflow(ctx context.Context, service *OrderService) {
 	customerID := "CUST-001"
-	amount := quickstart.NewMoney(150.75, "USD")
+	amount := NewMoney(150.75, "USD")
 	correlationID := "demo-workflow-001"
 
 	// Create order
@@ -128,10 +127,10 @@ func demonstrateBasicWorkflow(ctx context.Context, service *quickstart.OrderServ
 	}
 }
 
-func demonstrateErrorHandling(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateErrorHandling(ctx context.Context, service *OrderService) {
 	// Try to create order with invalid data
 	fmt.Println("Attempting to create order with negative amount...")
-	invalidAmount := quickstart.NewMoney(-100.00, "USD")
+	invalidAmount := NewMoney(-100.00, "USD")
 	result := service.CreateOrder(ctx, "CUST-002", invalidAmount, "")
 
 	result.Match(
@@ -145,7 +144,7 @@ func demonstrateErrorHandling(ctx context.Context, service *quickstart.OrderServ
 
 	// Try to create order with empty customer ID
 	fmt.Println("Attempting to create order with empty customer ID...")
-	validAmount := quickstart.NewMoney(100.00, "USD")
+	validAmount := NewMoney(100.00, "USD")
 	result2 := service.CreateOrder(ctx, "", validAmount, "")
 
 	if result2.IsFailure() {
@@ -166,13 +165,13 @@ func demonstrateErrorHandling(ctx context.Context, service *quickstart.OrderServ
 	}
 }
 
-func demonstrateMaybeUsage(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateMaybeUsage(ctx context.Context, service *OrderService) {
 	// Try to get non-existent order
 	fmt.Println("Looking for non-existent order...")
 	maybeOrder := service.GetOrder(ctx, "NON-EXISTENT")
 
 	result := maybeOrder.
-		Map(func(o quickstart.Order) string {
+		Map(func(o Order) string {
 			return fmt.Sprintf("Found order: %s", o.GetID())
 		}).
 		OrElse("Order not found")
@@ -181,7 +180,7 @@ func demonstrateMaybeUsage(ctx context.Context, service *quickstart.OrderService
 
 	// Create order and demonstrate Maybe operations
 	fmt.Println("Creating order and using Maybe operations...")
-	createResult := service.CreateOrder(ctx, "CUST-004", quickstart.NewMoney(200.00, "USD"), "")
+	createResult := service.CreateOrder(ctx, "CUST-004", NewMoney(200.00, "USD"), "")
 	if createResult.IsSuccess() {
 		orderID := createResult.Value()
 
@@ -189,7 +188,7 @@ func demonstrateMaybeUsage(ctx context.Context, service *quickstart.OrderService
 
 		// Chain Maybe operations
 		summary := maybeOrder.
-			Map(func(o quickstart.Order) string {
+			Map(func(o Order) string {
 				return fmt.Sprintf("Order %s: %s (%s)", o.GetID(), o.GetTotalAmount(), o.GetStatus())
 			}).
 			OrElse("No order information available")
@@ -206,9 +205,9 @@ func demonstrateMaybeUsage(ctx context.Context, service *quickstart.OrderService
 	}
 }
 
-func demonstrateOperationChaining(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateOperationChaining(ctx context.Context, service *OrderService) {
 	customerID := "CUST-005"
-	amount := quickstart.NewMoney(300.00, "USD")
+	amount := NewMoney(300.00, "USD")
 
 	fmt.Println("Demonstrating operation chaining...")
 
@@ -235,7 +234,7 @@ func demonstrateOperationChaining(ctx context.Context, service *quickstart.Order
 	// Demonstrate recovery pattern
 	fmt.Println("Demonstrating recovery pattern...")
 
-	recoveryResult := service.CreateOrder(ctx, "CUST-006", quickstart.NewMoney(400.00, "USD"), "").
+	recoveryResult := service.CreateOrder(ctx, "CUST-006", NewMoney(400.00, "USD"), "").
 		Bind(func(orderID string) functional.Result[string] {
 			// Try to ship directly (will fail)
 			shipResult := service.ShipOrder(ctx, orderID)
@@ -263,9 +262,9 @@ func demonstrateOperationChaining(ctx context.Context, service *quickstart.Order
 	}
 }
 
-func demonstrateDomainEvents(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateDomainEvents(ctx context.Context, service *OrderService) {
 	customerID := "CUST-007"
-	amount := quickstart.NewMoney(500.00, "USD")
+	amount := NewMoney(500.00, "USD")
 
 	fmt.Println("Creating order and tracking events...")
 
@@ -312,14 +311,14 @@ func demonstrateDomainEvents(ctx context.Context, service *quickstart.OrderServi
 	}
 }
 
-func demonstrateAdvancedScenarios(ctx context.Context, service *quickstart.OrderService) {
+func demonstrateAdvancedScenarios(ctx context.Context, service *OrderService) {
 	// Batch operations
 	fmt.Println("Creating multiple orders...")
 
-	requests := []quickstart.CreateOrderRequest{
-		{CustomerID: "CUST-BATCH-1", Amount: quickstart.NewMoney(100.00, "USD"), CorrelationID: "batch-1"},
-		{CustomerID: "CUST-BATCH-2", Amount: quickstart.NewMoney(200.00, "USD"), CorrelationID: "batch-2"},
-		{CustomerID: "CUST-BATCH-3", Amount: quickstart.NewMoney(300.00, "USD"), CorrelationID: "batch-3"},
+	requests := []CreateOrderRequest{
+		{CustomerID: "CUST-BATCH-1", Amount: NewMoney(100.00, "USD"), CorrelationID: "batch-1"},
+		{CustomerID: "CUST-BATCH-2", Amount: NewMoney(200.00, "USD"), CorrelationID: "batch-2"},
+		{CustomerID: "CUST-BATCH-3", Amount: NewMoney(300.00, "USD"), CorrelationID: "batch-3"},
 	}
 
 	batchResult := service.BatchCreateOrders(ctx, requests)
@@ -347,7 +346,7 @@ func demonstrateAdvancedScenarios(ctx context.Context, service *quickstart.Order
 	// Add slight delay to potentially trigger timeout
 	time.Sleep(50 * time.Millisecond)
 
-	timeoutResult := service.ProcessOrderWorkflow(timeoutCtx, "CUST-TIMEOUT", quickstart.NewMoney(600.00, "USD"), "timeout-test")
+	timeoutResult := service.ProcessOrderWorkflow(timeoutCtx, "CUST-TIMEOUT", NewMoney(600.00, "USD"), "timeout-test")
 	if timeoutResult.IsFailure() {
 		fmt.Printf("Workflow with timeout: %s\n", timeoutResult.Error().Message())
 	} else {

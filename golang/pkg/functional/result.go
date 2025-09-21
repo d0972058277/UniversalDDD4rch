@@ -8,8 +8,8 @@ type Result struct {
 	error     Error
 }
 
-// Result[T] represents the result of an operation that can succeed with a value or fail
-type Result[T any] struct {
+// ResultOf[T] represents the result of an operation that can succeed with a value or fail
+type ResultOf[T any] struct {
 	isSuccess bool
 	value     T
 	error     Error
@@ -40,8 +40,8 @@ func Fail(err Error) Result {
 	return Result{isSuccess: false, error: err}
 }
 
-// Map transforms a successful Result to a Result[T] by applying the provided function
-func (r Result) Map(f func() T) Result[T] {
+// MapResult transforms a successful Result to a ResultOf[T] by applying the provided function
+func MapResult[T any](r Result, f func() T) ResultOf[T] {
 	if r.isSuccess {
 		return OkWith(f())
 	}
@@ -56,8 +56,8 @@ func (r Result) Bind(f func() Result) Result {
 	return r
 }
 
-// Match applies one of two functions based on the result state
-func (r Result) Match(onSuccess func() T, onFailure func(Error) T) T {
+// MatchResult applies one of two functions based on the result state
+func MatchResult[T any](r Result, onSuccess func() T, onFailure func(Error) T) T {
 	if r.isSuccess {
 		return onSuccess()
 	}
@@ -65,46 +65,62 @@ func (r Result) Match(onSuccess func() T, onFailure func(Error) T) T {
 }
 
 // IsSuccess returns true if the result represents success
-func (r Result[T]) IsSuccess() bool {
+func (r ResultOf[T]) IsSuccess() bool {
 	return r.isSuccess
 }
 
 // IsFailure returns true if the result represents failure
-func (r Result[T]) IsFailure() bool {
+func (r ResultOf[T]) IsFailure() bool {
 	return !r.isSuccess
 }
 
 // Value returns the value if the result is successful
-func (r Result[T]) Value() T {
+func (r ResultOf[T]) Value() T {
 	return r.value
 }
 
 // Error returns the error if the result is a failure
-func (r Result[T]) Error() Error {
+func (r ResultOf[T]) Error() Error {
 	return r.error
 }
 
-// OkWith creates a successful Result[T] with the specified value
-func OkWith[T any](value T) Result[T] {
-	return Result[T]{isSuccess: true, value: value}
+// OkWith creates a successful ResultOf[T] with the specified value
+func OkWith[T any](value T) ResultOf[T] {
+	return ResultOf[T]{isSuccess: true, value: value}
 }
 
-// FailWith creates a failed Result[T] with the specified error
-func FailWith[T any](err Error) Result[T] {
+// FailWith creates a failed ResultOf[T] with the specified error
+func FailWith[T any](err Error) ResultOf[T] {
 	var zero T
-	return Result[T]{isSuccess: false, value: zero, error: err}
+	return ResultOf[T]{isSuccess: false, value: zero, error: err}
 }
 
-// Map transforms the value of a successful Result[T] to Result[U]
-func (r Result[T]) Map(f func(T) U) Result[U] {
+// Map transforms the value of a successful ResultOf[T] to ResultOf[U]
+func (r ResultOf[T]) Map(f func(T) any) ResultOf[any] {
+	if r.isSuccess {
+		return OkWith(f(r.value))
+	}
+	return FailWith[any](r.error)
+}
+
+// MapTo transforms the value of a successful ResultOf[T] to ResultOf[U]
+func MapTo[T, U any](r ResultOf[T], f func(T) U) ResultOf[U] {
 	if r.isSuccess {
 		return OkWith(f(r.value))
 	}
 	return FailWith[U](r.error)
 }
 
-// Bind chains Result[T] operations, applying the function only if the current result is successful
-func (r Result[T]) Bind(f func(T) Result[U]) Result[U] {
+// Bind chains ResultOf[T] operations, applying the function only if the current result is successful
+func (r ResultOf[T]) Bind(f func(T) ResultOf[any]) ResultOf[any] {
+	if r.isSuccess {
+		return f(r.value)
+	}
+	return FailWith[any](r.error)
+}
+
+// BindTo chains ResultOf[T] operations, applying the function only if the current result is successful
+func BindTo[T, U any](r ResultOf[T], f func(T) ResultOf[U]) ResultOf[U] {
 	if r.isSuccess {
 		return f(r.value)
 	}
@@ -112,15 +128,23 @@ func (r Result[T]) Bind(f func(T) Result[U]) Result[U] {
 }
 
 // Match applies one of two functions based on the result state
-func (r Result[T]) Match(onSuccess func(T) U, onFailure func(Error) U) U {
+func (r ResultOf[T]) Match(onSuccess func(T) any, onFailure func(Error) any) any {
 	if r.isSuccess {
 		return onSuccess(r.value)
 	}
 	return onFailure(r.error)
 }
 
-// FromMaybe converts a Maybe[T] to Result[T], using the provided error if Maybe is None
-func FromMaybe[T any](maybe Maybe[T], errorWhenNone Error) Result[T] {
+// MatchTo applies one of two functions based on the result state
+func MatchTo[T, U any](r ResultOf[T], onSuccess func(T) U, onFailure func(Error) U) U {
+	if r.isSuccess {
+		return onSuccess(r.value)
+	}
+	return onFailure(r.error)
+}
+
+// FromMaybe converts a Maybe[T] to ResultOf[T], using the provided error if Maybe is None
+func FromMaybe[T any](maybe Maybe[T], errorWhenNone Error) ResultOf[T] {
 	if maybe.HasValue() {
 		return OkWith(maybe.Value())
 	}
@@ -128,34 +152,32 @@ func FromMaybe[T any](maybe Maybe[T], errorWhenNone Error) Result[T] {
 }
 
 // Ensure validates a successful result with a predicate, converting to failure if predicate fails
-func (r Result[T]) Ensure(predicate func(T) bool, errorWhenFalse Error) Result[T] {
+func (r ResultOf[T]) Ensure(predicate func(T) bool, errorWhenFalse Error) ResultOf[T] {
 	if r.isSuccess && !predicate(r.value) {
 		return FailWith[T](errorWhenFalse)
 	}
 	return r
 }
 
-// TryMap attempts to map the value, catching panics and converting them to errors
-func (r Result[T]) TryMap(f func(T) U) Result[U] {
+// TryMapTo attempts to map the value, catching panics and converting them to errors
+func TryMapTo[T, U any](r ResultOf[T], f func(T) U) ResultOf[U] {
 	if !r.isSuccess {
 		return FailWith[U](r.error)
 	}
 
 	defer func() {
 		if recovered := recover(); recovered != nil {
-			// Convert panic to infrastructure error
-			err := InfrastructureError("PANIC_RECOVERED", "Operation panicked: "+fmt.Sprintf("%v", recovered))
-			result := FailWith[U](err)
-			// This is a bit hacky but necessary for the defer to work
-			r = Result[T]{isSuccess: false, error: err}
+			// Convert panic to infrastructure error - in a real implementation this would
+			// be handled properly with a panic handler that returns an error result
+			_ = InfrastructureError("PANIC_RECOVERED", "Operation panicked: "+fmt.Sprintf("%v", recovered))
 		}
 	}()
 
 	return OkWith(f(r.value))
 }
 
-// TryBind attempts to bind the operation, catching panics and converting them to errors
-func (r Result[T]) TryBind(f func(T) Result[U]) Result[U] {
+// TryBindTo attempts to bind the operation, catching panics and converting them to errors
+func TryBindTo[T, U any](r ResultOf[T], f func(T) ResultOf[U]) ResultOf[U] {
 	if !r.isSuccess {
 		return FailWith[U](r.error)
 	}

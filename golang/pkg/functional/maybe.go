@@ -29,8 +29,16 @@ func None[T any]() Maybe[T] {
 	return Maybe[T]{hasValue: false, value: zero}
 }
 
-// Map transforms the value inside Maybe[T] to Maybe[U] if a value is present
-func (m Maybe[T]) Map(f func(T) U) Maybe[U] {
+// Map transforms the value inside Maybe[T] to Maybe[any] if a value is present
+func (m Maybe[T]) Map(f func(T) any) Maybe[any] {
+	if m.hasValue {
+		return Some(f(m.value))
+	}
+	return None[any]()
+}
+
+// MapTo transforms the value inside Maybe[T] to Maybe[U] if a value is present
+func MapToMaybe[T, U any](m Maybe[T], f func(T) U) Maybe[U] {
 	if m.hasValue {
 		return Some(f(m.value))
 	}
@@ -38,7 +46,15 @@ func (m Maybe[T]) Map(f func(T) U) Maybe[U] {
 }
 
 // Bind chains Maybe operations, applying the function only if a value is present
-func (m Maybe[T]) Bind(f func(T) Maybe[U]) Maybe[U] {
+func (m Maybe[T]) Bind(f func(T) Maybe[any]) Maybe[any] {
+	if m.hasValue {
+		return f(m.value)
+	}
+	return None[any]()
+}
+
+// BindTo chains Maybe operations, applying the function only if a value is present
+func BindToMaybe[T, U any](m Maybe[T], f func(T) Maybe[U]) Maybe[U] {
 	if m.hasValue {
 		return f(m.value)
 	}
@@ -70,15 +86,23 @@ func (m Maybe[T]) OrElseFunc(factory func() T) T {
 }
 
 // Match applies one of two functions based on whether a value is present
-func (m Maybe[T]) Match(onSome func(T) U, onNone func() U) U {
+func (m Maybe[T]) Match(onSome func(T) any, onNone func() any) any {
 	if m.hasValue {
 		return onSome(m.value)
 	}
 	return onNone()
 }
 
-// ToResult converts Maybe[T] to Result[T], using the provided error if no value is present
-func (m Maybe[T]) ToResult(errorWhenNone Error) Result[T] {
+// MatchTo applies one of two functions based on whether a value is present
+func MatchToMaybe[T, U any](m Maybe[T], onSome func(T) U, onNone func() U) U {
+	if m.hasValue {
+		return onSome(m.value)
+	}
+	return onNone()
+}
+
+// ToResult converts Maybe[T] to ResultOf[T], using the provided error if no value is present
+func (m Maybe[T]) ToResult(errorWhenNone Error) ResultOf[T] {
 	if m.hasValue {
 		return OkWith(m.value)
 	}
@@ -107,13 +131,23 @@ func (m Maybe[T]) Where(predicate func(T) bool) Maybe[T] {
 }
 
 // Select transforms the value (alias for Map for LINQ-style usage)
-func (m Maybe[T]) Select(f func(T) U) Maybe[U] {
+func (m Maybe[T]) Select(f func(T) any) Maybe[any] {
 	return m.Map(f)
 }
 
+// SelectTo transforms the value (alias for MapTo for LINQ-style usage)
+func SelectToMaybe[T, U any](m Maybe[T], f func(T) U) Maybe[U] {
+	return MapToMaybe(m, f)
+}
+
 // SelectMany chains Maybe operations (alias for Bind for LINQ-style usage)
-func (m Maybe[T]) SelectMany(f func(T) Maybe[U]) Maybe[U] {
+func (m Maybe[T]) SelectMany(f func(T) Maybe[any]) Maybe[any] {
 	return m.Bind(f)
+}
+
+// SelectManyTo chains Maybe operations (alias for BindTo for LINQ-style usage)
+func SelectManyToMaybe[T, U any](m Maybe[T], f func(T) Maybe[U]) Maybe[U] {
+	return BindToMaybe(m, f)
 }
 
 // IsNone returns true if no value is present

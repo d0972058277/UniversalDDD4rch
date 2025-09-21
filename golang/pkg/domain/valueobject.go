@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"hash"
 	"hash/fnv"
 	"reflect"
 )
@@ -134,7 +135,7 @@ func hashEqualityComponents(components []interface{}) uint64 {
 }
 
 // hashComponent adds a single component to the hash
-func hashComponent(h *fnv.Hash64a, component interface{}) {
+func hashComponent(h hash.Hash64, component interface{}) {
 	if component == nil {
 		h.Write([]byte("null"))
 		return

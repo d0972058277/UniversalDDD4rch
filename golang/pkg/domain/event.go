@@ -2,7 +2,6 @@ package domain
 
 import (
 	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"time"
 )
