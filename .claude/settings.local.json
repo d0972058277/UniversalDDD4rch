@@ -52,7 +52,8 @@
       "Bash(npm run test:unit:*)",
       "Bash(npm run build:tsc:*)",
       "Bash(npm install:*)",
-      "Bash(npx typedoc:*)"
+      "Bash(npx typedoc:*)",
+      "Bash(npm run test:coverage:*)"
     ],
     "deny": [],
     "ask": []

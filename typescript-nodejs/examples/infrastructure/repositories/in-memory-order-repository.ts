@@ -1,4 +1,4 @@
-import { Result, Maybe, Error } from '../../../src/functional';
+import { Result, ResultOf, Maybe, Error as DomainError } from '../../../src/functional';
 import { Order, OrderId, CustomerId } from '../../domain/entities/order';
 import { OrderStatus } from '../../domain/value-objects/order-status';
 import {
@@ -22,7 +22,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async getByIdAsync(
         id: OrderId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Maybe<Order>>> {
+    ): Promise<ResultOf<Maybe<Order>>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -30,13 +30,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(order ? Maybe.some(order) : Maybe.none());
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.GetByIdFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -54,7 +54,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
             this.checkCancellation(cancellationToken);
 
             if (this.orders.has(aggregate.id.value)) {
-                return Result.fail(Error.infrastructure(
+                return Result.fail(DomainError.infrastructure(
                     'Repository.DuplicateId',
                     `Order with ID ${aggregate.id.value} already exists`
                 ));
@@ -73,13 +73,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok();
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.AddFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -98,7 +98,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             const existingOrder = this.orders.get(aggregate.id.value);
             if (!existingOrder) {
-                return Result.fail(Error.infrastructure(
+                return Result.fail(DomainError.infrastructure(
                     'Repository.NotFound',
                     `Order with ID ${aggregate.id.value} not found`
                 ));
@@ -106,7 +106,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             // Optimistic concurrency check
             if (existingOrder.version !== aggregate.version - 1) {
-                return Result.fail(Error.concurrency(
+                return Result.fail(DomainError.concurrency(
                     'Repository.ConcurrencyConflict',
                     `Expected version ${aggregate.version - 1}, but found ${existingOrder.version}`
                 ));
@@ -128,13 +128,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok();
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.UpdateFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -153,7 +153,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             const order = this.orders.get(id.value);
             if (!order) {
-                return Result.fail(Error.infrastructure(
+                return Result.fail(DomainError.infrastructure(
                     'Repository.NotFound',
                     `Order with ID ${id.value} not found`
                 ));
@@ -168,13 +168,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok();
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.DeleteFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -187,7 +187,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async existsAsync(
         id: OrderId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<boolean>> {
+    ): Promise<ResultOf<boolean>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -195,13 +195,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(exists);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.ExistsFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -214,7 +214,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async findByCustomerIdAsync(
         customerId: CustomerId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -226,13 +226,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindByCustomerFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -245,7 +245,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async findByStatusAsync(
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -257,13 +257,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindByStatusFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -277,7 +277,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
         customerId: CustomerId,
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -292,13 +292,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(filteredOrders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindByCustomerAndStatusFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -312,7 +312,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
         startDate: Date,
         endDate: Date,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -325,13 +325,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindByDateRangeFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -346,7 +346,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
         maxAmount: number,
         currency: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -361,13 +361,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindByAmountRangeFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -380,7 +380,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async getCustomerStatisticsAsync(
         customerId: CustomerId,
         cancellationToken?: AbortSignal
-    ): Promise<Result<OrderStatistics>> {
+    ): Promise<ResultOf<OrderStatistics>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -456,13 +456,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             });
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.GetStatisticsFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -475,7 +475,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async findRecentOrdersAsync(
         limit: number,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -486,13 +486,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindRecentFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -505,7 +505,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async findOrdersWithProductAsync(
         productName: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -515,13 +515,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindWithProductFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -534,7 +534,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async countByStatusAsync(
         status: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>> {
+    ): Promise<ResultOf<number>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -542,13 +542,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(orderIds.size);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.CountByStatusFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -563,7 +563,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
         endDate: Date,
         currency: string,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>> {
+    ): Promise<ResultOf<number>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -574,18 +574,18 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
             const totalSales = ordersResult.value
                 .filter(order => order.totalAmount.currency === currency)
-                .reduce((sum, order) => sum + order.totalAmount.amount, 0);
+                .reduce((sum: number, order: any) => sum + order.totalAmount.amount, 0);
 
             return Result.ok(totalSales);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.GetTotalSalesFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -598,7 +598,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async findStaleOrdersAsync(
         daysOld: number,
         cancellationToken?: AbortSignal
-    ): Promise<Result<Order[]>> {
+    ): Promise<ResultOf<Order[]>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -614,13 +614,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(staleOrders);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.FindStaleFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -634,7 +634,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
         orderIds: OrderId[],
         newStatus: OrderStatus,
         cancellationToken?: AbortSignal
-    ): Promise<Result<number>> {
+    ): Promise<ResultOf<number>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -660,13 +660,13 @@ export class InMemoryOrderRepository implements IOrderRepository {
             return Result.ok(updatedCount);
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.BulkUpdateFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -679,7 +679,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
     public async saveAllAsync(
         orders: Order[],
         cancellationToken?: AbortSignal
-    ): Promise<Result<void>> {
+    ): Promise<ResultOf<void>> {
         try {
             this.checkCancellation(cancellationToken);
 
@@ -695,12 +695,12 @@ export class InMemoryOrderRepository implements IOrderRepository {
                     if (this.orders.has(order.id.value)) {
                         const updateResult = await this.updateAsync(order, cancellationToken);
                         if (updateResult.isFailure) {
-                            throw new Error(updateResult.error.message);
+                            throw new globalThis.Error(updateResult.error.message);
                         }
                     } else {
                         const addResult = await this.addAsync(order, cancellationToken);
                         if (addResult.isFailure) {
-                            throw new Error(addResult.error.message);
+                            throw new globalThis.Error(addResult.error.message);
                         }
                     }
                 }
@@ -723,20 +723,20 @@ export class InMemoryOrderRepository implements IOrderRepository {
                     this.statusIndex.set(key, value);
                 }
 
-                return Result.fail(Error.infrastructure(
+                return Result.fail(DomainError.infrastructure(
                     'Repository.SaveAllFailed',
                     error instanceof Error ? error.message : 'Unknown error'
                 ));
             }
 
         } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                return Result.fail(Error.infrastructure(
+            if (error instanceof Error && (error as any).name === 'AbortError') {
+                return Result.fail(DomainError.infrastructure(
                     'Repository.OperationCancelled',
                     'Operation was cancelled'
                 ));
             }
-            return Result.fail(Error.infrastructure(
+            return Result.fail(DomainError.infrastructure(
                 'Repository.SaveAllFailed',
                 error instanceof Error ? error.message : 'Unknown error'
             ));
@@ -761,7 +761,7 @@ export class InMemoryOrderRepository implements IOrderRepository {
 
     private checkCancellation(signal?: AbortSignal): void {
         if (signal?.aborted) {
-            throw new Error('Operation was cancelled');
+            throw new globalThis.Error('Operation was cancelled');
         }
     }
 

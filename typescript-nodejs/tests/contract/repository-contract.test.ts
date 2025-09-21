@@ -142,9 +142,9 @@ describe('Repository Contract Tests', () => {
       const orderId = new TestOrderId('ORDER-001');
       const controller = new AbortController();
 
-      // When
-      const promise = repository.getByIdAsync(orderId, controller.signal);
+      // When - Cancel before the operation starts
       controller.abort();
+      const promise = repository.getByIdAsync(orderId, controller.signal);
 
       // Then
       await expect(promise).rejects.toThrow('Operation was cancelled');

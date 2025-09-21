@@ -149,7 +149,7 @@ describe('Repository Async Patterns Integration Tests', () => {
             const statuses = [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.SHIPPED];
 
             for (let i = 0; i < 10; i++) {
-                const customerId = new CustomerId(customers[i % customers.length]);
+                const customerId = new CustomerId(customers[i % customers.length]!);
                 const order = Order.create(customerId);
 
                 const item = OrderItem.create(

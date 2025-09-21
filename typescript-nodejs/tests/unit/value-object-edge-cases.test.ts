@@ -333,13 +333,13 @@ describe('ValueObject Multi-Field Equality Edge Cases', () => {
     describe('Map Field Equality', () => {
         test('Should_BeEqual_When_MapsHaveSameEntries', () => {
             // Given
-            const map1 = new Map([
+            const map1 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key2', 42],
                 ['key3', true]
             ]);
 
-            const map2 = new Map([
+            const map2 = new Map<string, any>([
                 ['key1', 'value1'],
                 ['key2', 42],
                 ['key3', true]

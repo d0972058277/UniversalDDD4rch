@@ -285,9 +285,9 @@ describe('DomainEvent Metadata Handling Tests', () => {
 
             // Then
             expect(event.metadata).toEqual(metadata);
-            expect(event.metadata.user.location.city).toBe('San Francisco');
-            expect(event.metadata.system.environment).toBe('production');
-            expect(event.metadata.metrics.processingTime).toBe(125);
+            expect((event.metadata.user as any).location.city).toBe('San Francisco');
+            expect((event.metadata.system as any).environment).toBe('production');
+            expect((event.metadata.metrics as any).processingTime).toBe(125);
             expect(event.metadata.flags).toContain('beta-user');
         });
 
@@ -389,7 +389,7 @@ describe('DomainEvent Metadata Handling Tests', () => {
             originalMetadata.tags.push('modified');
 
             // Then - Event metadata should remain unchanged
-            expect(event.metadata.config.enabled).toBe(true);
+            expect((event.metadata.config as any).enabled).toBe(true);
             expect(event.metadata.tags).toEqual(['important', 'user-action']);
         });
     });

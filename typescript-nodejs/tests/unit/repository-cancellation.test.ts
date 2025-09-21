@@ -3,9 +3,9 @@
  * Architecture.Core TypeScript Implementation
  */
 
-import { Result } from '../../src/functional/result';
+import { Result, ResultOf } from '../../src/functional/result';
 import { Maybe } from '../../src/functional/maybe';
-import { Error } from '../../src/functional/error';
+import { Error as DomainError } from '../../src/functional/error';
 import { IRepository } from '../../src/domain/interfaces/i-repository';
 import { AggregateRoot } from '../../src/domain/aggregate-root';
 import { DomainEventBase } from '../../src/domain/domain-event-base';
@@ -62,7 +62,7 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
         return new Promise<void>((resolve, reject) => {
             if (cancellationToken?.aborted) {
                 if (this.shouldThrowOnCancel) {
-                    reject(new Error('Operation was cancelled'));
+                    reject(new globalThis.Error('Operation was cancelled'));
                 } else {
                     resolve();
                 }
@@ -77,7 +77,7 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
                 const abortHandler = () => {
                     clearTimeout(timeoutId);
                     if (this.shouldThrowOnCancel) {
-                        reject(new Error('Operation was cancelled'));
+                        reject(new globalThis.Error('Operation was cancelled'));
                     } else {
                         resolve();
                     }
@@ -103,11 +103,11 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
         await this.delay(cancellationToken);
 
         if (cancellationToken?.aborted) {
-            return Result.fail(Error.infrastructure('CANCELLED', 'Add operation was cancelled'));
+            return Result.fail(DomainError.infrastructure('CANCELLED', 'Add operation was cancelled'));
         }
 
         if (this.storage.has(aggregate.id.value)) {
-            return Result.fail(Error.domain('DUPLICATE_ID', 'Aggregate already exists'));
+            return Result.fail(DomainError.domain('DUPLICATE_ID', 'Aggregate already exists'));
         }
 
         this.storage.set(aggregate.id.value, aggregate);
@@ -118,11 +118,11 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
         await this.delay(cancellationToken);
 
         if (cancellationToken?.aborted) {
-            return Result.fail(Error.infrastructure('CANCELLED', 'Update operation was cancelled'));
+            return Result.fail(DomainError.infrastructure('CANCELLED', 'Update operation was cancelled'));
         }
 
         if (!this.storage.has(aggregate.id.value)) {
-            return Result.fail(Error.domain('NOT_FOUND', 'Aggregate not found'));
+            return Result.fail(DomainError.domain('NOT_FOUND', 'Aggregate not found'));
         }
 
         this.storage.set(aggregate.id.value, aggregate);
@@ -133,22 +133,22 @@ class MockRepository implements IRepository<TestAggregate, TestId> {
         await this.delay(cancellationToken);
 
         if (cancellationToken?.aborted) {
-            return Result.fail(Error.infrastructure('CANCELLED', 'Delete operation was cancelled'));
+            return Result.fail(DomainError.infrastructure('CANCELLED', 'Delete operation was cancelled'));
         }
 
         if (!this.storage.has(id.value)) {
-            return Result.fail(Error.domain('NOT_FOUND', 'Aggregate not found'));
+            return Result.fail(DomainError.domain('NOT_FOUND', 'Aggregate not found'));
         }
 
         this.storage.delete(id.value);
         return Result.ok();
     }
 
-    async existsAsync(id: TestId, cancellationToken?: AbortSignal): Promise<Result<boolean>> {
+    async existsAsync(id: TestId, cancellationToken?: AbortSignal): Promise<ResultOf<boolean>> {
         await this.delay(cancellationToken);
 
         if (cancellationToken?.aborted) {
-            return Result.fail(Error.infrastructure('CANCELLED', 'Exists check was cancelled'));
+            return Result.fail(DomainError.infrastructure('CANCELLED', 'Exists check was cancelled'));
         }
 
         return Result.ok(this.storage.has(id.value));
@@ -346,7 +346,7 @@ describe('Repository Cancellation Handling Tests', () => {
             const results = await Promise.all(operations);
 
             // Then - All operations should be cancelled
-            results.forEach(result => {
+            results.forEach((result: any) => {
                 if ('hasValue' in result) {
                     expect(result.hasValue).toBe(false);
                 } else {
