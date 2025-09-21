@@ -102,22 +102,22 @@ Implementation tasks for Architecture.Core TypeScript Node.js library providing 
 - [X] **T030** [P] Functional types barrel export in `typescript-nodejs/src/functional/index.ts`
 
 ### DDD Base Classes Implementation
-- [ ] **T031** [P] IEntity interface in `typescript-nodejs/src/domain/interfaces/i-entity.ts`
-- [ ] **T032** [P] ValueObject abstract base class in `typescript-nodejs/src/domain/value-object.ts`
-- [ ] **T033** [P] Entity<TId> abstract base class in `typescript-nodejs/src/domain/entity.ts`
-- [ ] **T034** [P] IAggregateRoot interface in `typescript-nodejs/src/domain/interfaces/i-aggregate-root.ts`
-- [ ] **T035** [P] IDomainEvent interface in `typescript-nodejs/src/domain/interfaces/i-domain-event.ts`
-- [ ] **T036** [P] DomainEventBase abstract class in `typescript-nodejs/src/domain/domain-event-base.ts`
-- [ ] **T037** AggregateRoot<TId> abstract base class in `typescript-nodejs/src/domain/aggregate-root.ts`
+- [X] **T031** [P] IEntity interface in `typescript-nodejs/src/domain/interfaces/i-entity.ts`
+- [X] **T032** [P] ValueObject abstract base class in `typescript-nodejs/src/domain/value-object.ts`
+- [X] **T033** [P] Entity<TId> abstract base class in `typescript-nodejs/src/domain/entity.ts`
+- [X] **T034** [P] IAggregateRoot interface in `typescript-nodejs/src/domain/interfaces/i-aggregate-root.ts`
+- [X] **T035** [P] IDomainEvent interface in `typescript-nodejs/src/domain/interfaces/i-domain-event.ts`
+- [X] **T036** [P] DomainEventBase abstract class in `typescript-nodejs/src/domain/domain-event-base.ts`
+- [X] **T037** AggregateRoot<TId> abstract base class in `typescript-nodejs/src/domain/aggregate-root.ts`
 
 ### Repository Abstractions
-- [ ] **T038** [P] IRepository interface in `typescript-nodejs/src/domain/interfaces/i-repository.ts`
-- [ ] **T039** [P] RepositoryBase abstract class in `typescript-nodejs/src/infrastructure/repository-base.ts`
+- [X] **T038** [P] IRepository interface in `typescript-nodejs/src/domain/interfaces/i-repository.ts`
+- [X] **T039** [P] RepositoryBase abstract class in `typescript-nodejs/src/infrastructure/repository-base.ts`
 
 ### Module Exports and Barrel Files
-- [ ] **T040** [P] Domain layer barrel export in `typescript-nodejs/src/domain/index.ts`
-- [ ] **T041** [P] Infrastructure layer barrel export in `typescript-nodejs/src/infrastructure/index.ts`
-- [ ] **T042** Main library barrel export in `typescript-nodejs/src/index.ts`
+- [X] **T040** [P] Domain layer barrel export in `typescript-nodejs/src/domain/index.ts`
+- [X] **T041** [P] Infrastructure layer barrel export in `typescript-nodejs/src/infrastructure/index.ts`
+- [X] **T042** Main library barrel export in `typescript-nodejs/src/index.ts`
 
 ## Phase 3.4: Integration Examples and Quickstart Validation
 

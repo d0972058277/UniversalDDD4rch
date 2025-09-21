@@ -194,7 +194,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const result = ResultOf.ok(5);
       const f = double; // x => ResultOf.ok(x * 2) = ResultOf.ok(10)
       const g = (x: number): ResultOf<number> =>
-        x > 15 ? ResultOf.ok(x) : Error.validation('TOO_SMALL', 'Value too small');
+        x > 15 ? ResultOf.ok(x) : ResultOf.fail(Error.validation('TOO_SMALL', 'Value too small'));
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -252,7 +252,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const f = (obj: { count: number; multiplier: number }): ResultOf<number> =>
         ResultOf.ok(obj.count * obj.multiplier);
       const g = (n: number): ResultOf<string> =>
-        n > 0 ? ResultOf.ok(`Count: ${n}`) : Error.validation('INVALID_COUNT', 'Count must be positive');
+        n > 0 ? ResultOf.ok(`Count: ${n}`) : ResultOf.fail(Error.validation('INVALID_COUNT', 'Count must be positive'));
 
       // When
       const leftSide = result.bind(f).bind(g);
@@ -278,10 +278,10 @@ describe('Result Monadic Laws Contract Tests', () => {
 
       const validateUser = (user: User): ResultOf<User> => {
         if (!user.email.includes('@')) {
-          return Error.validation('INVALID_EMAIL', 'Email must contain @');
+          return ResultOf.fail(Error.validation('INVALID_EMAIL', 'Email must contain @'));
         }
         if (user.age < 0 || user.age > 120) {
-          return Error.validation('INVALID_AGE', 'Age must be between 0 and 120');
+          return ResultOf.fail(Error.validation('INVALID_AGE', 'Age must be between 0 and 120'));
         }
         return ResultOf.ok(user);
       };
@@ -327,7 +327,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       const parseNumber = (s: string): ResultOf<number> => {
         const parsed = parseInt(s, 10);
         return isNaN(parsed)
-          ? Error.validation('INVALID_NUMBER', 'Cannot parse number')
+          ? ResultOf.fail(Error.validation('INVALID_NUMBER', 'Cannot parse number'))
           : ResultOf.ok(parsed);
       };
 

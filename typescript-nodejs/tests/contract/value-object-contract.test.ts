@@ -96,7 +96,7 @@ describe('ValueObject Contract Tests', () => {
 
       // When/Then
       expect(money.equals(name)).toBe(false);
-      expect(money == name).toBe(false);
+      expect((money as any) == (name as any)).toBe(false);
     });
 
     test('Should_BeEqual_When_ComponentsIncludeNullValues', () => {
@@ -203,12 +203,12 @@ describe('ValueObject Contract Tests', () => {
       const money = new TestMoney(100, 'USD');
 
       // When
-      const components = money.getEqualityComponents();
+      const components = (money as any).getEqualityComponents();
 
       // Then
       expect(() => {
-        // @ts-expect-error - Testing immutability
-        components[0] = 200;
+        // Testing immutability - components should be readonly
+        (components as any)[0] = 200;
       }).toThrow();
     });
   });
