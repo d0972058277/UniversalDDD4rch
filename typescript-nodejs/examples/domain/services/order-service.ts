@@ -1,4 +1,4 @@
-import { Result, Error } from '../../../src/functional';
+import { Result, ResultOf, Error } from '../../../src/functional';
 import { Order, OrderId, CustomerId } from '../entities/order';
 import { OrderItem } from '../entities/order-item';
 import { Money } from '../value-objects/money';
@@ -103,7 +103,7 @@ export class OrderService {
     /**
      * Calculate complete order totals including discounts, shipping, and tax
      */
-    public calculateOrderTotals(order: Order): Result<OrderCalculation> {
+    public calculateOrderTotals(order: Order): ResultOf<OrderCalculation> {
         try {
             const subtotal = order.totalAmount;
 
@@ -241,7 +241,7 @@ export class OrderService {
     /**
      * Check if two orders can be merged
      */
-    public canMergeOrders(order1: Order, order2: Order): Result<boolean> {
+    public canMergeOrders(order1: Order, order2: Order): ResultOf<boolean> {
         // Orders must be for the same customer
         if (!order1.customerId.equals(order2.customerId)) {
             return Result.fail(Error.domain(
@@ -289,7 +289,7 @@ export class OrderService {
     /**
      * Create a new order by merging two existing orders
      */
-    public mergeOrders(order1: Order, order2: Order): Result<Order> {
+    public mergeOrders(order1: Order, order2: Order): ResultOf<Order> {
         const canMergeResult = this.canMergeOrders(order1, order2);
         if (canMergeResult.isFailure) {
             return canMergeResult.error;
@@ -325,7 +325,7 @@ export class OrderService {
     /**
      * Split an order into multiple orders based on criteria
      */
-    public splitOrderByQuantity(order: Order, maxItemsPerOrder: number): Result<Order[]> {
+    public splitOrderByQuantity(order: Order, maxItemsPerOrder: number): ResultOf<Order[]> {
         if (maxItemsPerOrder <= 0) {
             return Result.fail(Error.validation(
                 'OrderService.InvalidSplitCriteria',

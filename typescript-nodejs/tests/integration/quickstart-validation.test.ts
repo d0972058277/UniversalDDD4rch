@@ -277,8 +277,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             const nonExistentId = OrderId.generate();
             const getResult = await repository.getByIdAsync(nonExistentId);
 
-            expect(getResult.isSuccess).toBe(true);
-            expect(getResult.value.hasValue).toBe(false);
+            expect(getResult.hasValue).toBe(false);
 
             // Test delete non-existent
             const deleteResult = await repository.deleteAsync(nonExistentId);
@@ -478,8 +477,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             const nonExistentId = OrderId.generate();
 
             const getResult = await repository.getByIdAsync(nonExistentId);
-            expect(getResult.isSuccess).toBe(true);
-            expect(getResult.value.hasValue).toBe(false);
+            expect(getResult.hasValue).toBe(false);
 
             const updateResult = await repository.updateAsync(Order.create(new CustomerId('test')));
             expect(updateResult.isFailure).toBe(true);

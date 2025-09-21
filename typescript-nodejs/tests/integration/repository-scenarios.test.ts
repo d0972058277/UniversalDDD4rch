@@ -38,10 +38,9 @@ describe('Repository Async Patterns Integration Tests', () => {
             const getResult = await repository.getByIdAsync(order.id);
 
             // Then - Retrieve succeeded
-            expect(getResult.isSuccess).toBe(true);
-            expect(getResult.value.hasValue).toBe(true);
+            expect(getResult.hasValue).toBe(true);
 
-            const retrievedOrder = getResult.value.value;
+            const retrievedOrder = getResult.value;
             expect(retrievedOrder.id.equals(order.id)).toBe(true);
             expect(retrievedOrder.customerId.equals(customerId)).toBe(true);
             expect(retrievedOrder.itemCount).toBe(1);
@@ -68,7 +67,7 @@ describe('Repository Async Patterns Integration Tests', () => {
 
             // When - Retrieve updated order
             const getResult = await repository.getByIdAsync(order.id);
-            const retrievedOrder = getResult.value.value;
+            const retrievedOrder = getResult.value;
 
             // Then - Changes persisted
             expect(retrievedOrder.status).toBe(OrderStatus.CONFIRMED);
@@ -85,8 +84,8 @@ describe('Repository Async Patterns Integration Tests', () => {
             await repository.addAsync(order);
 
             // When - Simulate concurrent modification
-            const order1 = (await repository.getByIdAsync(order.id)).value.value;
-            const order2 = (await repository.getByIdAsync(order.id)).value.value;
+            const order1 = (await repository.getByIdAsync(order.id)).value;
+            const order2 = (await repository.getByIdAsync(order.id)).value;
 
             order1.confirm();
             await repository.updateAsync(order1); // First update succeeds
@@ -116,8 +115,7 @@ describe('Repository Async Patterns Integration Tests', () => {
             const getResult = await repository.getByIdAsync(order.id);
 
             // Then - Order not found
-            expect(getResult.isSuccess).toBe(true);
-            expect(getResult.value.hasValue).toBe(false);
+            expect(getResult.hasValue).toBe(false);
         });
 
         it('should check if order exists', async () => {
@@ -397,7 +395,8 @@ describe('Repository Async Patterns Integration Tests', () => {
             // Verify orders were updated
             for (const orderId of orderIds) {
                 const orderResult = await repository.getByIdAsync(orderId);
-                const order = orderResult.value.value;
+                expect(orderResult.hasValue).toBe(true);
+                const order = orderResult.value;
                 expect(order.status).toBe(OrderStatus.CANCELLED);
             }
         });
@@ -423,8 +422,7 @@ describe('Repository Async Patterns Integration Tests', () => {
             // Verify all orders were saved
             for (const order of orders) {
                 const getResult = await repository.getByIdAsync(order.id);
-                expect(getResult.isSuccess).toBe(true);
-                expect(getResult.value.hasValue).toBe(true);
+                expect(getResult.hasValue).toBe(true);
             }
         });
     });
