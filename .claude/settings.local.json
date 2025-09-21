@@ -46,7 +46,10 @@
       "Bash(dir:*)",
       "Bash(npm run test:contract:*)",
       "Bash(npm run build:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(npm run test:performance:*)",
+      "Bash(npm run test:unit:*)"
     ],
     "deny": [],
     "ask": []

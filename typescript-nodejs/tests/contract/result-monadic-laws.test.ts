@@ -332,7 +332,7 @@ describe('Result Monadic Laws Contract Tests', () => {
       };
 
       const makePositive = (n: number): ResultOf<number> =>
-        n >= 0 ? ResultOf.ok(n) : Error.validation('NEGATIVE_NUMBER', 'Number must be positive');
+        n >= 0 ? ResultOf.ok(n) : ResultOf.fail(Error.validation('NEGATIVE_NUMBER', 'Number must be positive'));
 
       const doubleIt = (n: number): ResultOf<number> => ResultOf.ok(n * 2);
 

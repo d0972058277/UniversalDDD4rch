@@ -78,7 +78,7 @@ class OrderCreatedEvent extends DomainEventBase {
     correlationId?: string
   ) {
     super(correlationId);
-    Object.freeze(this);
+    this.freezeEvent();
   }
 }
 
@@ -88,7 +88,7 @@ class OrderConfirmedEvent extends DomainEventBase {
     causationId?: string
   ) {
     super(undefined, causationId);
-    Object.freeze(this);
+    this.freezeEvent();
   }
 }
 

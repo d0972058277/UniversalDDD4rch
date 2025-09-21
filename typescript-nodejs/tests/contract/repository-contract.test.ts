@@ -4,7 +4,7 @@
 
 import { IRepository } from '@/domain/interfaces/i-repository';
 import { AggregateRoot } from '@/domain/aggregate-root';
-import { Result } from '@/functional/result';
+import { Result, ResultOf } from '@/functional/result';
 import { Maybe } from '@/functional/maybe';
 import { Error, ErrorCategory } from '@/functional/error';
 
@@ -39,7 +39,7 @@ class TestOrderRepository implements IRepository<TestOrder, TestOrderId> {
     this.checkCancellation(cancellationToken);
 
     if (this.orders.has(aggregate.id.value)) {
-      return Error.concurrency('DUPLICATE_ID', 'Order with this ID already exists');
+      return Result.fail(Error.concurrency('DUPLICATE_ID', 'Order with this ID already exists'));
     }
 
     this.orders.set(aggregate.id.value, aggregate);
@@ -50,7 +50,7 @@ class TestOrderRepository implements IRepository<TestOrder, TestOrderId> {
     this.checkCancellation(cancellationToken);
 
     if (!this.orders.has(aggregate.id.value)) {
-      return Error.domain('NOT_FOUND', 'Order not found');
+      return Result.fail(Error.domain('NOT_FOUND', 'Order not found'));
     }
 
     this.orders.set(aggregate.id.value, aggregate);
@@ -61,14 +61,14 @@ class TestOrderRepository implements IRepository<TestOrder, TestOrderId> {
     this.checkCancellation(cancellationToken);
 
     if (!this.orders.has(id.value)) {
-      return Error.domain('NOT_FOUND', 'Order not found');
+      return Result.fail(Error.domain('NOT_FOUND', 'Order not found'));
     }
 
     this.orders.delete(id.value);
     return Result.ok();
   }
 
-  async existsAsync(id: TestOrderId, cancellationToken?: AbortSignal): Promise<Result<boolean>> {
+  async existsAsync(id: TestOrderId, cancellationToken?: AbortSignal): Promise<ResultOf<boolean>> {
     this.checkCancellation(cancellationToken);
 
     const exists = this.orders.has(id.value);
@@ -77,7 +77,7 @@ class TestOrderRepository implements IRepository<TestOrder, TestOrderId> {
 
   private checkCancellation(cancellationToken?: AbortSignal): void {
     if (cancellationToken?.aborted) {
-      throw new Error('Operation was cancelled');
+      throw new globalThis.Error('Operation was cancelled');
     }
   }
 
@@ -469,14 +469,14 @@ describe('Repository Contract Tests', () => {
 
         async getByIdAsync(_id: TestOrderId): Promise<Maybe<TestOrder>> {
           if (this.shouldFail) {
-            throw new Error('Database connection failed');
+            throw new globalThis.Error('Database connection failed');
           }
           return Maybe.none();
         }
 
         async addAsync(_aggregate: TestOrder): Promise<Result> {
           if (this.shouldFail) {
-            return Error.infrastructure('DB_ERROR', 'Database connection failed');
+            return Result.fail(Error.infrastructure('DB_ERROR', 'Database connection failed'));
           }
           return Result.ok();
         }
@@ -489,7 +489,7 @@ describe('Repository Contract Tests', () => {
           return Result.ok();
         }
 
-        async existsAsync(_id: TestOrderId): Promise<Result<boolean>> {
+        async existsAsync(_id: TestOrderId): Promise<ResultOf<boolean>> {
           return Result.ok(false);
         }
       }

@@ -6,11 +6,11 @@ import { IDomainEvent } from './interfaces/i-domain-event';
  * Domain events represent something that happened in the domain that is of interest to the business.
  */
 export abstract class DomainEventBase implements IDomainEvent {
-  public readonly id: string;
-  public readonly occurredAt: Date;
-  public readonly correlationId: string | undefined;
-  public readonly causationId: string | undefined;
-  public readonly metadata: Readonly<Record<string, unknown>>;
+  private readonly _id: string;
+  private readonly _occurredAt: Date;
+  private readonly _correlationId: string | undefined;
+  private readonly _causationId: string | undefined;
+  private readonly _metadata: Readonly<Record<string, unknown>>;
 
   /**
    * Creates a new domain event with default values.
@@ -32,15 +32,54 @@ export abstract class DomainEventBase implements IDomainEvent {
     causationId?: string,
     metadata?: Record<string, unknown>
   ) {
-    this.id = crypto.randomUUID();
-    this.occurredAt = new Date();
-    this.correlationId = correlationId;
-    this.causationId = causationId;
-    this.metadata = Object.freeze({ ...(metadata || {}) });
+    this._id = crypto.randomUUID();
+    this._occurredAt = new Date();
+    this._correlationId = correlationId;
+    this._causationId = causationId;
+    this._metadata = Object.freeze({ ...(metadata || {}) });
+  }
 
-    // Note: We don't freeze the entire object here because derived classes
-    // need to set their own properties. They should freeze themselves after
-    // setting all properties.
+  /**
+   * Freezes this domain event instance to make it immutable.
+   * Should be called by derived classes after all properties are set.
+   */
+  protected freezeEvent(): void {
+    Object.freeze(this);
+  }
+
+  /**
+   * Gets the unique identifier of this domain event.
+   */
+  public get id(): string {
+    return this._id;
+  }
+
+  /**
+   * Gets the timestamp when this domain event occurred.
+   */
+  public get occurredAt(): Date {
+    return this._occurredAt;
+  }
+
+  /**
+   * Gets the correlation ID for tracking related events across service boundaries.
+   */
+  public get correlationId(): string | undefined {
+    return this._correlationId;
+  }
+
+  /**
+   * Gets the causation ID linking this event to the event that caused it.
+   */
+  public get causationId(): string | undefined {
+    return this._causationId;
+  }
+
+  /**
+   * Gets the metadata associated with this domain event.
+   */
+  public get metadata(): Readonly<Record<string, unknown>> {
+    return this._metadata;
   }
 
   /**

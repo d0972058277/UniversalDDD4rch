@@ -15,6 +15,7 @@ class TestOrderCreatedEvent extends DomainEventBase {
     metadata?: Record<string, unknown>
   ) {
     super(correlationId, causationId, metadata);
+    this.freezeEvent();
   }
 }
 
@@ -27,6 +28,7 @@ class TestOrderStatusChangedEvent extends DomainEventBase {
     causationId?: string
   ) {
     super(correlationId, causationId);
+    this.freezeEvent();
   }
 }
 
@@ -42,6 +44,7 @@ class TestComplexEvent extends DomainEventBase {
     metadata?: Record<string, unknown>
   ) {
     super(correlationId, causationId, metadata);
+    this.freezeEvent();
   }
 }
 
@@ -347,7 +350,8 @@ describe('DomainEventBase Contract Tests', () => {
       );
 
       // When
-      const json = JSON.stringify(event);
+      const plainObject = event.toPlainObject();
+      const json = JSON.stringify(plainObject);
       const parsed = JSON.parse(json);
 
       // Then
@@ -365,7 +369,8 @@ describe('DomainEventBase Contract Tests', () => {
       const originalOccurredAt = event.occurredAt;
 
       // When
-      const json = JSON.stringify(event);
+      const plainObject = event.toPlainObject();
+      const json = JSON.stringify(plainObject);
       const parsed = JSON.parse(json);
 
       // Then

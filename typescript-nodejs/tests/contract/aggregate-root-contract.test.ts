@@ -52,7 +52,7 @@ class TestOrder extends AggregateRoot<TestOrderId> {
 
   confirm(): void {
     if (this._status !== 'Pending') {
-      throw new Error('Can only confirm pending orders');
+      throw new globalThis.Error('Can only confirm pending orders');
     }
     const oldStatus = this._status;
     this._status = 'Confirmed';
@@ -278,10 +278,11 @@ describe('AggregateRoot Contract Tests', () => {
         .filter(e => e instanceof TestOrderStatusChangedEvent)
         .map(e => (e as TestOrderStatusChangedEvent));
 
-      expect(statusChanges[0].fromStatus).toBe('Pending');
-      expect(statusChanges[0].toStatus).toBe('Confirmed');
-      expect(statusChanges[1].fromStatus).toBe('Confirmed');
-      expect(statusChanges[1].toStatus).toBe('Cancelled');
+      expect(statusChanges.length).toBe(2);
+      expect(statusChanges[0]!.fromStatus).toBe('Pending');
+      expect(statusChanges[0]!.toStatus).toBe('Confirmed');
+      expect(statusChanges[1]!.fromStatus).toBe('Confirmed');
+      expect(statusChanges[1]!.toStatus).toBe('Cancelled');
     });
   });
 
