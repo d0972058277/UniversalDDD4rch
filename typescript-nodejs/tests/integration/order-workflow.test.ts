@@ -204,7 +204,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(order.totalAmount.amount).toBe(65.00); // (25*2) + (5*3)
 
             // Phase 2: Update item quantity
-            const bookItem = order.items.find(item => item.productName === 'Book')!;
+            const bookItem = order.items.find((item: any) => item.productName === 'Book')!;
             const updateResult = await commandHandler.handleUpdateOrderItemQuantityAsync({
                 orderId,
                 itemId: bookItem.id.value,
@@ -218,7 +218,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
             expect(order.totalAmount.amount).toBe(40.00); // (25*1) + (5*3)
 
             // Phase 3: Remove item
-            const bookmarkItem = order.items.find(item => item.productName === 'Bookmark')!;
+            const bookmarkItem = order.items.find((item: any) => item.productName === 'Bookmark')!;
             const removeResult = await commandHandler.handleRemoveOrderItemAsync({
                 orderId,
                 itemId: bookmarkItem.id.value,
@@ -550,7 +550,7 @@ describe('Complete Order Lifecycle Workflow Integration Tests', () => {
 
             // Verify total amount is preserved
             const totalAmount = splitOrders.reduce(
-                (sum, order) => sum + order.totalAmount.amount,
+                (sum: number, order: any) => sum + order.totalAmount.amount,
                 0
             );
             expect(totalAmount).toBe(120.00); // 12 * 10.00

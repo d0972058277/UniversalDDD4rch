@@ -181,8 +181,8 @@ Implementation tasks for Architecture.Core TypeScript Node.js library providing 
 - [X] **T075** [P] Repository cancellation handling unit tests in `typescript-nodejs/tests/unit/repository-cancellation.test.ts`
 
 ### Type Safety and Compilation Tests
-- [ ] **T076** [P] TypeScript strict mode compilation tests in `typescript-nodejs/tests/unit/type-safety.test.ts`
-- [ ] **T077** [P] Generic constraints validation tests in `typescript-nodejs/tests/unit/generic-constraints.test.ts`
+- [X] **T076** [P] TypeScript strict mode compilation tests in `typescript-nodejs/tests/unit/type-safety.test.ts`
+- [X] **T077** [P] Generic constraints validation tests in `typescript-nodejs/tests/unit/generic-constraints.test.ts`
 
 ### Build and Packaging
 - [ ] **T078** Production build configuration and optimization in `typescript-nodejs/build.config.js`

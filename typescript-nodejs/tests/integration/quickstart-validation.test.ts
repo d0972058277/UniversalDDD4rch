@@ -126,7 +126,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             const confirmResult = order.confirm();
             confirmResult.match(
                 () => console.log('Order confirmed successfully'),
-                error => console.log(`Failed to confirm: ${error.message}`)
+                (error: any) => console.log(`Failed to confirm: ${error.message}`)
             );
 
             expect(confirmResult.isSuccess).toBe(true);
@@ -135,7 +135,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             const cancelResult = order.cancel();
             cancelResult.match(
                 () => console.log('Order cancelled successfully'),
-                error => console.log(`Failed to cancel: ${error.message}`)
+                (error: any) => console.log(`Failed to cancel: ${error.message}`)
             );
 
             expect(cancelResult.isFailure).toBe(true);
@@ -222,7 +222,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
             const processResult = await processOrderAsync(order);
             processResult.match(
                 orderId => console.log(`Order ${orderId} processed successfully`),
-                error => console.log(`Processing failed: ${error.message}`)
+                (error: any) => console.log(`Processing failed: ${error.message}`)
             );
 
             expect(processResult.isSuccess).toBe(true);
@@ -371,7 +371,7 @@ describe('Quickstart Example Validation Integration Tests', () => {
 
             // Verify total amount preserved
             const totalAmount = splitOrders.reduce(
-                (sum, order) => sum + order.totalAmount.amount,
+                (sum: number, order: any) => sum + order.totalAmount.amount,
                 0
             );
             expect(totalAmount).toBe(80.00); // 8 * 10.00

@@ -421,7 +421,7 @@ describe('Entity Identity and Invariants Integration Tests', () => {
 
             // When - Find specific entity
             const searchStartTime = performance.now();
-            const targetId = items[500].id;
+            const targetId = items[500]!.id;
             const foundItem = items.find(item => item.id.equals(targetId));
             const searchTime = performance.now() - searchStartTime;
 

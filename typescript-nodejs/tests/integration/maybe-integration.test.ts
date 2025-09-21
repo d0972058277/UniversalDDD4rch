@@ -264,8 +264,10 @@ describe('Maybe Integration Tests', () => {
             const failureResult = Result.fail(Error.domain('SOME_ERROR', 'Error occurred'));
 
             // When
-            const maybeFromSuccess = Result.toMaybe(successResult);
-            const maybeFromFailure = Result.toMaybe(failureResult);
+            // Note: toMaybe method not implemented in current version
+            // Create equivalent functionality manually
+            const maybeFromSuccess = successResult.isSuccess ? Maybe.some(successResult.value) : Maybe.none<number>();
+            const maybeFromFailure = failureResult.isSuccess ? Maybe.some(failureResult.value) : Maybe.none<number>();
 
             // Then
             expect(maybeFromSuccess.hasValue).toBe(true);
@@ -310,8 +312,7 @@ describe('Maybe Integration Tests', () => {
 
             // When
             const result = primarySource()
-                .orElse(() => secondarySource().orElse(''))
-                .orElse('default');
+                .orElse(() => secondarySource().orElse(''));
 
             // Then
             expect(result).toBe('');
@@ -523,13 +524,14 @@ describe('Maybe Integration Tests', () => {
 });
 
 // Extension methods for Result to work with Maybe (would be in the actual Result implementation)
-declare global {
-    namespace Result {
-        function toMaybe<T>(result: Result<T>): Maybe<T>;
-    }
-}
+// Note: toMaybe functionality is not currently implemented in the core library
+// declare global {
+//     namespace Result {
+//         function toMaybe<T>(result: Result<T>): Maybe<T>;
+//     }
+// }
 
 // Implementation would be in the actual Result class
-Result.toMaybe = function<T>(result: Result<T>): Maybe<T> {
-    return result.isSuccess ? Maybe.some(result.value) : Maybe.none();
-};
+// Result.toMaybe = function<T>(result: Result<T>): Maybe<T> {
+//     return result.isSuccess ? Maybe.some(result.value) : Maybe.none();
+// };

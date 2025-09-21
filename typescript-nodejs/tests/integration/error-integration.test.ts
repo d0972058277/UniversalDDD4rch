@@ -248,10 +248,10 @@ describe('Error Integration Tests', () => {
             );
 
             // Then
-            expect(error.metadata.request.id).toBe('req-123');
-            expect(error.metadata.user.roles).toEqual(['customer', 'premium']);
-            expect(error.metadata.business.operation).toBe('create-order');
-            expect(error.metadata.technical.stackTrace).toContain('OrderService.createOrder');
+            expect((error.metadata.get('request') as any).id).toBe('req-123');
+            expect((error.metadata.get('user') as any).roles).toEqual(['customer', 'premium']);
+            expect((error.metadata.get('business') as any).operation).toBe('create-order');
+            expect((error.metadata.get('technical') as any).stackTrace).toContain('OrderService.createOrder');
         });
     });
 

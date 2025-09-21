@@ -17,7 +17,7 @@ import {
 export class OrderId {
     constructor(public readonly value: string) {
         if (!value || value.trim().length === 0) {
-            throw new Error('Order ID cannot be empty');
+            throw new globalThis.Error('Order ID cannot be empty');
         }
     }
 
@@ -44,7 +44,7 @@ export class OrderId {
 export class CustomerId {
     constructor(public readonly value: string) {
         if (!value || value.trim().length === 0) {
-            throw new Error('Customer ID cannot be empty');
+            throw new globalThis.Error('Customer ID cannot be empty');
         }
     }
 
@@ -425,7 +425,7 @@ export class Order extends AggregateRoot<OrderId> {
         }
 
         // Get currency from first item
-        const currency = items[0].totalPrice.currency;
+        const currency = items[0]!.totalPrice.currency;
         this._totalAmount = items.reduce(
             (total, item) => total.add(item.totalPrice),
             Money.zero(currency)
@@ -465,7 +465,7 @@ export class Order extends AggregateRoot<OrderId> {
         order._status = status;
         order._createdAt = createdAt;
         order._updatedAt = updatedAt;
-        order.version = version;
+        (order as any).setVersion(version);
 
         // Add items without triggering events
         for (const item of items) {

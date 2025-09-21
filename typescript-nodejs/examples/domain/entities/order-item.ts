@@ -189,7 +189,7 @@ export class OrderItem extends Entity<OrderItemId> {
         }
     }
 
-    public toString(): string {
+    public override toString(): string {
         return `${this._productName} x${this._quantity} @ ${this._unitPrice} = ${this._totalPrice}`;
     }
 

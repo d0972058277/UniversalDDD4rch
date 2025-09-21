@@ -75,7 +75,7 @@ export class Money extends ValueObject {
     /**
      * Format as string
      */
-    public toString(): string {
+    public override toString(): string {
         return `${this.amount.toFixed(2)} ${this.currency}`;
     }
 
@@ -88,12 +88,12 @@ export class Money extends ValueObject {
             throw new Error('Invalid money format. Expected "100.50 USD"');
         }
 
-        const amount = parseFloat(parts[0]);
+        const amount = parseFloat(parts[0]!);
         if (isNaN(amount)) {
             throw new Error('Invalid amount format');
         }
 
-        return new Money(amount, parts[1]);
+        return new Money(amount, parts[1]!);
     }
 
     /**
