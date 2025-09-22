@@ -77,7 +77,8 @@
       "Bash(ren:*)",
       "Bash(CGO_ENABLED=1 go test -race ./tests/...)",
       "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
-      "Bash(.specify/scripts/bash/setup-plan.sh:*)"
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)",
+      "Bash(/Users/porridg3/GitHub/UniversalDDD4rch/.specify/scripts/bash/update-agent-context.sh:*)"
     ],
     "deny": [],
     "ask": []

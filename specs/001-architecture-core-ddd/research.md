@@ -1,289 +1,402 @@
-# Go Research: DDD Abstractions and Functional Types
+# Java Research: DDD Abstractions and Functional Types
 
-**Date**: 2025-09-21
-**Context**: Architecture.Core implementation for Go
+**Date**: 2025-09-22
+**Context**: Architecture.Core implementation for Java Spring
 **Status**: Complete
 
-## 1. Go Generics Best Practices for DDD Types
+## 1. Java Generics Best Practices for DDD Types
 
-### Decision: Type Constraints with Interface Definitions
-Use Go generics with domain-specific type constraints, leveraging the `comparable` built-in constraint and custom constraints for entity IDs and aggregate types.
+### Decision: Bounded Type Parameters with Comparable Interface
+Use Java generics with bounded type parameters, leveraging `Comparable` interface and custom type constraints for entity IDs and aggregate types.
 
-```go
-// Type constraints for entity identifiers
-type EntityID interface {
-    comparable
-    fmt.Stringer
+```java
+// Base interface for entity identifiers
+public interface EntityId<T extends EntityId<T>> extends Comparable<T>, Serializable {
+    String getValue();
 }
 
 // Generic aggregate root with type-safe ID
-type AggregateRoot[TID EntityID] interface {
-    ID() TID
-    Version() int64
-    DomainEvents() []DomainEvent
+public abstract class AggregateRoot<TId extends EntityId<TId>> {
+    private final TId id;
+    private long version;
+    private final List<DomainEvent> domainEvents = new ArrayList<>();
+
+    protected AggregateRoot(TId id) {
+        this.id = Objects.requireNonNull(id);
+        this.version = 0;
+    }
+
+    public TId getId() { return id; }
+    public long getVersion() { return version; }
+    public List<DomainEvent> getDomainEvents() { return Collections.unmodifiableList(domainEvents); }
 }
 
 // Generic entity with identity-based equality
-type Entity[TID EntityID] interface {
-    ID() TID
-    Equals(other Entity[TID]) bool
+public abstract class Entity<TId extends EntityId<TId>> {
+    private final TId id;
+
+    protected Entity(TId id) {
+        this.id = Objects.requireNonNull(id);
+    }
+
+    public TId getId() { return id; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Entity<?> entity = (Entity<?>) obj;
+        return Objects.equals(id, entity.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
 ```
 
 ### Rationale
 - **Type Safety**: Compile-time verification of ID types across the domain
-- **Performance**: Zero-cost abstractions with generic specialization
-- **Go Idioms**: Follows Go's preference for small interfaces and explicit types
+- **Java Generics**: Leverages mature Java generics system with bounded wildcards
+- **Serialization**: Built-in support for persistence and distributed systems
 - **Multi-language Consistency**: Maintains same type safety as C# and TypeScript implementations
 
 ### Alternatives Considered
-- **interface{} with type assertions**: Rejected due to runtime type checking and lack of type safety
-- **Code generation**: Rejected due to build complexity and poor IDE support
+- **Raw types**: Rejected due to loss of type safety and compiler warnings
+- **Object-based identifiers**: Rejected due to runtime type checking overhead
 - **Reflection-based approaches**: Rejected due to performance overhead and runtime errors
 
-## 2. Go Interface Design Patterns for Repository Abstraction
+## 2. Java Interface Design Patterns for Repository Abstraction
 
-### Decision: Small, Focused Interfaces with Dependency Inversion
-Place repository interfaces in the domain package, implement in infrastructure, following Go's implicit interface satisfaction.
+### Decision: Generic Repository Interface with CompletableFuture
+Place repository interfaces in the domain package, implement in infrastructure, following dependency inversion principle with async support.
 
-```go
+```java
 // Domain package defines the interface
-type OrderRepository interface {
-    GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error)
-    Save(ctx context.Context, order *Order) error
-    Delete(ctx context.Context, id OrderID) error
-    Exists(ctx context.Context, id OrderID) (bool, error)
+public interface Repository<TAggregate extends AggregateRoot<TId>, TId extends EntityId<TId>> {
+    CompletableFuture<Maybe<TAggregate>> getByIdAsync(TId id, CancellationToken cancellationToken);
+    CompletableFuture<Result<Void>> addAsync(TAggregate aggregate, CancellationToken cancellationToken);
+    CompletableFuture<Result<Void>> updateAsync(TAggregate aggregate, CancellationToken cancellationToken);
+    CompletableFuture<Result<Void>> deleteAsync(TId id, CancellationToken cancellationToken);
+    CompletableFuture<Boolean> existsAsync(TId id, CancellationToken cancellationToken);
 }
 
 // Infrastructure package implements
-type sqlOrderRepository struct {
-    db *sql.DB
-}
+@Component
+public class JpaOrderRepository implements Repository<Order, OrderId> {
+    private final OrderJpaRepository jpaRepository;
 
-func (r *sqlOrderRepository) GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error) {
-    // Implementation
+    public JpaOrderRepository(OrderJpaRepository jpaRepository) {
+        this.jpaRepository = jpaRepository;
+    }
+
+    @Override
+    public CompletableFuture<Maybe<Order>> getByIdAsync(OrderId id, CancellationToken cancellationToken) {
+        return CompletableFuture.supplyAsync(() -> {
+            Optional<OrderEntity> entity = jpaRepository.findById(id.getValue());
+            return entity.map(this::mapToDomain)
+                         .map(Maybe::some)
+                         .orElse(Maybe.none());
+        }, getAsyncExecutor());
+    }
 }
 ```
 
 ### Rationale
 - **Dependency Inversion**: Domain defines contracts, infrastructure implements
-- **Testability**: Easy to create test doubles and mocks
-- **Go Conventions**: Leverages implicit interface satisfaction
-- **Context Integration**: Proper cancellation and timeout support
+- **Testability**: Easy to create test doubles and mocks using Mockito
+- **Async Operations**: CompletableFuture provides cancellation and timeout support
+- **Spring Integration**: Natural integration with Spring Data repositories
 
 ### Alternatives Considered
-- **Generic repository pattern**: Rejected due to loss of domain-specific operations
+- **Synchronous repository pattern**: Rejected due to blocking I/O concerns
 - **Single large interface**: Rejected due to Interface Segregation Principle violations
 - **Concrete types in domain**: Rejected due to tight coupling to infrastructure
 
 ## 3. Memory Allocation Optimization for Functional Types
 
-### Decision: Value Types with Zero-Allocation Patterns
-Implement Result[T] and Maybe[T] as structs with value semantics, using sync.Pool for high-frequency allocations.
+### Decision: Value-Based Classes with JVM Optimizations
+Implement Result<T> and Maybe<T> as value-based classes leveraging JVM optimizations for small immutable objects.
 
-```go
-// Zero-allocation Result type
-type Result[T any] struct {
-    value T
-    err   *Error
-    isOk  bool
-}
+```java
+// Value-based Result type optimized for JVM
+public final class Result<T> {
+    private final T value;
+    private final Error error;
+    private final boolean isSuccess;
 
-// Stack-friendly constructor
-func Ok[T any](value T) Result[T] {
-    return Result[T]{value: value, isOk: true}
-}
+    private Result(T value, Error error, boolean isSuccess) {
+        this.value = value;
+        this.error = error;
+        this.isSuccess = isSuccess;
+    }
 
-// Maybe type with zero allocations for Some/None
-type Maybe[T any] struct {
-    value    T
-    hasValue bool
-}
+    public static <T> Result<T> success(T value) {
+        return new Result<>(Objects.requireNonNull(value), null, true);
+    }
 
-var errorPool = sync.Pool{
-    New: func() interface{} {
-        return &Error{}
-    },
+    public static <T> Result<T> failure(Error error) {
+        return new Result<>(null, Objects.requireNonNull(error), false);
+    }
+
+    // Maybe type with JVM escape analysis optimization
+    public static final class Maybe<T> {
+        private static final Maybe<?> NONE = new Maybe<>(null, false);
+
+        private final T value;
+        private final boolean hasValue;
+
+        private Maybe(T value, boolean hasValue) {
+            this.value = value;
+            this.hasValue = hasValue;
+        }
+
+        public static <T> Maybe<T> some(T value) {
+            return new Maybe<>(Objects.requireNonNull(value), true);
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T> Maybe<T> none() {
+            return (Maybe<T>) NONE;
+        }
+    }
 }
 ```
 
 ### Rationale
-- **Performance**: Stack allocation for small types, minimal GC pressure
-- **Memory Efficiency**: No boxing/unboxing overhead
-- **Zero-Cost Abstractions**: Compiles to efficient machine code
-- **Go Patterns**: Value semantics align with Go conventions
+- **Performance**: JVM escape analysis enables stack allocation for short-lived objects
+- **Memory Efficiency**: Value-based classes minimize heap allocations
+- **GC Optimization**: Small immutable objects are handled efficiently by modern GCs
+- **Java Patterns**: Follows value-based class conventions (Optional, LocalDateTime)
 
 ### Alternatives Considered
-- **Pointer-based approach**: Rejected due to heap allocations and GC pressure
-- **Interface-based design**: Rejected due to boxing overhead and indirection
-- **Channel-based Maybe**: Rejected due to complexity and allocation overhead
+- **Interface-based design**: Rejected due to virtual method call overhead
+- **Mutable state pattern**: Rejected due to thread safety concerns
+- **Primitive specializations**: Rejected due to code complexity without significant benefit
 
-## 4. Go Error Handling vs Exception-Based Languages
+## 4. Java Error Handling with Result Pattern
 
-### Decision: Explicit Error-as-Values with Domain Context
-Embrace Go's explicit error handling while providing structured error types with business context.
+### Decision: Result Pattern with Structured Errors and Exception Integration
+Combine Result pattern for business logic with strategic exception handling for system errors.
 
-```go
+```java
 // Structured error with business context
-type Error struct {
-    Code     string
-    Message  string
-    Category ErrorCategory
-    Metadata map[string]interface{}
-    Inner    error
+public final class Error {
+    private final String code;
+    private final String message;
+    private final ErrorCategory category;
+    private final Map<String, Object> metadata;
+    private final Throwable cause;
+
+    public Error(String code, String message, ErrorCategory category, Map<String, Object> metadata, Throwable cause) {
+        this.code = Objects.requireNonNull(code);
+        this.message = Objects.requireNonNull(message);
+        this.category = Objects.requireNonNull(category);
+        this.metadata = Map.copyOf(metadata != null ? metadata : Map.of());
+        this.cause = cause;
+    }
+
+    public static Error domain(String code, String message) {
+        return new Error(code, message, ErrorCategory.DOMAIN, Map.of(), null);
+    }
+
+    public static Error validation(String code, String message, Map<String, Object> metadata) {
+        return new Error(code, message, ErrorCategory.VALIDATION, metadata, null);
+    }
+
+    public static Error infrastructure(String code, String message, Throwable cause) {
+        return new Error(code, message, ErrorCategory.INFRASTRUCTURE, Map.of(), cause);
+    }
 }
 
 // Domain-specific error patterns
-func (r *OrderRepository) GetByID(ctx context.Context, id OrderID) (*Maybe[Order], error) {
-    // Database operation
-    if err := db.QueryRow(query, id).Scan(&order); err != nil {
-        if errors.Is(err, sql.ErrNoRows) {
-            return Maybe[Order]{}, nil // None case, not an error
-        }
-        return nil, &Error{
-            Code:     "Infrastructure.Database.QueryFailed",
-            Message:  "Failed to retrieve order",
-            Category: Infrastructure,
-            Inner:    err,
-        }
+@Repository
+public class JpaOrderRepository implements OrderRepository {
+
+    @Override
+    public CompletableFuture<Maybe<Order>> getByIdAsync(OrderId id, CancellationToken cancellationToken) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Optional<OrderEntity> entity = jpaRepository.findById(id.getValue());
+                return entity.map(this::mapToDomain)
+                             .map(Maybe::some)
+                             .orElse(Maybe.none());
+            } catch (DataAccessException ex) {
+                // Convert infrastructure exceptions to errors when needed
+                throw new InfrastructureException(
+                    Error.infrastructure("Infrastructure.Database.QueryFailed",
+                                       "Failed to retrieve order", ex));
+            }
+        }, getAsyncExecutor());
     }
-    return Some(order), nil
 }
 ```
 
 ### Rationale
-- **Predictability**: Explicit error handling forces consideration of failure cases
+- **Predictability**: Result pattern forces consideration of business failure cases
 - **Business Context**: Structured errors preserve domain knowledge
-- **Performance**: No stack unwinding overhead
-- **Go Idioms**: Works naturally with Go's error handling patterns
+- **Exception Integration**: Strategic use of exceptions for system errors
+- **Spring Compatibility**: Works naturally with Spring's transaction and error handling
 
 ### Alternatives Considered
-- **Panic/recover for business logic**: Rejected as anti-pattern in Go
-- **Result-only pattern (no error)**: Rejected due to loss of standard library integration
-- **Error interface implementation only**: Rejected due to limited structure and context
+- **Exceptions for all errors**: Rejected due to loss of functional composition
+- **Result-only pattern (no exceptions)**: Rejected due to poor integration with Java ecosystem
+- **Optional-based approach**: Rejected due to loss of error information
 
-## 5. Go Testing Patterns and Benchmarking
+## 5. Java Testing Patterns with JUnit 5
 
-### Decision: Table-Driven Tests with Given-When-Then Structure
-Use Go's built-in testing with table-driven patterns, explicit Given-When-Then comments, and comprehensive benchmarking.
+### Decision: Parameterized Tests with Given-When-Then Structure
+Use JUnit 5 with parameterized tests, explicit Given-When-Then comments, and comprehensive benchmarking.
 
-```go
-func TestResult_Should_ChainOperations_When_AllSucceed(t *testing.T) {
-    tests := []struct {
-        name     string
-        input    int
-        expected string
-    }{
-        {"positive number", 5, "10"},
-        {"zero", 0, "0"},
-        {"negative number", -3, "-6"},
-    }
+```java
+@DisplayName("Result should chain operations when all succeed")
+@ParameterizedTest(name = "{0}")
+@MethodSource("chainOperationTestCases")
+void Should_ChainOperations_When_AllSucceed(String testName, int input, String expected) {
+    // Given
+    Result<Integer> result = Result.success(input);
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            // Given
-            result := Ok(tt.input)
+    // When
+    Result<String> mapped = result
+        .map(x -> x * 2)
+        .map(String::valueOf);
 
-            // When
-            mapped := result.
-                Map(func(x int) int { return x * 2 }).
-                Map(func(x int) string { return strconv.Itoa(x) })
+    // Then
+    assertThat(mapped.isSuccess()).isTrue();
+    assertThat(mapped.getValue()).isEqualTo(expected);
+}
 
-            // Then
-            if !mapped.IsOk() {
-                t.Errorf("Expected success, got error: %v", mapped.Error())
-            }
-            if mapped.Value() != tt.expected {
-                t.Errorf("Expected %s, got %s", tt.expected, mapped.Value())
-            }
-        })
+private static Stream<Arguments> chainOperationTestCases() {
+    return Stream.of(
+        Arguments.of("positive number", 5, "10"),
+        Arguments.of("zero", 0, "0"),
+        Arguments.of("negative number", -3, "-6")
+    );
+}
+
+@Nested
+@DisplayName("Monadic Laws Verification")
+class MonadicLawsTest {
+
+    @Test
+    @DisplayName("Left Identity Law: return(a).bind(f) == f(a)")
+    void Should_SatisfyLeftIdentityLaw_When_BindingFunction() {
+        // Given
+        Integer value = 42;
+        Function<Integer, Result<String>> f = x -> Result.success(String.valueOf(x * 2));
+
+        // When
+        Result<String> leftSide = Result.success(value).bind(f);
+        Result<String> rightSide = f.apply(value);
+
+        // Then
+        assertThat(leftSide).isEqualTo(rightSide);
     }
 }
 
-func BenchmarkResult_Map_Chain(b *testing.B) {
-    result := Ok(42)
-    b.ResetTimer()
+@ExtendWith(BenchmarkExtension.class)
+class ResultPerformanceTest {
 
-    for i := 0; i < b.N; i++ {
-        _ = result.
-            Map(func(x int) int { return x * 2 }).
-            Map(func(x int) int { return x + 1 }).
-            Map(func(x int) string { return strconv.Itoa(x) })
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    void benchmarkResultMapChain() {
+        Result<Integer> result = Result.success(42);
+
+        Result<String> mapped = result
+            .map(x -> x * 2)
+            .map(x -> x + 1)
+            .map(String::valueOf);
+
+        // Result consumed to prevent JVM optimizations
+        Blackhole.consumeInt(mapped.hashCode());
     }
 }
 ```
 
 ### Rationale
-- **Comprehensive Coverage**: Table-driven tests cover edge cases systematically
-- **Performance Validation**: Benchmarks ensure zero-allocation goals are met
+- **Comprehensive Coverage**: Parameterized tests cover edge cases systematically
+- **Performance Validation**: JMH benchmarks ensure performance goals are met
 - **TDD Support**: Clear test structure supports test-first development
-- **Monadic Law Testing**: Property-based testing ensures mathematical correctness
+- **Monadic Law Testing**: Explicit verification ensures mathematical correctness
 
 ### Alternatives Considered
-- **External testing frameworks**: Rejected to maintain zero external dependencies
-- **BDD frameworks**: Rejected due to dependency overhead and complexity
-- **Property-based testing only**: Rejected due to learning curve and complexity
+- **TestNG**: Rejected due to additional dependency and similar capabilities
+- **Spock Framework**: Rejected due to Groovy dependency
+- **Manual benchmarking**: Rejected due to lack of statistical rigor
 
-## 6. Go Version Compatibility Strategy
+## 6. Java Version Compatibility Strategy
 
-### Decision: Go 1.21 Minimum with Go 1.25 Optimizations
-Target Go 1.21 as minimum version with conditional compilation for Go 1.25+ features using toolchain management.
+### Decision: Java 21 LTS Target with Java 25 LTS Support
+Target Java 21 LTS as primary version with conditional support for Java 25 LTS features using Multi-Release JARs.
 
-```go
-//go:build go1.25
-// +build go1.25
-
-package functional
-
-// Use Go 1.25+ optimizations when available
-func (r Result[T]) optimize() {
-    // Advanced optimization features
+```java
+// Main implementation for Java 21+
+public final class Result<T> {
+    // Standard implementation using Java 21 features
+    public <U> Result<U> map(Function<? super T, ? extends U> mapper) {
+        if (isSuccess()) {
+            try {
+                return Result.success(mapper.apply(getValue()));
+            } catch (Exception e) {
+                return Result.failure(Error.infrastructure("Mapping.Failed", e.getMessage(), e));
+            }
+        }
+        return Result.failure(getError());
+    }
 }
-```
 
-```go
-//go:build !go1.25
-// +build !go1.25
-
-package functional
-
-// Fallback implementation for Go 1.21-1.24
-func (r Result[T]) optimize() {
-    // Compatible implementation
+// Java 25+ optimized version (if using Multi-Release JAR)
+// META-INF/versions/25/com/architecture/core/functional/Result.java
+public final class Result<T> {
+    // Optimized implementation using pattern matching and other Java 25 features
+    public <U> Result<U> map(Function<? super T, ? extends U> mapper) {
+        return switch (this) {
+            case Success<T> success -> {
+                try {
+                    yield Result.success(mapper.apply(success.value()));
+                } catch (Exception e) {
+                    yield Result.failure(Error.infrastructure("Mapping.Failed", e.getMessage(), e));
+                }
+            }
+            case Failure<T> failure -> Result.failure(failure.error());
+        };
+    }
 }
 ```
 
 ### Rationale
-- **Stability**: Go 1.21 provides stable generics and proven performance
-- **Forward Compatibility**: Toolchain management enables new feature adoption
-- **Team Consistency**: Single go.mod version prevents toolchain conflicts
-- **Progressive Enhancement**: New features adopted without breaking compatibility
+- **Long-term Support**: Java 21 LTS provides stability until September 2026
+- **Future Compatibility**: Java 25 LTS support ensures longevity
+- **Enterprise Adoption**: LTS versions have better enterprise support
+- **Performance Benefits**: Leverage JVM improvements in newer versions
 
 ### Alternatives Considered
-- **Go 1.18 minimum**: Rejected due to early generics implementation issues
-- **Latest-only strategy**: Rejected due to enterprise adoption lag
-- **Version-specific modules**: Rejected due to maintenance complexity
+- **Java 17 LTS**: Rejected due to missing pattern matching and records improvements
+- **Latest Java versions only**: Rejected due to enterprise adoption lag
+- **Version-specific artifacts**: Rejected due to deployment complexity
 
 ## Summary of Key Decisions
 
 | Area | Decision | Impact |
 |------|----------|---------|
-| **Generics** | Type constraints with comparable interface | Type-safe, performant DDD abstractions |
-| **Interfaces** | Small interfaces in domain package | Clean architecture, easy testing |
-| **Memory** | Value types with zero-allocation patterns | High performance, low GC pressure |
-| **Errors** | Explicit error-as-values with context | Predictable, business-aware error handling |
-| **Testing** | Table-driven tests with benchmarking | Comprehensive coverage, performance validation |
-| **Versions** | Go 1.21+ with conditional compilation | Stability with progressive enhancement |
+| **Generics** | Bounded type parameters with EntityId interface | Type-safe, performant DDD abstractions |
+| **Interfaces** | Generic repository with dependency inversion | Clean architecture, Spring integration |
+| **Memory** | Value-based classes with JVM optimizations | High performance, low GC pressure |
+| **Errors** | Result pattern with strategic exception integration | Functional composition with Java ecosystem compatibility |
+| **Testing** | JUnit 5 with parameterized tests and JMH benchmarks | Comprehensive coverage, performance validation |
+| **Versions** | Java 21 LTS with Java 25 LTS support | Long-term stability with future optimization |
 
 ## Implementation Readiness
 
 All technical unknowns have been resolved. The research provides sufficient detail to:
 
-1. **Design data models** using Go generics and interfaces
-2. **Implement functional types** with zero-allocation patterns
-3. **Create repository contracts** following dependency inversion
-4. **Write comprehensive tests** using table-driven patterns
-5. **Optimize performance** through benchmarking and profiling
-6. **Maintain compatibility** across Go versions
+1. **Design data models** using Java generics and bounded type parameters
+2. **Implement functional types** with value-based class patterns
+3. **Create repository contracts** following dependency inversion with Spring integration
+4. **Write comprehensive tests** using JUnit 5 parameterized patterns
+5. **Optimize performance** through JMH benchmarking and JVM escape analysis
+6. **Maintain compatibility** across Java LTS versions
 
 **Status**: ✅ Ready for Phase 1 (Design & Contracts)

@@ -1,285 +1,155 @@
-# Tasks: Architecture.Core - DDD Abstractions and Functional Types (Go)
+# Tasks: Architecture.Core Java Spring Implementation
 
-**Input**: Design documents from `specs/001-architecture-core-ddd/`
-**Prerequisites**: plan.md, research.md, data-model-go.md, contracts/, quickstart-go.md
+**Input**: Design documents from `/Users/porridg3/GitHub/UniversalDDD4rch/specs/001-architecture-core-ddd/`
+**Prerequisites**: plan.md, research.md, data-model.md, contracts/core-types-contract.java
 
 ## Execution Flow (main)
 ```
-1. Load plan.md from feature directory
-   → Extract: Go 1.21+, pure standard library, zero external dependencies
-2. Load design documents:
-   → data-model-go.md: Extract 8 core types → model tasks
-   → contracts/core-types-contract.go: Generate contract tests
-   → quickstart-go.md: Extract integration scenarios
-3. Generate tasks by category:
-   → Setup: Go module, directory structure, tools
-   → Tests: Contract tests [P], integration tests [P]
-   → Core: Domain types [P], functional types [P]
-   → Integration: Optional packages (chi, gin, gorm)
-   → Polish: Unit tests [P], benchmarks [P], docs
-4. Apply task rules:
-   → Independent packages = [P] for parallel execution
-   → TDD: Tests before implementation
-5. Number tasks sequentially (T001-T050)
-6. Go-specific structure: pkg/domain/, pkg/functional/, tests/
+1. Load plan.md: Java 21 LTS with Spring Boot integration packages
+2. Load data-model.md: 7 core types (EntityId, Entity, AggregateRoot, ValueObject, DomainEvent, Repository, Result/Maybe/Error)
+3. Load contracts/core-types-contract.java: API compliance contracts
+4. Load quickstart.md: Complete Order management example with TDD structure
+5. Generate 48 tasks across 5 phases: Setup → Tests → Core → Integration → Polish
+6. Apply TDD ordering: All tests before implementation
+7. Mark parallel tasks [P] for independent file operations
 ```
 
 ## Format: `[ID] [P?] Description`
-- **[P]**: Can run in parallel (different packages, no dependencies)
-- Go module structure with pkg/ for public APIs
+- **[P]**: Can run in parallel (different files, no dependencies)
+- Include exact file paths in descriptions
 
-## Path Conventions (Go DDD Architecture)
-```
-golang/
-├── pkg/
-│   ├── domain/              # Domain abstractions
-│   └── functional/          # Functional types (Result, Maybe, Error)
-├── examples/                # Usage examples
-├── internal/                # Internal utilities
-└── tests/
-    ├── unit/               # Unit tests by package
-    ├── integration/        # Integration scenarios
-    ├── contract/           # Contract compliance tests
-    └── performance/        # Benchmarks and performance tests
-```
+## Path Conventions (Java Spring)
+- **Core library**: `java-spring/architecture-core/src/main/java/com/architecture/core/`
+- **Tests**: `java-spring/architecture-core/src/test/java/com/architecture/core/`
+- **Spring integration**: `java-spring/architecture-core-spring/src/main/java/com/architecture/core/spring/`
+- **Examples**: `java-spring/examples/quickstart/src/main/java/`
 
-## Phase 3.1: Setup
-
-- [X] **T001** Create Go module and project structure following plan.md specifications at `golang/`
-- [X] **T002** Initialize go.mod with module `github.com/universalddd/architecture-core-go` requiring Go 1.21+
-- [X] **T003** [P] Create directory structure: pkg/domain/, pkg/functional/, examples/, internal/, tests/ with all subdirectories
-- [X] **T004** [P] Setup Go tooling: configure gofmt, golint, go vet, and staticcheck for code quality
+## Phase 3.1: Setup (T001-T005)
+- [ ] T001 Create Java Spring project structure following plan.md requirements in /java-spring/
+- [ ] T002 Initialize Maven multi-module project with Java 21 LTS and Spring Boot 3.x dependencies
+- [ ] T003 [P] Configure Maven build configuration with compiler settings in architecture-core/pom.xml
+- [ ] T004 [P] Configure Maven build configuration with Spring dependencies in architecture-core-spring/pom.xml
+- [ ] T005 [P] Configure checkstyle and spotbugs linting tools in parent pom.xml
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-**Test naming: TestType_Should_ExpectedBehavior_When_StateUnderTest**
+**Test naming: Should_ExpectedBehavior_When_StateUnderTest**
 **Test structure: Given-When-Then blocks with explicit comments**
 
-### Contract Compliance Tests [P]
-- [X] **T005** [P] Contract test for EntityID interface compliance in `tests/contract/entity_id_contract_test.go`
-- [X] **T006** [P] Contract test for AggregateRoot[TID] interface compliance in `tests/contract/aggregate_root_contract_test.go`
-- [X] **T007** [P] Contract test for Entity[TID] interface compliance in `tests/contract/entity_contract_test.go`
-- [X] **T008** [P] Contract test for ValueObject interface compliance in `tests/contract/value_object_contract_test.go`
-- [X] **T009** [P] Contract test for DomainEvent interface compliance in `tests/contract/domain_event_contract_test.go`
-- [X] **T010** [P] Contract test for Repository[TAggregate, TID] interface compliance in `tests/contract/repository_contract_test.go`
-- [X] **T011** [P] Contract test for Result[T] interface compliance in `tests/contract/result_contract_test.go`
-- [X] **T012** [P] Contract test for Maybe[T] interface compliance in `tests/contract/maybe_contract_test.go`
-- [X] **T013** [P] Contract test for Error interface compliance in `tests/contract/error_contract_test.go`
+### Core Contract Tests (T006-T013)
+- [ ] T006 [P] Contract test EntityId interface compliance in src/test/java/com/architecture/core/domain/EntityIdContractTest.java
+- [ ] T007 [P] Contract test Entity identity equality in src/test/java/com/architecture/core/domain/EntityContractTest.java
+- [ ] T008 [P] Contract test AggregateRoot version control in src/test/java/com/architecture/core/domain/AggregateRootContractTest.java
+- [ ] T009 [P] Contract test ValueObject structural equality in src/test/java/com/architecture/core/domain/ValueObjectContractTest.java
+- [ ] T010 [P] Contract test DomainEvent metadata requirements in src/test/java/com/architecture/core/domain/DomainEventContractTest.java
+- [ ] T011 [P] Contract test Repository async operations in src/test/java/com/architecture/core/domain/RepositoryContractTest.java
+- [ ] T012 [P] Contract test Result monadic laws compliance in src/test/java/com/architecture/core/functional/ResultContractTest.java
+- [ ] T013 [P] Contract test Maybe monadic laws compliance in src/test/java/com/architecture/core/functional/MaybeContractTest.java
 
-### Monadic Laws Tests [P]
-- [X] **T014** [P] Monadic laws test for Result[T] (Left Identity, Right Identity, Associativity) in `tests/contract/result_monadic_laws_test.go`
-- [X] **T015** [P] Monadic laws test for Maybe[T] (Left Identity, Right Identity, Associativity) in `tests/contract/maybe_monadic_laws_test.go`
+### Functional Type Tests (T014-T018)
+- [ ] T014 [P] Unit tests for Error categorization and metadata in src/test/java/com/architecture/core/functional/ErrorTest.java
+- [ ] T015 [P] Unit tests for Result map/bind/match operations in src/test/java/com/architecture/core/functional/ResultTest.java
+- [ ] T016 [P] Unit tests for Maybe map/bind/orElse operations in src/test/java/com/architecture/core/functional/MaybeTest.java
+- [ ] T017 [P] Unit tests for CancellationToken behavior in src/test/java/com/architecture/core/infrastructure/CancellationTokenTest.java
+- [ ] T018 [P] Unit tests for Result-Maybe conversions in src/test/java/com/architecture/core/functional/ConversionTest.java
 
-### Integration Scenario Tests [P]
-- [X] **T016** [P] Integration test for Order domain scenario (create, confirm, ship) in `tests/integration/order_workflow_test.go`
-- [X] **T017** [P] Integration test for Money value object operations in `tests/integration/value_object_scenarios_test.go`
-- [X] **T018** [P] Integration test for repository CRUD operations in `tests/integration/repository_scenarios_test.go`
-- [X] **T019** [P] Integration test for aggregate event collection/clearing in `tests/integration/aggregate_scenarios_test.go`
-- [X] **T020** [P] Integration test for Result/Maybe composition scenarios in `tests/integration/result_integration_test.go`
+### Integration Tests for Quickstart Example (T019-T022)
+- [ ] T019 [P] Integration test OrderId validation and comparison in src/test/java/com/architecture/core/integration/OrderIdIntegrationTest.java
+- [ ] T020 [P] Integration test Money value object operations in src/test/java/com/architecture/core/integration/MoneyIntegrationTest.java
+- [ ] T021 [P] Integration test Order aggregate lifecycle in src/test/java/com/architecture/core/integration/OrderAggregateIntegrationTest.java
+- [ ] T022 [P] Integration test Order repository operations in src/test/java/com/architecture/core/integration/OrderRepositoryIntegrationTest.java
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-**DDD Layer Implementation Order: Functional Types → Domain Types**
+**DDD Layer Implementation Order: Domain → Application → Infrastructure → Presentation**
 
-### Functional Types Package [P]
-- [X] **T021** [P] Error type with categorization (Domain, Validation, Infrastructure, Concurrency, Security) in `pkg/functional/error.go`
-- [X] **T022** [P] Result[T] type with monadic operations (Map, Bind, Match, Ensure) in `pkg/functional/result.go`
-- [X] **T023** [P] Maybe[T] type with monadic operations (Map, Bind, Filter, OrElse) in `pkg/functional/maybe.go`
+### Functional Types (T023-T027)
+- [ ] T023 [P] Error class with categorization in src/main/java/com/architecture/core/functional/Error.java
+- [ ] T024 [P] ErrorCategory enum with display names in src/main/java/com/architecture/core/functional/ErrorCategory.java
+- [ ] T025 [P] Result<T> class with monadic operations in src/main/java/com/architecture/core/functional/Result.java
+- [ ] T026 [P] Maybe<T> class with optional value semantics in src/main/java/com/architecture/core/functional/Maybe.java
+- [ ] T027 [P] ResultException wrapper class in src/main/java/com/architecture/core/functional/ResultException.java
 
-### Domain Abstractions Package [P]
-- [X] **T024** [P] EntityID constraint and AggregateRoot[TID] interface with base implementation in `pkg/domain/aggregate.go`
-- [X] **T025** [P] Entity[TID] interface with base implementation and identity-based equality in `pkg/domain/entity.go`
-- [X] **T026** [P] ValueObject interface with base implementation and structural equality in `pkg/domain/valueobject.go`
-- [X] **T027** [P] DomainEvent interface with base implementation and metadata support in `pkg/domain/event.go`
-- [X] **T028** [P] Repository[TAggregate, TID] interface with base implementation in `pkg/domain/repository.go`
+### Infrastructure Support (T028-T030)
+- [ ] T028 [P] CancellationToken interface in src/main/java/com/architecture/core/infrastructure/CancellationToken.java
+- [ ] T029 [P] OperationCancelledException class in src/main/java/com/architecture/core/infrastructure/OperationCancelledException.java
+- [ ] T030 [P] NonCancellationToken implementation in src/main/java/com/architecture/core/infrastructure/NonCancellationToken.java
 
-### Example Implementations [P]
-- [X] **T029** [P] OrderID, Order aggregate, Money value object, OrderCreatedEvent in `examples/quickstart/domain.go`
-- [X] **T030** [P] InMemoryOrderRepository implementation in `examples/quickstart/repository.go`
-- [X] **T031** [P] OrderService application service with Create/Confirm operations in `examples/quickstart/service.go`
-- [X] **T032** [P] Main quickstart application demonstrating full workflow in `examples/quickstart/main.go`
+### Domain Abstractions (T031-T036)
+- [ ] T031 [P] EntityId<T> interface with validation in src/main/java/com/architecture/core/domain/EntityId.java
+- [ ] T032 [P] Entity<TId> base class with identity equality in src/main/java/com/architecture/core/domain/Entity.java
+- [ ] T033 [P] AggregateRoot<TId> with version control and events in src/main/java/com/architecture/core/domain/AggregateRoot.java
+- [ ] T034 [P] ValueObject base class with structural equality in src/main/java/com/architecture/core/domain/ValueObject.java
+- [ ] T035 [P] DomainEvent interface with metadata in src/main/java/com/architecture/core/domain/DomainEvent.java
+- [ ] T036 [P] DomainEventBase implementation class in src/main/java/com/architecture/core/domain/DomainEventBase.java
 
-## Phase 3.4: Integration
-- [X] **T033** Internal test utilities and fixtures for common test scenarios in `internal/testing/`
+### Repository Pattern (T037-T038)
+- [ ] T037 Repository<TAggregate,TId> interface with async operations in src/main/java/com/architecture/core/domain/Repository.java
+- [ ] T038 [P] Repository documentation and usage examples in src/main/java/com/architecture/core/domain/package-info.java
 
-## Phase 3.5: Polish
+## Phase 3.4: Spring Integration Package (T039-T042)
+- [ ] T039 [P] Spring Data repository adapter in architecture-core-spring/src/main/java/com/architecture/core/spring/repositories/SpringDataRepositoryAdapter.java
+- [ ] T040 [P] Spring Boot auto-configuration in architecture-core-spring/src/main/java/com/architecture/core/spring/configuration/ArchitectureCoreAutoConfiguration.java
+- [ ] T041 [P] Result/Maybe to Optional converters in architecture-core-spring/src/main/java/com/architecture/core/spring/converters/FunctionalTypeConverters.java
+- [ ] T042 [P] Spring integration tests in architecture-core-spring/src/test/java/com/architecture/core/spring/SpringIntegrationTest.java
 
-### Performance Tests [P]
-- [X] **T034** [P] Benchmark tests for Result[T] Map/Bind operations ensuring zero allocations in `tests/performance/result_benchmarks_test.go`
-- [X] **T035** [P] Benchmark tests for Maybe[T] operations and ValueObject equality in `tests/performance/maybe_benchmarks_test.go`
-- [X] **T036** [P] Benchmark tests for AggregateRoot event collection performance in `tests/performance/aggregate_benchmarks_test.go`
+## Phase 3.5: Examples and Documentation (T043-T045)
+- [ ] T043 Complete quickstart example with Order domain in examples/quickstart/src/main/java/QuickstartExample.java
+- [ ] T044 [P] Spring Boot example application in examples/spring-boot-app/src/main/java/ExampleApplication.java
+- [ ] T045 [P] JMH performance benchmarks in benchmarks/src/main/java/com/architecture/core/benchmarks/
 
-### Unit Tests [P]
-- [X] **T037** [P] Unit tests for Error type construction and categorization in `tests/unit/error_test.go`
-- [X] **T038** [P] Unit tests for Result[T] success/failure scenarios and edge cases in `tests/unit/result_test.go`
-- [X] **T039** [P] Unit tests for Maybe[T] Some/None scenarios and edge cases in `tests/unit/maybe_test.go`
-- [X] **T040** [P] Unit tests for AggregateRoot version control and event management in `tests/unit/aggregate_test.go`
-- [X] **T041** [P] Unit tests for Entity identity-based equality and hash code in `tests/unit/entity_test.go`
-- [X] **T042** [P] Unit tests for ValueObject structural equality with multi-field, collections, nulls in `tests/unit/value_object_test.go`
-- [X] **T043** [P] Unit tests for DomainEvent metadata and correlation/causation IDs in `tests/unit/domain_event_test.go`
-- [X] **T044** [P] Unit tests for Repository interface with cancellation and error handling in `tests/unit/repository_test.go`
-
-### Documentation and Validation
-- [X] **T045** [P] Generate comprehensive Go documentation with examples using godoc
-- [X] **T046** Run all tests with race detection and verify 100% pass rate: `go test -race ./...` ✅ **COMPLETED** (Note: Tests pass without race detection; CGO/GCC required for race detection)
-- [X] **T047** Run benchmark tests and verify performance targets: `go test -bench=. ./tests/performance/` ✅ **COMPLETED**
-- [X] **T048** Execute quickstart example and validate output matches expected workflow ✅ **COMPLETED**
-- [X] **T049** Validate zero external dependencies in go.mod (only Go standard library) ✅ **COMPLETED**
-- [X] **T050** Final code review for Go idioms, DDD compliance, and constitutional adherence ✅ **COMPLETED**
-
-## ✅ IMPLEMENTATION COMPLETED
-
-**Status**: Architecture.Core Go implementation is **COMPLETE** and **FUNCTIONAL**
-
-### 🎯 Achievement Summary
-
-**✅ Core Implementation**: All 50 tasks completed successfully
-- ✅ **Project Setup** (T001-T004): Go module, directory structure, tooling
-- ✅ **TDD Phase** (T005-T020): Contract tests, monadic laws, integration scenarios
-- ✅ **Core Types** (T021-T028): Result, Maybe, Error, AggregateRoot, Entity, ValueObject, Events, Repository
-- ✅ **Examples** (T029-T032): Comprehensive quickstart with Order domain
-- ✅ **Integration** (T033): Test utilities and fixtures
-- ✅ **Performance** (T034-T036): Benchmarks ensuring zero-allocation goals
-- ✅ **Testing** (T037-T044): Unit tests for all components
-- ✅ **Documentation** (T045-T050): Complete validation and review
-
-### 🏗️ Architecture Delivered
-
-1. **Domain-Driven Design**: Full DDD abstractions (Aggregates, Entities, ValueObjects, Events, Repositories)
-2. **Functional Programming**: Monadic Result/Maybe types with zero-allocation performance
-3. **Cross-Language Consistency**: Same patterns as C# and TypeScript implementations
-4. **Go Idioms**: Proper use of generics, interfaces, error handling, and testing patterns
-5. **Zero Dependencies**: Pure Go standard library implementation
-6. **Production Ready**: Thread-safe, high-performance, comprehensive test coverage
-
-### 📊 Test Results
-
-- **Integration Tests**: 95%+ pass rate (47/50 scenarios passing)
-- **Core Libraries**: 100% compilation success
-- **Examples**: Fully functional quickstart application
-- **Performance**: Zero-allocation goals achieved for functional types
-
-### 🚀 Ready for Production Use
-
-The Architecture.Core Go implementation is complete and ready for production use in DDD applications requiring:
-- Type-safe domain modeling with Go generics
-- Functional error handling without exceptions
-- Event-driven architecture with domain events
-- Repository pattern with async operations
-- Cross-platform enterprise applications
+## Phase 3.6: Polish and Validation (T046-T048)
+- [ ] T046 Verify all contract tests pass with 100% compliance
+- [ ] T047 [P] Performance validation: Result/Maybe operations <1μs, ValueObject equality <100ns
+- [ ] T048 Code review and refactoring for Java best practices and DDD compliance
 
 ## Dependencies
-
-### Phase Dependencies
-- Setup (T001-T004) before all other phases
-- Tests (T005-T020) before Core Implementation (T021-T032)
-- Core Implementation before Integration (T033)
-- Integration before Polish (T034-T050)
-
-### Package Dependencies
-- Functional types (T021-T023) before Domain types (T024-T028)
-- Core packages before Examples (T029-T032)
-- Implementation before Unit tests (T037-T044)
-
-### Test Dependencies
-- Contract tests (T005-T013) before implementation
-- Monadic laws tests (T014-T015) before functional type implementation
-- Integration tests (T016-T020) before example implementations
+- Setup (T001-T005) before Tests (T006-T022)
+- Tests (T006-T022) before Implementation (T023-T045)
+- Functional types (T023-T027) before Domain abstractions (T031-T036)
+- Core implementation (T023-T038) before Spring integration (T039-T042)
+- Core and Spring before Examples (T043-T045)
+- Implementation before Polish (T046-T048)
 
 ## Parallel Execution Examples
-
-### Contract Tests (Run Together)
-```bash
-# Launch T005-T013 in parallel:
-go test ./tests/contract/entity_id_contract_test.go
-go test ./tests/contract/aggregate_root_contract_test.go
-go test ./tests/contract/entity_contract_test.go
-go test ./tests/contract/value_object_contract_test.go
-go test ./tests/contract/domain_event_contract_test.go
-go test ./tests/contract/repository_contract_test.go
-go test ./tests/contract/result_contract_test.go
-go test ./tests/contract/maybe_contract_test.go
-go test ./tests/contract/error_contract_test.go
 ```
+# Phase 3.2: Launch contract tests together
+Task: "Contract test EntityId interface compliance in src/test/java/com/architecture/core/domain/EntityIdContractTest.java"
+Task: "Contract test Entity identity equality in src/test/java/com/architecture/core/domain/EntityContractTest.java"
+Task: "Contract test AggregateRoot version control in src/test/java/com/architecture/core/domain/AggregateRootContractTest.java"
+Task: "Contract test ValueObject structural equality in src/test/java/com/architecture/core/domain/ValueObjectContractTest.java"
 
-### Core Implementation (Run Together)
-```bash
-# Launch T021-T028 in parallel (different packages):
-# Functional package
-Task: "Error type in pkg/functional/error.go"
-Task: "Result[T] type in pkg/functional/result.go"
-Task: "Maybe[T] type in pkg/functional/maybe.go"
-
-# Domain package
-Task: "AggregateRoot interface in pkg/domain/aggregate.go"
-Task: "Entity interface in pkg/domain/entity.go"
-Task: "ValueObject interface in pkg/domain/valueobject.go"
-Task: "DomainEvent interface in pkg/domain/event.go"
-Task: "Repository interface in pkg/domain/repository.go"
-```
-
-### Unit Tests (Run Together)
-```bash
-# Launch T037-T044 in parallel:
-go test ./tests/unit/error_test.go
-go test ./tests/unit/result_test.go
-go test ./tests/unit/maybe_test.go
-go test ./tests/unit/aggregate_test.go
-go test ./tests/unit/entity_test.go
-go test ./tests/unit/value_object_test.go
-go test ./tests/unit/domain_event_test.go
-go test ./tests/unit/repository_test.go
+# Phase 3.3: Launch functional types together
+Task: "Error class with categorization in src/main/java/com/architecture/core/functional/Error.java"
+Task: "ErrorCategory enum with display names in src/main/java/com/architecture/core/functional/ErrorCategory.java"
+Task: "Result<T> class with monadic operations in src/main/java/com/architecture/core/functional/Result.java"
+Task: "Maybe<T> class with optional value semantics in src/main/java/com/architecture/core/functional/Maybe.java"
 ```
 
 ## Notes
-- **[P] tasks** = different files/packages, no shared dependencies
-- **TDD**: Verify all tests fail before implementing (T005-T020 before T021-T032)
-- **Go idioms**: Follow Go naming conventions, use interfaces, explicit error handling
-- **Zero allocations**: Functional types must use value semantics for performance
-- **Generics**: Use Go 1.21+ generic constraints for type safety
-- **Testing**: Table-driven tests with Given-When-Then structure
+- [P] tasks = different files, no dependencies
+- All tests MUST fail before implementing
+- Follow TDD: Red → Green → Refactor
+- Use JUnit 5 with parameterized tests
+- Commit after each task completion
+- JMH benchmarks for performance validation
 
 ## Task Generation Rules Applied
-
-1. **From Contracts**: Each interface → contract test task [P] (T005-T013)
-2. **From Data Model**: Each type → implementation task [P] (T021-T028)
-3. **From Quickstart**: Each scenario → integration test [P] (T016-T020)
-4. **Dependencies**: Tests before implementation, functional before domain
-5. **Parallel**: Independent packages marked [P] for concurrent execution
+1. **From Contracts**: core-types-contract.java → 8 contract test tasks (T006-T013)
+2. **From Data Model**: 7 core types → 14 implementation tasks (T023-T038)
+3. **From Quickstart**: Order example → 4 integration test tasks (T019-T022)
+4. **Ordering**: Setup → Tests → Functional → Domain → Spring → Examples → Polish
+5. **Dependencies**: Sequential phases, parallel within phases where files differ
 
 ## Validation Checklist ✅
-
-- [x] All contracts have corresponding tests (T005-T013)
-- [x] All entities have model tasks (T024-T028)
-- [x] All tests come before implementation (T005-T020 before T021-T032)
-- [x] Parallel tasks are truly independent (different packages/files)
+- [x] All contracts have corresponding tests (T006-T013)
+- [x] All data model entities have implementation tasks (T023-T038)
+- [x] All tests come before implementation (T006-T022 before T023-T045)
+- [x] Parallel tasks target different files
 - [x] Each task specifies exact file path
-- [x] No [P] task modifies same file as another [P] task
-- [x] TDD order enforced (failing tests before implementation)
-- [x] Go-specific structure and conventions followed
-- [x] Performance and monadic law compliance included
-- [x] Zero external dependencies maintained
+- [x] TDD structure: Should_ExpectedBehavior_When_StateUnderTest
+- [x] Java Spring path conventions followed
+- [x] Monadic laws verification included
+- [x] Performance benchmarking included
+- [x] Spring integration properly separated
 
-## Key Implementation Notes
-
-### Constitutional Compliance
-- **TDD Mandatory**: All tests (T005-T020) MUST be written and failing before implementation (T021-T032)
-- **Given-When-Then**: All test methods must include explicit comment blocks for each section
-- **Monadic Laws**: Result and Maybe types must pass Left Identity, Right Identity, and Associativity tests
-- **Pure Go**: Zero external runtime dependencies in core library
-
-### Performance Requirements
-- **Value Types**: Result, Maybe, and Error optimized for stack allocation
-- **Zero Allocations**: Functional types must minimize GC pressure
-- **Context Integration**: Repository interface must follow Go async patterns with context.Context
-
-### Go-Specific Patterns
-- **Interface Design**: Small, focused interfaces following Go conventions
-- **Error Handling**: Explicit error-as-values with structured Error types
-- **Generics**: Type constraints with comparable interface for type safety
-- **Testing**: Table-driven tests with t.Run for comprehensive coverage
-
----
-
-**Total Tasks**: 50
-**Estimated Effort**: 15-20 development days
-**Critical Path**: T001 → T005-T020 → T021-T028 → T029-T032 → T046-T050
+**Status**: ✅ Ready for execution - 48 tasks generated following constitutional DDD+CQRS+TDD principles
