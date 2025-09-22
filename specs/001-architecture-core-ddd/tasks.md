@@ -39,19 +39,19 @@
 ### Core Contract Tests (T006-T013)
 - [X] T006 [P] Contract test EntityId interface compliance in src/test/java/com/architecture/core/domain/EntityIdContractTest.java
 - [X] T007 [P] Contract test Entity identity equality in src/test/java/com/architecture/core/domain/EntityContractTest.java
-- [ ] T008 [P] Contract test AggregateRoot version control in src/test/java/com/architecture/core/domain/AggregateRootContractTest.java
+- [X] T008 [P] Contract test AggregateRoot version control in src/test/java/com/architecture/core/domain/AggregateRootContractTest.java
 - [X] T009 [P] Contract test ValueObject structural equality in src/test/java/com/architecture/core/domain/ValueObjectContractTest.java
-- [ ] T010 [P] Contract test DomainEvent metadata requirements in src/test/java/com/architecture/core/domain/DomainEventContractTest.java
-- [ ] T011 [P] Contract test Repository async operations in src/test/java/com/architecture/core/domain/RepositoryContractTest.java
+- [X] T010 [P] Contract test DomainEvent metadata requirements in src/test/java/com/architecture/core/domain/DomainEventContractTest.java
+- [X] T011 [P] Contract test Repository async operations in src/test/java/com/architecture/core/domain/RepositoryContractTest.java
 - [X] T012 [P] Contract test Result monadic laws compliance in src/test/java/com/architecture/core/functional/ResultContractTest.java
-- [ ] T013 [P] Contract test Maybe monadic laws compliance in src/test/java/com/architecture/core/functional/MaybeContractTest.java
+- [X] T013 [P] Contract test Maybe monadic laws compliance in src/test/java/com/architecture/core/functional/MaybeContractTest.java
 
 ### Functional Type Tests (T014-T018)
-- [ ] T014 [P] Unit tests for Error categorization and metadata in src/test/java/com/architecture/core/functional/ErrorTest.java
-- [ ] T015 [P] Unit tests for Result map/bind/match operations in src/test/java/com/architecture/core/functional/ResultTest.java
-- [ ] T016 [P] Unit tests for Maybe map/bind/orElse operations in src/test/java/com/architecture/core/functional/MaybeTest.java
-- [ ] T017 [P] Unit tests for CancellationToken behavior in src/test/java/com/architecture/core/infrastructure/CancellationTokenTest.java
-- [ ] T018 [P] Unit tests for Result-Maybe conversions in src/test/java/com/architecture/core/functional/ConversionTest.java
+- [X] T014 [P] Unit tests for Error categorization and metadata in src/test/java/com/architecture/core/functional/ErrorTest.java
+- [X] T015 [P] Unit tests for Result map/bind/match operations in src/test/java/com/architecture/core/functional/ResultTest.java
+- [X] T016 [P] Unit tests for Maybe map/bind/orElse operations in src/test/java/com/architecture/core/functional/MaybeTest.java
+- [X] T017 [P] Unit tests for CancellationToken behavior in src/test/java/com/architecture/core/infrastructure/CancellationTokenTest.java
+- [X] T018 [P] Unit tests for Result-Maybe conversions in src/test/java/com/architecture/core/functional/ConversionTest.java
 
 ### Integration Tests for Quickstart Example (T019-T022)
 - [ ] T019 [P] Integration test OrderId validation and comparison in src/test/java/com/architecture/core/integration/OrderIdIntegrationTest.java
@@ -66,24 +66,24 @@
 - [X] T023 [P] Error class with categorization in src/main/java/com/architecture/core/functional/Error.java
 - [X] T024 [P] ErrorCategory enum with display names in src/main/java/com/architecture/core/functional/ErrorCategory.java
 - [X] T025 [P] Result<T> class with monadic operations in src/main/java/com/architecture/core/functional/Result.java
-- [ ] T026 [P] Maybe<T> class with optional value semantics in src/main/java/com/architecture/core/functional/Maybe.java
+- [X] T026 [P] Maybe<T> class with optional value semantics in src/main/java/com/architecture/core/functional/Maybe.java
 - [X] T027 [P] ResultException wrapper class in src/main/java/com/architecture/core/functional/ResultException.java
 
 ### Infrastructure Support (T028-T030)
-- [ ] T028 [P] CancellationToken interface in src/main/java/com/architecture/core/infrastructure/CancellationToken.java
-- [ ] T029 [P] OperationCancelledException class in src/main/java/com/architecture/core/infrastructure/OperationCancelledException.java
-- [ ] T030 [P] NonCancellationToken implementation in src/main/java/com/architecture/core/infrastructure/NonCancellationToken.java
+- [X] T028 [P] CancellationToken interface in src/main/java/com/architecture/core/infrastructure/CancellationToken.java
+- [X] T029 [P] OperationCancelledException class in src/main/java/com/architecture/core/infrastructure/OperationCancelledException.java
+- [X] T030 [P] NonCancellationToken implementation in src/main/java/com/architecture/core/infrastructure/NonCancellationToken.java
 
 ### Domain Abstractions (T031-T036)
 - [X] T031 [P] EntityId<T> interface with validation in src/main/java/com/architecture/core/domain/EntityId.java
 - [X] T032 [P] Entity<TId> base class with identity equality in src/main/java/com/architecture/core/domain/Entity.java
-- [ ] T033 [P] AggregateRoot<TId> with version control and events in src/main/java/com/architecture/core/domain/AggregateRoot.java
+- [X] T033 [P] AggregateRoot<TId> with version control and events in src/main/java/com/architecture/core/domain/AggregateRoot.java
 - [X] T034 [P] ValueObject base class with structural equality in src/main/java/com/architecture/core/domain/ValueObject.java
-- [ ] T035 [P] DomainEvent interface with metadata in src/main/java/com/architecture/core/domain/DomainEvent.java
-- [ ] T036 [P] DomainEventBase implementation class in src/main/java/com/architecture/core/domain/DomainEventBase.java
+- [X] T035 [P] DomainEvent interface with metadata in src/main/java/com/architecture/core/domain/DomainEvent.java
+- [X] T036 [P] DomainEventBase implementation class in src/main/java/com/architecture/core/domain/DomainEventBase.java
 
 ### Repository Pattern (T037-T038)
-- [ ] T037 Repository<TAggregate,TId> interface with async operations in src/main/java/com/architecture/core/domain/Repository.java
+- [X] T037 Repository<TAggregate,TId> interface with async operations in src/main/java/com/architecture/core/domain/Repository.java
 - [ ] T038 [P] Repository documentation and usage examples in src/main/java/com/architecture/core/domain/package-info.java
 
 ## Phase 3.4: Spring Integration Package (T039-T042)
