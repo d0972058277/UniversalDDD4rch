@@ -2,9 +2,15 @@
 description: Execute the implementation planning workflow using the plan template to generate design artifacts.
 ---
 
+The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
+
+User input:
+
+$ARGUMENTS
+
 Given the implementation details provided as an argument, do this:
 
-1. Run `.specify/scripts/powershell/setup-plan.ps1 -Json` from the repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. All future file paths must be absolute.
+1. Run the setup-plan script with `--json` from the repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. Use `.specify/scripts/powershell/setup-plan.ps1` on Windows or `.specify/scripts/bash/setup-plan.sh` on macOS/Linux. All future file paths must be absolute.
 2. Read and analyze the feature specification to understand:
    - The feature requirements and user stories
    - Functional and non-functional requirements

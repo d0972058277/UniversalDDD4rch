@@ -75,7 +75,9 @@
       "Bash(cat:*)",
       "Bash(CGO_ENABLED=1 go test -race ./...)",
       "Bash(ren:*)",
-      "Bash(CGO_ENABLED=1 go test -race ./tests/...)"
+      "Bash(CGO_ENABLED=1 go test -race ./tests/...)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)"
     ],
     "deny": [],
     "ask": []
