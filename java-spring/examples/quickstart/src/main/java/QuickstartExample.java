@@ -55,7 +55,7 @@ public class QuickstartExample {
                 ));
             }
 
-            return Result.success(null);
+            return Result.success();
         }
 
         @Override
@@ -87,7 +87,7 @@ public class QuickstartExample {
         public String getValue() { return value; }
 
         @Override
-        public Result<Void> validate() { return Result.success(null); }
+        public Result<Void> validate() { return Result.success(); }
 
         @Override
         public int compareTo(CustomerId other) { return this.value.compareTo(other.value); }
@@ -115,7 +115,7 @@ public class QuickstartExample {
         public String getValue() { return value; }
 
         @Override
-        public Result<Void> validate() { return Result.success(null); }
+        public Result<Void> validate() { return Result.success(); }
 
         @Override
         public int compareTo(ProductId other) { return this.value.compareTo(other.value); }
@@ -285,7 +285,7 @@ public class QuickstartExample {
             recalculateTotal();
 
             addDomainEvent(new OrderLineAddedEvent(getId(), productId, quantity, unitPrice));
-            return Result.success(null);
+            return Result.success();
         }
 
         public Result<Void> confirm() {
@@ -304,7 +304,7 @@ public class QuickstartExample {
             }
 
             this.status = OrderStatus.CONFIRMED;
-            return Result.success(null);
+            return Result.success();
         }
 
         private void recalculateTotal() {
@@ -355,7 +355,7 @@ public class QuickstartExample {
             com.architecture.core.infrastructure.CancellationToken cancellationToken
         ) {
             orders.put(aggregate.getId(), aggregate);
-            return CompletableFuture.completedFuture(Result.success(null));
+            return CompletableFuture.completedFuture(Result.success());
         }
 
         @Override
@@ -369,7 +369,7 @@ public class QuickstartExample {
                 );
             }
             orders.put(aggregate.getId(), aggregate);
-            return CompletableFuture.completedFuture(Result.success(null));
+            return CompletableFuture.completedFuture(Result.success());
         }
 
         @Override
@@ -383,7 +383,7 @@ public class QuickstartExample {
                 );
             }
             orders.remove(id);
-            return CompletableFuture.completedFuture(Result.success(null));
+            return CompletableFuture.completedFuture(Result.success());
         }
 
         @Override
@@ -438,7 +438,7 @@ public class QuickstartExample {
             // Add order lines using functional composition
             Result<Void> addLinesResult = lineRequests.stream()
                 .map(req -> order.addOrderLine(req.getProductId(), req.getQuantity(), req.getUnitPrice()))
-                .reduce(Result.success(null), (acc, result) ->
+                .reduce(Result.success(), (acc, result) ->
                     acc.bind(ignored -> result)
                 );
 

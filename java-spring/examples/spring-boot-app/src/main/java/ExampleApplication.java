@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -62,7 +63,7 @@ public class ExampleApplication {
         @Override
         public Result<Void> validate() {
             if (!value.matches("^ORD-\\d{6}$")) {
-                return Result.failure(Error.validation("OrderId.InvalidFormat", "Invalid format"));
+                return Result.failure(com.architecture.core.functional.Error.validation("OrderId.InvalidFormat", "Invalid format", Map.of()));
             }
             return Result.success(null);
         }
@@ -132,7 +133,7 @@ public class ExampleApplication {
 
         public Result<Void> updateTotal(BigDecimal amount) {
             if (amount.compareTo(BigDecimal.ZERO) < 0) {
-                return Result.failure(Error.validation("Order.NegativeAmount", "Amount cannot be negative"));
+                return Result.failure(com.architecture.core.functional.Error.validation("Order.NegativeAmount", "Amount cannot be negative", Map.of()));
             }
             this.totalAmount = amount;
             return Result.success(null);
@@ -140,7 +141,7 @@ public class ExampleApplication {
 
         public Result<Void> confirm() {
             if (!"DRAFT".equals(status)) {
-                return Result.failure(Error.domain("Order.InvalidStatus", "Order is not in draft status"));
+                return Result.failure(com.architecture.core.functional.Error.domain("Order.InvalidStatus", "Order is not in draft status"));
             }
             this.status = "CONFIRMED";
             addDomainEvent(new OrderConfirmedEvent(getId()));
@@ -359,7 +360,7 @@ public class ExampleApplication {
                     return Result.success(orderId);
 
                 } catch (Exception e) {
-                    return Result.failure(Error.infrastructure("OrderService.CreateFailed",
+                    return Result.failure(com.architecture.core.functional.Error.infrastructure("OrderService.CreateFailed",
                         "Failed to create order", e));
                 }
             });
@@ -372,7 +373,7 @@ public class ExampleApplication {
                     Maybe<Order> maybeOrder = orderRepository.getByIdAsync(orderId, CancellationToken.none()).join();
 
                     if (maybeOrder.isEmpty()) {
-                        return Result.failure(Error.domain("Order.NotFound", "Order not found"));
+                        return Result.failure(com.architecture.core.functional.Error.domain("Order.NotFound", "Order not found"));
                     }
 
                     Order order = maybeOrder.getValue();
@@ -385,7 +386,7 @@ public class ExampleApplication {
                     return orderRepository.updateAsync(order, CancellationToken.none()).join();
 
                 } catch (Exception e) {
-                    return Result.failure(Error.infrastructure("OrderService.ConfirmFailed",
+                    return Result.failure(com.architecture.core.functional.Error.infrastructure("OrderService.ConfirmFailed",
                         "Failed to confirm order", e));
                 }
             });
