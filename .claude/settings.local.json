@@ -85,7 +85,8 @@
       "Bash(mvn compile:*)",
       "Bash(mvn install:*)",
       "Bash(mvn exec:java:*)",
-      "Bash(mvn:*)"
+      "Bash(mvn:*)",
+      "Bash(./.specify/scripts/bash/setup-plan.sh:*)"
     ],
     "deny": [],
     "ask": []

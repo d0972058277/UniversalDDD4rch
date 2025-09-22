@@ -1,5 +1,5 @@
 
-# Implementation Plan: Architecture.Core - DDD Abstractions and Functional Types (Java Spring)
+# Implementation Plan: Architecture.Core - Python Django Implementation
 
 **Branch**: `001-architecture-core-ddd` | **Date**: 2025-09-22 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/Users/porridg3/GitHub/UniversalDDD4rch/specs/001-architecture-core-ddd/spec.md`
@@ -31,47 +31,47 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Implement Architecture.Core for Java Spring providing essential DDD abstractions (AggregateRoot<TId>, Entity<TId>, ValueObject, DomainEvent, Repository<TAggregate,TId>) and functional types (Result/Result<T>, Error, Maybe<T>) using pure JDK with no external runtime dependencies. Support Spring Boot, Spring Data JPA, Spring Security, JUnit 5 integration packages while maintaining constitutional DDD+CQRS+TDD principles and explicit architecture layer separation.
+Implementation of DDD core abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional types (Result/Result[T], Error, Maybe[T]) for Python Django applications. The library will use pure Python standard library with no external runtime dependencies, supporting optional integration with Django 4+, Django REST Framework, pytest, and factory_boy. The implementation follows explicit architecture principles with clear layer separation and TDD methodology.
 
 ## Technical Context
-**Language/Version**: Java 21 LTS (free until September 2026) or Java 25 LTS (free until September 2028)
-**Primary Dependencies**: Pure JDK implementation (no external runtime dependencies for core); Optional integration packages: Spring Boot, Spring Data JPA, Spring Security, JUnit 5
-**Storage**: N/A (core abstractions only - storage implementations are optional integrations)
-**Testing**: JUnit 5 with TDD approach following Should_ExpectedBehavior_When_StateUnderTest naming pattern
-**Target Platform**: JVM-based applications (server, desktop, Android via integration packages)
-**Project Type**: Single library project with clear DDD layer separation
-**Performance Goals**: Zero-allocation patterns for functional types, minimal GC pressure for monadic operations
-**Constraints**: Pure JDK only for core library, zero external runtime dependencies, monadic laws compliance (Left Identity/Right Identity/Associativity)
-**Scale/Scope**: Core library foundation for enterprise DDD applications, multi-language consistency across C#, Java, Python, Go, TypeScript implementations
-**Arguments**: Architecture.Core for Java Spring: Implement DDD core abstractions (AggregateRoot<TId>, Entity<TId>, ValueObject, DomainEvent, Repository<TAggregate,TId>) and functional types (Result/Result<T>, Error, Maybe<T>) using pure JDK with no external runtime dependencies. Support Spring Boot, Spring Data JPA, Spring Security, JUnit 5. Follow explicit architecture principles with clear layer separation.
+**Language/Version**: Python 3.12+ (supported until October 2028) or Python 3.13+ (latest stable)
+**Primary Dependencies**: Pure Python standard library (core), Django 4+, Django REST Framework (optional integrations)
+**Storage**: Optional Django ORM, PostgreSQL/MySQL (for Django integration examples)
+**Testing**: pytest with factory_boy for test data generation
+**Target Platform**: Cross-platform (Linux, macOS, Windows) web applications
+**Project Type**: single - Core library with optional Django integration packages
+**Performance Goals**: Sub-millisecond aggregate operations, memory-efficient value object equality
+**Constraints**: Zero external runtime dependencies for core library, <200ms p95 for repository operations
+**Scale/Scope**: Support for 10k+ domain aggregates, enterprise-scale Django applications
+**Arguments**: $ARGUMENTS - Architecture.Core for Python Django: Implement DDD core abstractions (AggregateRoot, Entity, ValueObject, DomainEvent, Repository) and functional types (Result/Result[T], Error, Maybe[T]) using pure Python standard library with no external runtime dependencies. Support Django 4+, Django REST Framework, pytest, factory_boy. Follow explicit architecture principles with clear layer separation.
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 **Domain-Driven Design Architecture**:
-- [x] Clear separation of Domain, Application, Infrastructure, and Presentation layers
-- [x] Domain layer contains only business logic (entities, value objects, domain services)
-- [x] Infrastructure dependencies point inward (dependency inversion)
+- [x] Clear separation of Domain, Application, Infrastructure, and Presentation layers (Python package structure with domain/, application/, infrastructure/, presentation/)
+- [x] Domain layer contains only business logic (entities, value objects, domain services) - AggregateRoot, Entity, ValueObject in domain/
+- [x] Infrastructure dependencies point inward (dependency inversion) - Django integration as optional infrastructure layer
 
 **CQRS Implementation**:
-- [x] Commands and Queries clearly separated (Repository interface separates read/write operations)
-- [x] Commands do not return data (except success/failure via Result types)
-- [x] Queries are read-only and stateless (Repository read operations)
+- [x] Commands and Queries clearly separated (Command/Query handlers in application layer)
+- [x] Commands do not return data (except success/failure) - Commands return Result<None> or Result<T> for created entities
+- [x] Queries are read-only and stateless (Query handlers return Result<T> or Maybe<T>)
 
 **Test-Driven Development**:
-- [x] All tests written before implementation
-- [x] Test naming follows Should_ExpectedBehavior_When_StateUnderTest pattern
-- [x] Given-When-Then structure with explicit comment blocks
+- [x] All tests written before implementation (pytest with TDD approach)
+- [x] Test naming follows Should_ExpectedBehavior_When_StateUnderTest pattern (Python test method naming)
+- [x] Given-When-Then structure with explicit comment blocks (AAA pattern with comments)
 
 **Functional Programming Principles**:
-- [x] Result/Error/Maybe monads used for error handling
-- [x] Exceptions only for unrecoverable errors
-- [x] Language-appropriate error handling patterns (Java Optional integration with Maybe<T>)
+- [x] Result/Error/Maybe monads used for error handling (Python implementations with typing support)
+- [x] Exceptions only for unrecoverable errors (Domain exceptions only for invariant violations)
+- [x] Language-appropriate error handling patterns (Python Result pattern with match statements)
 
 **Multi-Language Consistency**:
-- [x] Same domain model structure across all language implementations
-- [x] Consistent API contracts and behavioral contracts
-- [x] Framework-specific but architecturally aligned implementation (Java generics matching C#/TypeScript/Go patterns)
+- [x] Same domain model structure across all language implementations (Consistent with C#, Java, Go, TypeScript versions)
+- [x] Consistent API contracts and behavioral contracts (Same interfaces and behaviors)
+- [x] Framework-specific but architecturally aligned implementation (Django-specific but DDD-compliant)
 
 ## Project Structure
 
@@ -86,49 +86,63 @@ specs/[###-feature]/
 └── tasks.md             # Phase 2 output (/tasks command - NOT created by /plan)
 ```
 
-### Source Code (Java Spring Implementation)
+### Source Code (repository root)
 ```
-java-spring/
-├── architecture-core/              # Core DDD abstractions (pure JDK)
-│   ├── src/main/java/
-│   │   └── com/architecture/core/
-│   │       ├── domain/             # DDD abstractions
-│   │       │   ├── AggregateRoot.java
-│   │       │   ├── Entity.java
-│   │       │   ├── EntityId.java
-│   │       │   ├── ValueObject.java
-│   │       │   ├── DomainEvent.java
-│   │       │   └── Repository.java
-│   │       ├── functional/         # Functional types
-│   │       │   ├── Result.java
-│   │       │   ├── Maybe.java
-│   │       │   ├── Error.java
-│   │       │   └── ErrorCategory.java
-│   │       └── infrastructure/     # Support classes
-│   │           ├── CancellationToken.java
-│   │           └── OperationCancelledException.java
-│   └── src/test/java/              # Unit tests
-│       └── com/architecture/core/
-│           ├── domain/
-│           ├── functional/
-│           └── integration/
-├── architecture-core-spring/       # Spring integration package
-│   ├── src/main/java/
-│   │   └── com/architecture/core/spring/
-│   │       ├── repositories/       # Spring Data implementations
-│   │       ├── configuration/      # Auto-configuration
-│   │       ├── converters/         # Type converters
-│   │       └── aspects/            # Cross-cutting concerns
-│   └── src/test/java/              # Integration tests
-├── examples/                       # Usage examples
-│   ├── quickstart/                 # Basic examples
-│   └── spring-boot-app/            # Complete Spring Boot application
-├── benchmarks/                     # Performance benchmarks
-├── docs/                           # Documentation
-└── build/                          # Build outputs
+# Option 1: Single project (DEFAULT) - DDD Architecture
+src/
+├── domain/              # Business logic layer
+│   ├── entities/
+│   ├── value-objects/
+│   ├── services/
+│   └── events/
+├── application/         # Use cases and application services
+│   ├── commands/
+│   ├── queries/
+│   ├── handlers/
+│   └── dtos/
+├── infrastructure/     # External concerns
+│   ├── repositories/
+│   ├── messaging/
+│   └── persistence/
+└── presentation/       # Controllers and APIs
+    ├── controllers/
+    ├── middleware/
+    └── serializers/
+
+tests/
+├── unit/              # Domain and application layer tests
+├── integration/       # Infrastructure integration tests
+└── contract/          # API contract tests
+
+# Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── domain/          # Business logic layer
+│   ├── application/     # Use cases and application services
+│   ├── infrastructure/  # External concerns
+│   └── presentation/    # API controllers
+└── tests/
+
+frontend/
+├── src/
+│   ├── domain/         # Client-side domain models
+│   ├── application/    # Client-side use cases
+│   ├── infrastructure/ # HTTP clients, localStorage
+│   └── presentation/   # Components, pages
+└── tests/
+
+# Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same DDD structure as backend above]
+
+ios/ or android/
+├── Domain/             # Platform-specific domain layer
+├── Application/        # Platform-specific use cases
+├── Infrastructure/     # Platform APIs, networking
+└── Presentation/       # Views, ViewModels
 ```
 
-**Structure Decision**: Java Spring Implementation - Pure JDK core library with Spring integration packages (following /java-spring directory structure)
+**Structure Decision**: Option 1 (Single project with DDD Architecture) - Core library with optional Django integration packages
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -181,45 +195,48 @@ java-spring/
    - Keep under 150 lines for token efficiency
    - Output to repository root
 
-**Output**: data-model.md, /contracts/core-types-contract.java, java-contracts-documentation.md, java-testing-documentation.md, quickstart.md, agent-specific file
+**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, agent-specific file
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
-**Task Generation Strategy for Java Spring Implementation**:
+**Task Generation Strategy for Python Django**:
 - Load `.specify/templates/tasks-template.md` as base
-- Generate tasks targeting `/java-spring/` directory structure
-- Core library tasks: `/java-spring/architecture-core/`
-- Spring integration tasks: `/java-spring/architecture-core-spring/`
-- Example application tasks: `/java-spring/examples/`
+- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
+- Core library tasks (zero dependencies):
+  * Domain abstractions: AggregateRoot[TId], Entity[TId], ValueObject
+  * Functional types: Result[T], Maybe[T], Error
+  * Repository interfaces: Repository[TAggregate, TId]
+- Django integration tasks (optional package):
+  * Model mixins: AggregateRootModelMixin
+  * Repository implementations: DjangoRepository
+  * Django ORM mapping utilities
+- Test generation strategy:
+  * Unit tests for each domain component [P]
+  * Property-based tests for monadic laws [P]
+  * Integration tests for Django repositories
+  * Performance benchmarks for core operations [P]
 
-**Task Categories**:
-1. **Core Library (TDD)**: Domain abstractions and functional types
-   - EntityId<T> interface and implementations [P]
-   - AggregateRoot<TId> base class [P]
-   - Entity<TId> base class [P]
-   - ValueObject base class [P]
-   - Result<T> and Maybe<T> functional types [P]
-   - Repository<TAggregate,TId> interface [P]
+**Python-Specific Ordering Strategy**:
+- TDD order: pytest tests before implementation
+- Dependency order:
+  1. Type protocols and interfaces
+  2. Functional types (Result, Maybe, Error)
+  3. Domain base classes (ValueObject, Entity, AggregateRoot)
+  4. Repository interfaces
+  5. Django integration layer (separate package)
+- Mark [P] for parallel execution (independent modules)
+- async/await patterns for repository operations
 
-2. **Spring Integration**: Framework-specific implementations
-   - Spring Data repository implementations
-   - Auto-configuration classes
-   - Type converters for JPA
-   - Aspect-oriented concerns
+**Technology-Specific Tasks**:
+- Python package structure setup (pyproject.toml, __init__.py)
+- Type checking configuration (mypy.ini)
+- pytest configuration and fixtures
+- Django package setup (separate django-architecture-core)
+- Performance profiling with cProfile and memory_profiler
+- Documentation generation with Sphinx
 
-3. **Examples and Documentation**:
-   - Quickstart example application
-   - Spring Boot integration demo
-   - Performance benchmarks
-
-**Ordering Strategy**:
-- TDD order: Tests before implementation in `/src/test/java/`
-- Core before Spring: Pure JDK types before framework integration
-- Examples last: Working implementations after core is complete
-- Mark [P] for parallel execution (independent Maven modules)
-
-**Estimated Output**: 35-40 numbered, ordered tasks targeting Java Spring directory structure
+**Estimated Output**: 30-35 numbered, ordered tasks in tasks.md
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
@@ -254,7 +271,7 @@ java-spring/
 - [x] Initial Constitution Check: PASS
 - [x] Post-Design Constitution Check: PASS
 - [x] All NEEDS CLARIFICATION resolved
-- [x] Complexity deviations documented (none required)
+- [x] Complexity deviations documented
 
 ---
 *Based on Constitution v1.0.0 - See `.specify/memory/constitution.md`*

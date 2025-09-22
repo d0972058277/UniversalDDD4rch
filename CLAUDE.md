@@ -37,6 +37,7 @@ Universal DDD Architecture providing core abstractions and functional types for 
 - `Maybe<T>`: Optional values with hasValue/map/bind/orElse
 
 ## Recent Changes
+- 001-architecture-core-ddd: Added Python 3.12+ (supported until October 2028) or Python 3.13+ (latest stable) + Pure Python standard library (core), Django 4+, Django REST Framework (optional integrations)
 - 001-architecture-core-ddd: Added Java 21 LTS (free until September 2026) or Java 25 LTS (free until September 2028) + Pure JDK implementation (no external runtime dependencies for core); Optional integration packages: Spring Boot, Spring Data JPA, Spring Security, JUnit 5
 - 001-architecture-core-ddd: Added Java 21 LTS (free until September 2026) or Java 25 LTS (free until September 2028) + Pure JDK implementation (no external runtime dependencies for core); Optional integration packages: Spring Boot, Spring Data JPA, Spring Security, JUnit 5
 1. **2025-09-21**: Architecture.Core specification completed
