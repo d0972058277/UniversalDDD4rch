@@ -189,7 +189,7 @@ public class ExampleApplication {
     /**
      * JPA entity for Order persistence
      */
-    @Entity
+    @jakarta.persistence.Entity
     @Table(name = "orders")
     static class OrderEntity {
         @Id
@@ -250,7 +250,7 @@ public class ExampleApplication {
     /**
      * Domain repository interface
      */
-    interface OrderRepository extends Repository<Order, OrderId> {
+    interface OrderRepository extends com.architecture.core.domain.Repository<Order, OrderId> {
         CompletableFuture<List<Order>> findByCustomerIdAsync(CustomerId customerId, CancellationToken cancellationToken);
         CompletableFuture<List<Order>> findByStatusAsync(String status, CancellationToken cancellationToken);
     }

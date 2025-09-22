@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.architecture.core.domain.ValueObject;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Stream;
@@ -53,7 +54,7 @@ class MoneyIntegrationTest {
             if (factor.compareTo(BigDecimal.ZERO) < 0) {
                 throw new IllegalArgumentException("Factor cannot be negative");
             }
-            return new Money(this.amount.multiply(factor), this.currency);
+            return new Money(this.amount.multiply(factor).setScale(2, RoundingMode.HALF_UP), this.currency);
         }
 
         public Money subtract(Money other) {
@@ -74,11 +75,11 @@ class MoneyIntegrationTest {
 
         // Factory methods
         public static Money usd(double amount) {
-            return new Money(BigDecimal.valueOf(amount), Currency.getInstance("USD"));
+            return new Money(BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP), Currency.getInstance("USD"));
         }
 
         public static Money eur(double amount) {
-            return new Money(BigDecimal.valueOf(amount), Currency.getInstance("EUR"));
+            return new Money(BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP), Currency.getInstance("EUR"));
         }
 
         public static Money zero(Currency currency) {
@@ -303,10 +304,10 @@ class MoneyIntegrationTest {
         Money eurMoney = Money.eur(200.75);
 
         // Then
-        assertThat(usdMoney.getAmount()).isEqualTo(BigDecimal.valueOf(100.50));
+        assertThat(usdMoney.getAmount()).isEqualTo(new BigDecimal("100.50"));
         assertThat(usdMoney.getCurrency()).isEqualTo(Currency.getInstance("USD"));
 
-        assertThat(eurMoney.getAmount()).isEqualTo(BigDecimal.valueOf(200.75));
+        assertThat(eurMoney.getAmount()).isEqualTo(new BigDecimal("200.75"));
         assertThat(eurMoney.getCurrency()).isEqualTo(Currency.getInstance("EUR"));
     }
 

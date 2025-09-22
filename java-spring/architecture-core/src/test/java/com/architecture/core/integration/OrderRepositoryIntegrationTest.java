@@ -48,7 +48,7 @@ class OrderRepositoryIntegrationTest {
                 return Result.failure(com.architecture.core.functional.Error.validation(
                     "OrderId.InvalidFormat", "Invalid format", java.util.Map.of()));
             }
-            return Result.success(null);
+            return Result.success();
         }
 
         @Override
@@ -183,7 +183,7 @@ class OrderRepositoryIntegrationTest {
     void Should_AddOrderSuccessfully_When_ValidOrderProvided() throws ExecutionException, InterruptedException {
         // Given
         when(mockRepository.addAsync(eq(testOrder), any(CancellationToken.class)))
-            .thenReturn(CompletableFuture.completedFuture(Result.success(null)));
+            .thenReturn(CompletableFuture.completedFuture(Result.success()));
 
         // When
         CompletableFuture<Result<Void>> future = mockRepository.addAsync(
@@ -229,7 +229,7 @@ class OrderRepositoryIntegrationTest {
         // Given
         Order updatedOrder = new Order(testOrderId, testCustomerId, 1); // Incremented version
         when(mockRepository.updateAsync(eq(updatedOrder), any(CancellationToken.class)))
-            .thenReturn(CompletableFuture.completedFuture(Result.success(null)));
+            .thenReturn(CompletableFuture.completedFuture(Result.success()));
 
         // When
         CompletableFuture<Result<Void>> future = mockRepository.updateAsync(
@@ -273,7 +273,7 @@ class OrderRepositoryIntegrationTest {
     void Should_DeleteOrderSuccessfully_When_OrderExists() throws ExecutionException, InterruptedException {
         // Given
         when(mockRepository.deleteAsync(eq(testOrderId), any(CancellationToken.class)))
-            .thenReturn(CompletableFuture.completedFuture(Result.success(null)));
+            .thenReturn(CompletableFuture.completedFuture(Result.success()));
 
         // When
         CompletableFuture<Result<Void>> future = mockRepository.deleteAsync(
