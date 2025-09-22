@@ -186,18 +186,20 @@ class TestEntityIdContract:
         # This import will fail until implementation exists
         from architecture_core.domain.protocols import EntityId
 
-        # This will fail until concrete implementation exists
-        class TestEntityIdImpl:
-            def __init__(self, value: str):
-                self.value = value
+        # Use a consistent class definition to avoid type mismatch issues
+        if not hasattr(self, '_TestEntityIdImpl'):
+            class TestEntityIdImpl:
+                def __init__(self, value: str):
+                    self.value = value
 
-            def __str__(self) -> str:
-                return self.value
+                def __str__(self) -> str:
+                    return self.value
 
-            def __eq__(self, other: object) -> bool:
-                return isinstance(other, TestEntityIdImpl) and self.value == other.value
+                def __eq__(self, other: object) -> bool:
+                    return isinstance(other, TestEntityIdImpl) and self.value == other.value
 
-            def __hash__(self) -> int:
-                return hash(self.value)
+                def __hash__(self) -> int:
+                    return hash(self.value)
+            self._TestEntityIdImpl = TestEntityIdImpl
 
-        return TestEntityIdImpl(value)
+        return self._TestEntityIdImpl(value)

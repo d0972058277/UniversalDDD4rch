@@ -57,6 +57,7 @@ class TestRepositoryContract:
 
     def _create_test_aggregate(self):
         """Helper to create test aggregate"""
+        test_id = self._create_test_id("test")
         class TestAggregate:
-            def __init__(self): self.id = self._create_test_id("test")
+            def __init__(self): self.id = test_id
         return TestAggregate()

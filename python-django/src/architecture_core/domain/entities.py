@@ -79,22 +79,27 @@ class Entity(Generic[TId], ABC):
         """
         Identity-based equality comparison.
 
-        Entities are equal if they are of the same type and have
+        Entities are equal if they are both Entity instances with
         equal identifiers. Other attributes do not affect equality.
 
         Args:
             other: Object to compare with
 
         Returns:
-            True if entities have same type and ID, False otherwise
+            True if both are entities with same ID, False otherwise
         """
         if self is other:
             return True
 
-        if other is None or type(self) != type(other):
+        if other is None:
             return False
 
         if not isinstance(other, Entity):
+            return False
+
+        # Entities must be of the same concrete type and have same ID
+        # Different entity types should not be equal even with same ID
+        if type(self) != type(other):
             return False
 
         return self.id == other.id

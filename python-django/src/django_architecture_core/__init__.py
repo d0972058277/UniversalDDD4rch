@@ -13,8 +13,34 @@ Usage:
 Note: This package requires Django 4+ and is optional.
 """
 
-# Placeholder imports - will be implemented in Phase 3.4
+# Import Django components
+from .models import DjangoModelMixin
+from .repositories import DjangoRepository
+from .serializers import (
+    FunctionalTypeJSONEncoder,
+    ResultField,
+    MaybeField,
+    result_to_dict,
+    maybe_to_dict,
+    dict_to_result,
+    dict_to_maybe,
+    ResultSerializer,
+    MaybeSerializer,
+)
+
 __all__ = [
+    # Model integration
     "DjangoModelMixin",
+    # Repository pattern
     "DjangoRepository",
+    # Serialization utilities
+    "FunctionalTypeJSONEncoder",
+    "ResultField",
+    "MaybeField",
+    "result_to_dict",
+    "maybe_to_dict",
+    "dict_to_result",
+    "dict_to_maybe",
+    "ResultSerializer",
+    "MaybeSerializer",
 ]

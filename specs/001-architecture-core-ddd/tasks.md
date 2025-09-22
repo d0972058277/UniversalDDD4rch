@@ -95,14 +95,14 @@
 ## Phase 3.4: Django Integration Package
 
 ### Django Package Setup
-- [ ] **T033** Create separate Django integration package structure in `src/django_architecture_core/`
-- [ ] **T034** [P] Django model mixins for aggregate roots in `src/django_architecture_core/models.py`
-- [ ] **T035** [P] Django repository base class with ORM operations in `src/django_architecture_core/repositories.py`
+- [X] **T033** Create separate Django integration package structure in `src/django_architecture_core/`
+- [X] **T034** [P] Django model mixins for aggregate roots in `src/django_architecture_core/models.py`
+- [X] **T035** [P] Django repository base class with ORM operations in `src/django_architecture_core/repositories.py`
 
 ### Django Integration Implementation
-- [ ] **T036** [P] Async Django repository implementation with optimistic concurrency in `src/django_architecture_core/repositories.py`
-- [ ] **T037** [P] Django serialization utilities for Result/Maybe types in `src/django_architecture_core/serializers.py`
-- [ ] **T038** Django package __init__.py with integration exports in `src/django_architecture_core/__init__.py`
+- [X] **T036** [P] Async Django repository implementation with optimistic concurrency in `src/django_architecture_core/repositories.py`
+- [X] **T037** [P] Django serialization utilities for Result/Maybe types in `src/django_architecture_core/serializers.py`
+- [X] **T038** Django package __init__.py with integration exports in `src/django_architecture_core/__init__.py`
 
 ## Phase 3.5: Examples and Documentation
 

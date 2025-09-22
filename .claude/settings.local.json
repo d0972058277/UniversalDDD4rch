@@ -88,7 +88,22 @@
       "Bash(mvn:*)",
       "Bash(./.specify/scripts/bash/setup-plan.sh:*)",
       "Bash(python -m pytest tests/contracts/test_result_contract.py::TestResultContract::test_should_create_success_when_success_called_with_value -v)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/ -v --tb=short)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_entity_contract.py::TestEntityContract::test_should_be_equal_when_same_id -v)",
+      "Bash(PYTHONPATH=src python3:*)",
+      "Bash(PYTHONPATH=src python:*)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_result_contract.py::TestResultContract::test_should_reject_none_value_when_creating_success -v)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_result_contract.py::TestResultContract::test_should_accept_none_value_when_creating_success_for_void_operations -v)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_value_object_contract.py::TestValueObjectContract::test_should_be_equal_when_same_equality_components -v)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/ -x)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_entity_contract.py -x)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_value_object_contract.py -x)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/ -v --tb=line)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_entity_id_contract.py -x)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v)",
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v --tb=short -p no:cov)"
     ],
     "deny": [],
     "ask": []

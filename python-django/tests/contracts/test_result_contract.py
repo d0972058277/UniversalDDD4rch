@@ -327,13 +327,16 @@ class TestResultContract:
         assert mapped_result.is_success is False
         assert mapped_result.error.category == ErrorCategory.INFRASTRUCTURE
 
-    def test_should_reject_none_value_when_creating_success(self):
+    def test_should_accept_none_value_when_creating_success_for_void_operations(self):
         """
-        Contract: Result.success must reject None values
+        Contract: Result.success must accept None values for void operations (Result[None])
         """
-        # Given/When/Then
-        with pytest.raises((ValueError, TypeError)):
-            Result.success(None)
+        # Given/When
+        result = Result.success(None)
+
+        # Then
+        assert result.is_success is True
+        assert result.value is None
 
     def test_should_reject_none_error_when_creating_failure(self):
         """

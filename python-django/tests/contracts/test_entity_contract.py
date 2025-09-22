@@ -254,12 +254,14 @@ class TestEntityContract:
         # This import will fail until implementation exists
         from architecture_core.domain import Entity
 
-        # This will fail until concrete implementation exists
-        class TestEntity(Entity[TestEntityId]):
-            def __init__(self, id: TestEntityId):
-                super().__init__(id)
+        # Use a consistent class definition to avoid type mismatch issues
+        if not hasattr(self, '_TestEntity'):
+            class TestEntity(Entity[TestEntityId]):
+                def __init__(self, id: TestEntityId):
+                    super().__init__(id)
+            self._TestEntity = TestEntity
 
-        return TestEntity(entity_id)
+        return self._TestEntity(entity_id)
 
     def _create_test_entity_with_data(self, entity_id: TestEntityId, data: str) -> Entity:
         """
@@ -267,12 +269,14 @@ class TestEntityContract:
         """
         from architecture_core.domain import Entity
 
-        class TestEntityWithData(Entity[TestEntityId]):
-            def __init__(self, id: TestEntityId, data: str):
-                super().__init__(id)
-                self.data = data
+        if not hasattr(self, '_TestEntityWithData'):
+            class TestEntityWithData(Entity[TestEntityId]):
+                def __init__(self, id: TestEntityId, data: str):
+                    super().__init__(id)
+                    self.data = data
+            self._TestEntityWithData = TestEntityWithData
 
-        return TestEntityWithData(entity_id, data)
+        return self._TestEntityWithData(entity_id, data)
 
     def _create_different_test_entity(self, entity_id: TestEntityId) -> Entity:
         """
@@ -280,8 +284,10 @@ class TestEntityContract:
         """
         from architecture_core.domain import Entity
 
-        class DifferentTestEntity(Entity[TestEntityId]):
-            def __init__(self, id: TestEntityId):
-                super().__init__(id)
+        if not hasattr(self, '_DifferentTestEntity'):
+            class DifferentTestEntity(Entity[TestEntityId]):
+                def __init__(self, id: TestEntityId):
+                    super().__init__(id)
+            self._DifferentTestEntity = DifferentTestEntity
 
-        return DifferentTestEntity(entity_id)
+        return self._DifferentTestEntity(entity_id)

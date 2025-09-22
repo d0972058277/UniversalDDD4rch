@@ -92,7 +92,15 @@ class ValueObject(ABC):
         if self is other:
             return True
 
-        if other is None or type(self) != type(other):
+        if other is None:
+            return False
+
+        if not isinstance(other, ValueObject):
+            return False
+
+        # ValueObjects must be of the same concrete type and have same components
+        # Different ValueObject types should not be equal even with same components
+        if type(self) != type(other):
             return False
 
         return self._get_equality_components_list() == other._get_equality_components_list()

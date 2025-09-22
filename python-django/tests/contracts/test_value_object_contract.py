@@ -252,84 +252,96 @@ class TestValueObjectContract:
         # This import will fail until implementation exists
         from architecture_core.domain import ValueObject
 
-        # This will fail until concrete implementation exists
-        class TestValueObject(ValueObject):
-            def __init__(self, text: str, number: int):
-                self.text = text
-                self.number = number
+        # Use a consistent class definition to avoid type mismatch issues
+        if not hasattr(self, '_TestValueObject'):
+            class TestValueObject(ValueObject):
+                def __init__(self, text: str, number: int):
+                    self.text = text
+                    self.number = number
 
-            def get_equality_components(self) -> Iterator[Any]:
-                yield self.text
-                yield self.number
+                def get_equality_components(self) -> Iterator[Any]:
+                    yield self.text
+                    yield self.number
+            self._TestValueObject = TestValueObject
 
-        return TestValueObject(text, number)
+        return self._TestValueObject(text, number)
 
     def _create_test_value_object_with_none(self, text: str, number: int | None) -> ValueObject:
         """Helper to create ValueObject with None components"""
         from architecture_core.domain import ValueObject
 
-        class TestValueObjectWithNone(ValueObject):
-            def __init__(self, text: str, number: int | None):
-                self.text = text
-                self.number = number
+        if not hasattr(self, '_TestValueObjectWithNone'):
+            class TestValueObjectWithNone(ValueObject):
+                def __init__(self, text: str, number: int | None):
+                    self.text = text
+                    self.number = number
 
-            def get_equality_components(self) -> Iterator[Any]:
-                yield self.text
-                yield self.number
+                def get_equality_components(self) -> Iterator[Any]:
+                    yield self.text
+                    yield self.number
+            self._TestValueObjectWithNone = TestValueObjectWithNone
 
-        return TestValueObjectWithNone(text, number)
+        return self._TestValueObjectWithNone(text, number)
 
     def _create_test_value_object_with_list(self, text: str, numbers: list[int]) -> ValueObject:
         """Helper to create ValueObject with list components"""
         from architecture_core.domain import ValueObject
 
-        class TestValueObjectWithList(ValueObject):
-            def __init__(self, text: str, numbers: list[int]):
-                self.text = text
-                self.numbers = numbers
+        if not hasattr(self, '_TestValueObjectWithList'):
+            class TestValueObjectWithList(ValueObject):
+                def __init__(self, text: str, numbers: list[int]):
+                    self.text = text
+                    self.numbers = numbers
 
-            def get_equality_components(self) -> Iterator[Any]:
-                yield self.text
-                yield tuple(self.numbers)  # Convert to tuple for hashability
+                def get_equality_components(self) -> Iterator[Any]:
+                    yield self.text
+                    yield tuple(self.numbers)  # Convert to tuple for hashability
+            self._TestValueObjectWithList = TestValueObjectWithList
 
-        return TestValueObjectWithList(text, numbers)
+        return self._TestValueObjectWithList(text, numbers)
 
     def _create_test_value_object_with_nested(self, text: str, nested: ValueObject) -> ValueObject:
         """Helper to create ValueObject with nested ValueObject"""
         from architecture_core.domain import ValueObject
 
-        class TestValueObjectWithNested(ValueObject):
-            def __init__(self, text: str, nested: ValueObject):
-                self.text = text
-                self.nested = nested
+        if not hasattr(self, '_TestValueObjectWithNested'):
+            class TestValueObjectWithNested(ValueObject):
+                def __init__(self, text: str, nested: ValueObject):
+                    self.text = text
+                    self.nested = nested
 
-            def get_equality_components(self) -> Iterator[Any]:
-                yield self.text
-                yield self.nested
+                def get_equality_components(self) -> Iterator[Any]:
+                    yield self.text
+                    yield self.nested
+            self._TestValueObjectWithNested = TestValueObjectWithNested
 
-        return TestValueObjectWithNested(text, nested)
+        return self._TestValueObjectWithNested(text, nested)
 
     def _create_test_value_object_empty(self) -> ValueObject:
         """Helper to create ValueObject with no components"""
         from architecture_core.domain import ValueObject
 
-        class TestValueObjectEmpty(ValueObject):
-            def get_equality_components(self) -> Iterator[Any]:
-                return iter([])
+        if not hasattr(self, '_TestValueObjectEmpty'):
+            class TestValueObjectEmpty(ValueObject):
+                def get_equality_components(self) -> Iterator[Any]:
+                    return iter([])
+            self._TestValueObjectEmpty = TestValueObjectEmpty
 
-        return TestValueObjectEmpty()
+        return self._TestValueObjectEmpty()
 
     def _create_different_test_value_object(self, text: str, number: int) -> ValueObject:
         """Helper to create different type of ValueObject"""
         from architecture_core.domain import ValueObject
 
-        class DifferentTestValueObject(ValueObject):
-            def __init__(self, text: str, number: int):
-                self.text = text
-                self.number = number
+        if not hasattr(self, '_DifferentTestValueObject'):
+            class DifferentTestValueObject(ValueObject):
+                def __init__(self, text: str, number: int):
+                    self.text = text
+                    self.number = number
 
-            def get_equality_components(self) -> Iterator[Any]:
-                yield self.text
-                yield self.number
+                def get_equality_components(self) -> Iterator[Any]:
+                    yield self.text
+                    yield self.number
+            self._DifferentTestValueObject = DifferentTestValueObject
 
-        return DifferentTestValueObject(text, number)
+        return self._DifferentTestValueObject(text, number)

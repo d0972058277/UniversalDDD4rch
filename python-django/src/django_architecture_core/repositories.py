@@ -52,6 +52,70 @@ class DjangoRepository(Repository[TAggregate, TId], ABC, Generic[TAggregate, TId
             # Log exception and return None for safety
             return Maybe.none()
 
+    async def add_async(self, aggregate: TAggregate) -> Result[None]:
+        """Django ORM implementation of add"""
+        try:
+            model_instance = self._map_to_model(aggregate)
+            await model_instance.asave()
+            return Result.success(None)
+        except Exception as ex:
+            return Result.failure(Error.infrastructure(
+                "Repository.Add.Exception",
+                f"Failed to add aggregate: {str(ex)}",
+                ex
+            ))
+
+    async def update_async(self, aggregate: TAggregate) -> Result[None]:
+        """Django ORM implementation of update with optimistic concurrency"""
+        try:
+            model_instance = self._map_to_model(aggregate)
+
+            # Optimistic concurrency check
+            current_version = aggregate.version
+            affected_rows = await self.model_class.objects.filter(
+                pk=str(aggregate.id),
+                version=current_version
+            ).aupdate(
+                version=current_version + 1,
+                **{field.name: getattr(model_instance, field.name)
+                   for field in model_instance._meta.fields
+                   if field.name not in ['id', 'version']}
+            )
+
+            if affected_rows == 0:
+                return Result.failure(Error.concurrency(
+                    "Repository.Update.ConcurrencyConflict",
+                    f"Aggregate {aggregate.id} was modified by another transaction"
+                ))
+
+            # Update aggregate version
+            aggregate.increment_version()
+            return Result.success(None)
+
+        except Exception as ex:
+            return Result.failure(Error.infrastructure(
+                "Repository.Update.Exception",
+                f"Failed to update aggregate: {str(ex)}",
+                ex
+            ))
+
+    async def delete_async(self, id: TId) -> Result[None]:
+        """Django ORM implementation of delete"""
+        try:
+            deleted_count, _ = await self.model_class.objects.filter(pk=str(id)).adelete()
+            if deleted_count == 0:
+                return Result.failure(Error.domain(
+                    "Repository.Delete.NotFound",
+                    f"Aggregate with ID {id} not found"
+                ))
+            return Result.success(None)
+        except Exception as ex:
+            return Result.failure(Error.infrastructure(
+                "Repository.Delete.Exception",
+                f"Failed to delete aggregate: {str(ex)}",
+                ex
+            ))
+
     async def exists_async(self, id: TId) -> bool:
         """Check if aggregate exists"""
         return await self.model_class.objects.filter(pk=str(id)).aexists()
