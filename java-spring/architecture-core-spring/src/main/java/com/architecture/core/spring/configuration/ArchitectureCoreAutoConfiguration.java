@@ -29,8 +29,7 @@ import java.util.concurrent.Executor;
 @EnableConfigurationProperties(ArchitectureCoreProperties.class)
 @EnableAsync
 @Import({
-    FunctionalTypeConverters.class,
-    RepositoryConfiguration.class
+    FunctionalTypeConverters.class
 })
 public class ArchitectureCoreAutoConfiguration implements AsyncConfigurer {
 

@@ -83,7 +83,8 @@
       "Bash(mvn test:*)",
       "Bash(./.specify/scripts/bash/check-prerequisites.sh:*)",
       "Bash(mvn compile:*)",
-      "Bash(mvn install:*)"
+      "Bash(mvn install:*)",
+      "Bash(mvn exec:java:*)"
     ],
     "deny": [],
     "ask": []

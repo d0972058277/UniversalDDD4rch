@@ -84,7 +84,7 @@
 
 ### Repository Pattern (T037-T038)
 - [X] T037 Repository<TAggregate,TId> interface with async operations in src/main/java/com/architecture/core/domain/Repository.java
-- [ ] T038 [P] Repository documentation and usage examples in src/main/java/com/architecture/core/domain/package-info.java
+- [X] T038 [P] Repository documentation and usage examples in src/main/java/com/architecture/core/domain/package-info.java
 
 ## Phase 3.4: Spring Integration Package (T039-T042)
 - [X] T039 [P] Spring Data repository adapter in architecture-core-spring/src/main/java/com/architecture/core/spring/repositories/SpringDataRepositoryAdapter.java
@@ -95,7 +95,7 @@
 ## Phase 3.5: Examples and Documentation (T043-T045)
 - [X] T043 Complete quickstart example with Order domain in examples/quickstart/src/main/java/QuickstartExample.java
 - [X] T044 [P] Spring Boot example application in examples/spring-boot-app/src/main/java/ExampleApplication.java
-- [ ] T045 [P] JMH performance benchmarks in benchmarks/src/main/java/com/architecture/core/benchmarks/
+- [X] T045 [P] JMH performance benchmarks in benchmarks/src/main/java/com/architecture/core/benchmarks/
 
 ## Phase 3.6: Polish and Validation (T046-T048)
 - [X] T046 Verify all contract tests pass with 100% compliance

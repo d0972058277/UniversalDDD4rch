@@ -1,5 +1,7 @@
 import com.architecture.core.domain.*;
-import com.architecture.core.functional.*;
+import com.architecture.core.functional.Error;
+import com.architecture.core.functional.Maybe;
+import com.architecture.core.functional.Result;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -423,7 +425,8 @@ public class QuickstartExample {
             if (lineRequests.isEmpty()) {
                 return Result.failure(Error.validation(
                     "OrderService.EmptyLines",
-                    "Cannot create order without order lines"
+                    "Cannot create order without order lines",
+                    Map.of()
                 ));
             }
 

@@ -6,6 +6,7 @@ import com.architecture.core.domain.Repository;
 import com.architecture.core.functional.Error;
 import com.architecture.core.functional.Maybe;
 import com.architecture.core.functional.Result;
+import com.architecture.core.functional.ResultException;
 import com.architecture.core.infrastructure.CancellationToken;
 import com.architecture.core.infrastructure.OperationCancelledException;
 
@@ -14,7 +15,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Async;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -90,12 +91,12 @@ public abstract class SpringDataRepositoryAdapter<
             } catch (OperationCancelledException e) {
                 return Maybe.none(); // Cancelled operations return empty results
             } catch (DataAccessException e) {
-                throw new RuntimeException(
+                throw new ResultException(
                     createInfrastructureError("Repository.GetById.Failed",
                         "Failed to retrieve aggregate by ID", e)
                 );
             } catch (Exception e) {
-                throw new RuntimeException(
+                throw new ResultException(
                     createInfrastructureError("Repository.GetById.UnexpectedError",
                         "Unexpected error during aggregate retrieval", e)
                 );
@@ -228,12 +229,12 @@ public abstract class SpringDataRepositoryAdapter<
             } catch (OperationCancelledException e) {
                 return false; // Cancelled operations return false
             } catch (DataAccessException e) {
-                throw new RuntimeException(
+                throw new ResultException(
                     createInfrastructureError("Repository.Exists.Failed",
                         "Failed to check aggregate existence", e)
                 );
             } catch (Exception e) {
-                throw new RuntimeException(
+                throw new ResultException(
                     createInfrastructureError("Repository.Exists.UnexpectedError",
                         "Unexpected error during existence check", e)
                 );
