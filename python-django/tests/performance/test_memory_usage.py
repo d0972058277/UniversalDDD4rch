@@ -347,7 +347,7 @@ class TestMemoryUsage:
             # Create objects
             for i in range(50):
                 order = Order(
-                    order_id=OrderId(f"ORD-{iteration}-{i:03d}"),
+                    order_id=OrderId(f"ORD-{(iteration * 100 + i):06d}"),
                     customer_id=self.customer_id,
                     customer_name=self.customer_name,
                     billing_address=self.address

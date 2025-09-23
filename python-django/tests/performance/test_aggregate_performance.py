@@ -130,7 +130,7 @@ class TestAggregatePerformance:
         """Test order confirmation performance."""
         def setup_and_confirm_order():
             order = Order(
-                order_id=OrderId(f"ORD-{time.time_ns()}"),
+                order_id=OrderId.generate(),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -224,7 +224,7 @@ class TestAggregatePerformance:
         def complex_operation():
             # Create order
             order = Order(
-                order_id=OrderId(f"ORD-{time.time_ns()}"),
+                order_id=OrderId.generate(),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -271,13 +271,13 @@ class TestAggregatePerformance:
         orders = []
         for i in range(100):
             order = Order(
-                order_id=OrderId(f"ORD-{i}"),
+                order_id=OrderId(f"ORD-{i:06d}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
             )
 
-            product_id = ProductId(f"PROD-{i}")
+            product_id = ProductId(f"PROD-{i:03d}")
             order.add_order_line(product_id, self.quantity, self.unit_price)
             order.confirm()
             orders.append(order)
