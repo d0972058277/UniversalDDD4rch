@@ -107,16 +107,16 @@
 ## Phase 3.5: Examples and Documentation
 
 ### Working Examples
-- [ ] **T039** [P] OrderId and CustomerId example implementations in `examples/order_domain/identifiers.py`
-- [ ] **T040** [P] Money and Address value object examples in `examples/order_domain/value_objects.py`
-- [ ] **T041** [P] Order aggregate with business logic in `examples/order_domain/aggregates.py`
-- [ ] **T042** [P] Order repository interface and Django implementation in `examples/order_domain/repositories.py`
-- [ ] **T043** Django models for Order example in `examples/django_order/models.py`
-- [ ] **T044** Django application service example in `examples/django_order/services.py`
+- [X] **T039** [P] OrderId and CustomerId example implementations in `examples/order_domain/identifiers.py`
+- [X] **T040** [P] Money and Address value object examples in `examples/order_domain/value_objects.py`
+- [X] **T041** [P] Order aggregate with business logic in `examples/order_domain/aggregates.py`
+- [X] **T042** [P] Order repository interface and Django implementation in `examples/order_domain/repositories.py`
+- [X] **T043** Django models for Order example in `examples/django_order/models.py`
+- [X] **T044** Django application service example in `examples/django_order/services.py`
 
 ### Example Tests
-- [ ] **T045** [P] Example Order aggregate tests in `examples/tests/test_order_aggregate.py`
-- [ ] **T046** [P] Example functional programming usage tests in `examples/tests/test_functional_usage.py`
+- [X] **T045** [P] Example Order aggregate tests in `examples/tests/test_order_aggregate.py`
+- [X] **T046** [P] Example functional programming usage tests in `examples/tests/test_functional_usage.py`
 
 ## Phase 3.6: Performance and Validation
 
