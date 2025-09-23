@@ -59,7 +59,7 @@ public interface Repository<TAggregate extends AggregateRoot<TId>, TId extends E
      *
      * @param id The aggregate identifier to check
      * @param cancellationToken Token for cancelling the operation
-     * @return A CompletableFuture containing true if the aggregate exists, false otherwise
+     * @return A CompletableFuture containing Result<Boolean> with true if the aggregate exists, false otherwise
      */
-    CompletableFuture<Boolean> existsAsync(TId id, CancellationToken cancellationToken);
+    CompletableFuture<Result<Boolean>> existsAsync(TId id, CancellationToken cancellationToken);
 }

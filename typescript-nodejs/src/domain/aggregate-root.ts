@@ -68,7 +68,7 @@ export abstract class AggregateRoot<TId extends object>
    * This is typically called by the repository when the aggregate is persisted
    * to implement optimistic concurrency control.
    */
-  protected incrementVersion(): void {
+  public incrementVersion(): void {
     this._version++;
   }
 

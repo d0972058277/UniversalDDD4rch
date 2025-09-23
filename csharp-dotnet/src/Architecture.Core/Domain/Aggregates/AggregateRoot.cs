@@ -62,6 +62,16 @@ public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot<TId>
     }
 
     /// <summary>
+    /// Increments the version number of this aggregate.
+    /// This method is typically called by the infrastructure when the aggregate is persisted
+    /// to implement optimistic concurrency control.
+    /// </summary>
+    public void IncrementVersion()
+    {
+        Version++;
+    }
+
+    /// <summary>
     /// Returns a string representation of this aggregate root including its type, identifier, and version.
     /// </summary>
     /// <returns>A string describing this aggregate root.</returns>

@@ -88,7 +88,7 @@ class Repository(Protocol, Generic[TAggregate, TId]):
         """
         ...
 
-    async def exists_async(self, id: TId) -> bool:
+    async def exists_async(self, id: TId) -> Result[bool]:
         """
         Check if aggregate exists asynchronously.
 
@@ -96,6 +96,6 @@ class Repository(Protocol, Generic[TAggregate, TId]):
             id: The aggregate identifier
 
         Returns:
-            True if aggregate exists, False otherwise
+            Result containing True if aggregate exists, False otherwise
         """
         ...

@@ -104,7 +104,12 @@
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_entity_id_contract.py -x)",
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v)",
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v --tb=short -p no:cov)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(.specify/scripts/bash/create-new-feature.sh:*)",
+      "Bash(./.specify/scripts/bash/create-new-feature.sh:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Read(//Users/porridg3/GitHub/**)"
     ],
     "deny": [],
     "ask": []
