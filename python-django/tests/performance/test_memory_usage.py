@@ -83,7 +83,7 @@ class TestMemoryUsage:
     def setup_method(self):
         """Set up test data."""
         self.profiler = MemoryProfiler()
-        self.order_id = OrderId("ORDER-123456")
+        self.order_id = OrderId("ORD-123456")
         self.customer_id = CustomerId("CUST-789")
         self.customer_name = PersonName("John", "Doe")
         self.address = Address(
@@ -196,7 +196,7 @@ class TestMemoryUsage:
         orders = []
         for i in range(100):
             order = Order(
-                order_id=OrderId(f"ORDER-{i:06d}"),
+                order_id=OrderId(f"ORD-{i:06d}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -204,7 +204,7 @@ class TestMemoryUsage:
 
             # Add order lines
             for j in range(3):
-                product_id = ProductId(f"PROD-{i:03d}-{j}")
+                product_id = ProductId(f"PROD-{i:03d}{j}")
                 order.add_order_line(product_id, self.quantity, self.unit_price)
 
             # Confirm order
@@ -266,7 +266,7 @@ class TestMemoryUsage:
         # Create and discard objects
         for i in range(100):
             order = Order(
-                order_id=OrderId(f"ORDER-{i:06d}"),
+                order_id=OrderId(f"ORD-{i:06d}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -347,7 +347,7 @@ class TestMemoryUsage:
             # Create objects
             for i in range(50):
                 order = Order(
-                    order_id=OrderId(f"ORDER-{iteration}-{i:03d}"),
+                    order_id=OrderId(f"ORD-{iteration}-{i:03d}"),
                     customer_id=self.customer_id,
                     customer_name=self.customer_name,
                     billing_address=self.address

@@ -11,7 +11,7 @@ import pytest
 import threading
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from decimal import Decimal
 
@@ -61,8 +61,8 @@ class TestAggregateRootEventCollection:
 
     def setup_method(self):
         """Set up test data."""
-        self.aggregate_id = OrderId("AGG-123456")
-        self.order_id = OrderId("ORDER-123456")
+        self.aggregate_id = OrderId("ORD-123456")
+        self.order_id = OrderId("ORD-789012")
         self.customer_id = CustomerId("CUST-789")
         self.customer_name = PersonName("John", "Doe")
         self.address = Address(
@@ -322,7 +322,7 @@ class TestAggregateRootEventCollection:
         """Test that event timestamps are preserved."""
         # Given
         aggregate = MockAggregate(self.aggregate_id)
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
 
         # When
         event1 = MockEvent("event 1")

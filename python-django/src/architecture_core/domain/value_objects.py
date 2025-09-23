@@ -124,23 +124,50 @@ class ValueObject(ABC):
 
         This method handles the conversion of the iterator to a list
         and ensures proper handling of unhashable types by converting
-        them to hashable equivalents.
+        them to hashable equivalents. It also protects against circular
+        references by using object ids for recursive structures.
 
         Returns:
             List of equality components
         """
         components = []
-        for component in self.get_equality_components():
+        seen_objects = set()
+
+        def process_component(component: Any) -> Any:
             if component is None:
-                components.append(None)
+                return None
             elif isinstance(component, (list, set)):
-                # Convert collections to tuples for hashability
-                components.append(tuple(sorted(component)) if isinstance(component, set) else tuple(component))
+                # Check for circular reference
+                obj_id = id(component)
+                if obj_id in seen_objects:
+                    return f"<circular_ref:{obj_id}>"
+
+                seen_objects.add(obj_id)
+                try:
+                    if isinstance(component, set):
+                        result = tuple(sorted(process_component(item) for item in component))
+                    else:
+                        result = tuple(process_component(item) for item in component)
+                finally:
+                    seen_objects.remove(obj_id)
+                return result
             elif isinstance(component, dict):
-                # Convert dictionaries to sorted tuples of key-value pairs
-                components.append(tuple(sorted(component.items())))
+                # Check for circular reference
+                obj_id = id(component)
+                if obj_id in seen_objects:
+                    return f"<circular_ref:{obj_id}>"
+
+                seen_objects.add(obj_id)
+                try:
+                    result = tuple(sorted((k, process_component(v)) for k, v in component.items()))
+                finally:
+                    seen_objects.remove(obj_id)
+                return result
             else:
-                components.append(component)
+                return component
+
+        for component in self.get_equality_components():
+            components.append(process_component(component))
         return components
 
     def __str__(self) -> str:

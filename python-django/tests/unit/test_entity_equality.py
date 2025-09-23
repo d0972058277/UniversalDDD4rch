@@ -222,7 +222,7 @@ class TestEntityIdentityEquality:
                 self.name = name
 
         # Given
-        order_id = OrderId("ORDER-123456")
+        order_id = OrderId("ORD-123456")
         customer_id = CustomerId("CUST-789")
 
         order1 = OrderEntity(order_id, "draft")

@@ -52,7 +52,7 @@ class MockOrderModel:
         async def aget(cls, pk):
             """Mock async get."""
             await asyncio.sleep(0.002)  # Simulate database latency
-            if pk == "ORDER-NOT-FOUND":
+            if pk == "ORD-NOT-FOUND":
                 from django.core.exceptions import ObjectDoesNotExist
                 raise ObjectDoesNotExist("Order not found")
 
@@ -155,7 +155,7 @@ class TestRepositoryPerformance:
     def setup_method(self):
         """Set up test data."""
         self.repository = MockOrderRepository()
-        self.order_id = OrderId("ORDER-123456")
+        self.order_id = OrderId("ORD-123456")
         self.customer_id = CustomerId("CUST-789")
         self.customer_name = PersonName("John", "Doe")
         self.address = Address(
@@ -233,7 +233,7 @@ class TestRepositoryPerformance:
         """Test add operation performance."""
         async def add_operation():
             order = Order(
-                order_id=OrderId(f"ORDER-{time.time_ns()}"),
+                order_id=OrderId(f"ORD-{time.time_ns()}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -263,7 +263,7 @@ class TestRepositoryPerformance:
         async def update_operation():
             # Create a fresh order for each update to avoid concurrency issues
             order = Order(
-                order_id=OrderId(f"ORDER-{time.time_ns()}"),
+                order_id=OrderId(f"ORD-{time.time_ns()}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -284,7 +284,7 @@ class TestRepositoryPerformance:
     async def test_delete_performance(self):
         """Test delete operation performance."""
         async def delete_operation():
-            order_id = OrderId(f"ORDER-{time.time_ns()}")
+            order_id = OrderId(f"ORD-{time.time_ns()}")
             return await self.repository.delete_async(order_id)
 
         stats = await self.measure_async_operation(delete_operation)
@@ -317,7 +317,7 @@ class TestRepositoryPerformance:
         async def concurrent_reads():
             tasks = []
             for i in range(10):
-                order_id = OrderId(f"ORDER-{i:06d}")
+                order_id = OrderId(f"ORD-{i:06d}")
                 task = self.repository.get_by_id_async(order_id)
                 tasks.append(task)
 
@@ -342,7 +342,7 @@ class TestRepositoryPerformance:
             orders = []
             for i in range(10):
                 order = Order(
-                    order_id=OrderId(f"ORDER-BATCH-{time.time_ns()}-{i}"),
+                    order_id=OrderId(f"ORD-BATCH-{time.time_ns()}-{i}"),
                     customer_id=self.customer_id,
                     customer_name=self.customer_name,
                     billing_address=self.address
@@ -369,7 +369,7 @@ class TestRepositoryPerformance:
         """Test error handling performance (operations that fail)."""
         async def failed_get():
             # This ID will trigger a not found error
-            return await self.repository.get_by_id_async(OrderId("ORDER-NOT-FOUND"))
+            return await self.repository.get_by_id_async(OrderId("ORD-NOT-FOUND"))
 
         # Override the mock to simulate exception
         original_aget = MockOrderModel.objects.aget
@@ -404,19 +404,19 @@ class TestRepositoryPerformance:
         tasks = []
         for i in range(operations_count):
             if i % 4 == 0:  # 25% reads
-                task = self.repository.get_by_id_async(OrderId(f"ORDER-{i:06d}"))
+                task = self.repository.get_by_id_async(OrderId(f"ORD-{i:06d}"))
             elif i % 4 == 1:  # 25% exists checks
-                task = self.repository.exists_async(OrderId(f"ORDER-{i:06d}"))
+                task = self.repository.exists_async(OrderId(f"ORD-{i:06d}"))
             elif i % 4 == 2:  # 25% adds
                 order = Order(
-                    order_id=OrderId(f"ORDER-THROUGHPUT-{i:06d}"),
+                    order_id=OrderId(f"ORD-THROUGHPUT-{i:06d}"),
                     customer_id=self.customer_id,
                     customer_name=self.customer_name,
                     billing_address=self.address
                 )
                 task = self.repository.add_async(order)
             else:  # 25% deletes
-                task = self.repository.delete_async(OrderId(f"ORDER-{i:06d}"))
+                task = self.repository.delete_async(OrderId(f"ORD-{i:06d}"))
 
             tasks.append(task)
 

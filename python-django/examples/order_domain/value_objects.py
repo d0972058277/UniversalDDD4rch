@@ -11,7 +11,7 @@ from typing import Iterator, Any, Optional
 from architecture_core.domain.value_objects import ValueObject
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class Money(ValueObject):
     """Example Money value object with currency support."""
 
@@ -105,7 +105,7 @@ class Money(ValueObject):
         return f"Money(amount={self.amount}, currency='{self.currency}')"
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class Address(ValueObject):
     """Example Address value object."""
 
@@ -188,7 +188,7 @@ class Address(ValueObject):
         return f"Address(street='{self.street}', city='{self.city}', state='{self.state}', postal_code='{self.postal_code}', country='{self.country}')"
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class PersonName(ValueObject):
     """Example PersonName value object."""
 
@@ -247,7 +247,7 @@ class PersonName(ValueObject):
         return f"PersonName(first_name='{self.first_name}', last_name='{self.last_name}', middle_name={repr(self.middle_name)})"
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class Quantity(ValueObject):
     """Example Quantity value object for order lines."""
 

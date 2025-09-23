@@ -103,7 +103,8 @@
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/ -v --tb=line)",
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_entity_id_contract.py -x)",
       "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v)",
-      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v --tb=short -p no:cov)"
+      "Bash(PYTHONPATH=src python -m pytest tests/contracts/test_repository_contract.py -x -v --tb=short -p no:cov)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

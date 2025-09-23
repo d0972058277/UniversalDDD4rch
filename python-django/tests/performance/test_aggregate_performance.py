@@ -38,7 +38,7 @@ class TestAggregatePerformance:
 
     def setup_method(self):
         """Set up test data for performance measurements."""
-        self.order_id = OrderId("ORDER-123456")
+        self.order_id = OrderId("ORD-123456")
         self.customer_id = CustomerId("CUST-789")
         self.customer_name = PersonName("John", "Doe")
         self.address = Address(
@@ -110,7 +110,7 @@ class TestAggregatePerformance:
 
         def add_order_line():
             # Create a new product ID for each iteration to avoid duplicate error
-            product_id = ProductId(f"PROD-{time.time_ns()}")
+            product_id = ProductId(f"PROD-{int(time.time_ns()) % 1000000:06d}")
             result = order.add_order_line(product_id, self.quantity, self.unit_price)
             # Clear the line to avoid memory accumulation
             if result.is_success:
@@ -130,13 +130,13 @@ class TestAggregatePerformance:
         """Test order confirmation performance."""
         def setup_and_confirm_order():
             order = Order(
-                order_id=OrderId(f"ORDER-{time.time_ns()}"),
+                order_id=OrderId(f"ORD-{time.time_ns()}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
             )
             # Add one order line
-            product_id = ProductId(f"PROD-{time.time_ns()}")
+            product_id = ProductId(f"PROD-{int(time.time_ns()) % 1000000:06d}")
             order.add_order_line(product_id, self.quantity, self.unit_price)
             # Confirm the order
             return order.confirm()
@@ -224,7 +224,7 @@ class TestAggregatePerformance:
         def complex_operation():
             # Create order
             order = Order(
-                order_id=OrderId(f"ORDER-{time.time_ns()}"),
+                order_id=OrderId(f"ORD-{time.time_ns()}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address
@@ -232,7 +232,7 @@ class TestAggregatePerformance:
 
             # Add multiple order lines
             for i in range(3):
-                product_id = ProductId(f"PROD-{time.time_ns()}-{i}")
+                product_id = ProductId(f"PROD-{i:03d}{int(time.time_ns()) % 1000:03d}")
                 quantity = Quantity(i + 1)
                 unit_price = Money(Decimal(f"{10 + i}.99"), "USD")
                 order.add_order_line(product_id, quantity, unit_price)
@@ -271,7 +271,7 @@ class TestAggregatePerformance:
         orders = []
         for i in range(100):
             order = Order(
-                order_id=OrderId(f"ORDER-{i}"),
+                order_id=OrderId(f"ORD-{i}"),
                 customer_id=self.customer_id,
                 customer_name=self.customer_name,
                 billing_address=self.address

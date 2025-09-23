@@ -447,7 +447,7 @@ class TestMaybeNullSafetyAndChaining:
         """Test handling of nested Maybe operations."""
         # Given
         def find_by_id(id: int) -> Maybe[str]:
-            data = {1: "first", 2: "second", 3: "third"}
+            data = {1: "first", 2: "hi", 3: "third"}
             return Maybe.from_optional(data.get(id))
 
         def format_data(data: str) -> Maybe[str]:
