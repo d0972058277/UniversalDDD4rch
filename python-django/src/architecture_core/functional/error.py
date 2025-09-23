@@ -211,6 +211,12 @@ class Error:
             metadata=merged_metadata
         )
 
+    def __hash__(self) -> int:
+        """Hash code for use in collections."""
+        # Convert metadata dict to a hashable tuple of sorted key-value pairs
+        metadata_tuple = tuple(sorted(self.metadata.items())) if self.metadata else ()
+        return hash((self.code, self.message, self.category, metadata_tuple))
+
     def __str__(self) -> str:
         """String representation for logging and debugging"""
         return f"[{self.category.value}] {self.code}: {self.message}"

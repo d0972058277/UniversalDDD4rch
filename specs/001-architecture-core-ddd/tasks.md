@@ -121,24 +121,24 @@
 ## Phase 3.6: Performance and Validation
 
 ### Performance Tests
-- [ ] **T047** [P] Performance benchmarks for aggregate operations (sub-millisecond target) in `tests/performance/test_aggregate_performance.py`
-- [ ] **T048** [P] Performance benchmarks for Result/Maybe operations in `tests/performance/test_functional_performance.py`
-- [ ] **T049** [P] Memory usage profiling for core types in `tests/performance/test_memory_usage.py`
-- [ ] **T050** Performance benchmarks for repository operations (<200ms p95) in `tests/performance/test_repository_performance.py`
+- [X] **T047** [P] Performance benchmarks for aggregate operations (sub-millisecond target) in `tests/performance/test_aggregate_performance.py`
+- [X] **T048** [P] Performance benchmarks for Result/Maybe operations in `tests/performance/test_functional_performance.py`
+- [X] **T049** [P] Memory usage profiling for core types in `tests/performance/test_memory_usage.py`
+- [X] **T050** Performance benchmarks for repository operations (<200ms p95) in `tests/performance/test_repository_performance.py`
 
 ### Unit Tests for Edge Cases
-- [ ] **T051** [P] Unit tests for ValueObject equality edge cases (nulls, collections) in `tests/unit/test_value_object_edge_cases.py`
-- [ ] **T052** [P] Unit tests for AggregateRoot event collection behavior in `tests/unit/test_aggregate_events.py`
-- [ ] **T053** [P] Unit tests for Entity identity-based equality in `tests/unit/test_entity_equality.py`
-- [ ] **T054** [P] Unit tests for Result error handling and composition in `tests/unit/test_result_composition.py`
-- [ ] **T055** [P] Unit tests for Maybe null safety and chaining in `tests/unit/test_maybe_safety.py`
+- [X] **T051** [P] Unit tests for ValueObject equality edge cases (nulls, collections) in `tests/unit/test_value_object_edge_cases.py`
+- [X] **T052** [P] Unit tests for AggregateRoot event collection behavior in `tests/unit/test_aggregate_events.py`
+- [X] **T053** [P] Unit tests for Entity identity-based equality in `tests/unit/test_entity_equality.py`
+- [X] **T054** [P] Unit tests for Result error handling and composition in `tests/unit/test_result_composition.py`
+- [X] **T055** [P] Unit tests for Maybe null safety and chaining in `tests/unit/test_maybe_safety.py`
 
 ### Documentation and Polish
-- [ ] **T056** [P] Generate API documentation with Sphinx in `docs/`
-- [ ] **T057** [P] Create README.md with installation and basic usage examples
-- [ ] **T058** [P] Validate all type annotations with mypy strict mode
-- [ ] **T059** Run complete test suite and verify 100% pass rate
-- [ ] **T060** Code review for DDD compliance and Python best practices
+- [X] **T056** [P] Generate API documentation with Sphinx in `docs/`
+- [X] **T057** [P] Create README.md with installation and basic usage examples
+- [X] **T058** [P] Validate all type annotations with mypy strict mode
+- [X] **T059** Run complete test suite and verify 100% pass rate
+- [X] **T060** Code review for DDD compliance and Python best practices
 
 ## Dependencies
 

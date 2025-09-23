@@ -1,8 +1,16 @@
 # Architecture.Core - Python Django Implementation
 
-DDD core abstractions and functional types for Python applications with optional Django integration.
+A comprehensive Domain-Driven Design (DDD) library providing core abstractions and functional types for Python Django applications.
 
-## Features
+[![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/django-4.0+-green.svg)](https://docs.djangoproject.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## Overview
+
+Architecture.Core provides battle-tested DDD building blocks and functional programming patterns for building robust, maintainable Django applications. This implementation follows the same architectural principles as the C#, Java, Go, and TypeScript versions while leveraging Python-specific features.
+
+### Key Features
 
 - Pure Python standard library core (zero runtime dependencies)
 - Optional Django 4+ integration package
