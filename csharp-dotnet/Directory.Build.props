@@ -1,0 +1,58 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Common properties for all C# .NET projects -->
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+
+    <!-- Company and product information -->
+    <Company>Universal DDD Architecture</Company>
+    <Authors>Universal DDD Architecture Team</Authors>
+    <Copyright>Copyright © Universal DDD Architecture Team 2025</Copyright>
+    <Product>Architecture.Core - C# .NET Implementation</Product>
+
+    <!-- Repository information -->
+    <RepositoryUrl>https://github.com/your-org/UniversalDDD4rch</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!-- Version information -->
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <!-- Code analysis rules -->
+  <PropertyGroup>
+    <!-- Enable strict mode for nullable reference types -->
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+
+    <!-- Treat specific analyzer warnings as errors -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Package references common to all projects -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Global using statements for all C# projects -->
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+  </ItemGroup>
+
+</Project>

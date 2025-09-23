@@ -1,0 +1,201 @@
+"""
+ValueObject abstract base class for structural equality.
+
+This module provides the base class for value objects that implement
+structural equality based on their component values.
+"""
+
+from typing import Iterator, Any
+from abc import ABC, abstractmethod
+
+
+class ValueObject(ABC):
+    """
+    Abstract base class for value objects with structural equality.
+
+    Value objects are immutable objects whose equality is based on their
+    structural content rather than identity. They represent descriptive
+    aspects of the domain with no conceptual identity.
+
+    Subclasses must implement get_equality_components() to define which
+    attributes participate in equality comparison. The base class provides
+    implementations of __eq__ and __hash__ based on these components.
+
+    Examples:
+        class Money(ValueObject):
+            def __init__(self, amount: Decimal, currency: str):
+                self.amount = amount
+                self.currency = currency
+
+            def get_equality_components(self) -> Iterator[Any]:
+                yield self.amount
+                yield self.currency.upper()
+
+        class Address(ValueObject):
+            def __init__(self, street: str, city: str, postal_code: str):
+                self.street = street
+                self.city = city
+                self.postal_code = postal_code
+
+            def get_equality_components(self) -> Iterator[Any]:
+                yield self.street.lower().strip()
+                yield self.city.lower().strip()
+                yield self.postal_code.upper().strip()
+
+    Design Principles:
+        1. Immutability: Value objects should be immutable after creation
+        2. Structural Equality: Equality based on component values, not identity
+        3. Side-effect Free: Operations should not modify state
+        4. Replaceability: Value objects can be replaced with equal instances
+    """
+
+    @abstractmethod
+    def get_equality_components(self) -> Iterator[Any]:
+        """
+        Return components that define equality for this value object.
+
+        This method must be implemented by subclasses to specify which
+        attributes participate in equality comparison. Components should
+        be yielded in a consistent order.
+
+        Returns:
+            Iterator yielding equality components
+
+        Examples:
+            def get_equality_components(self) -> Iterator[Any]:
+                yield self.amount
+                yield self.currency
+                yield self.precision
+
+        Notes:
+            - Order matters for equality comparison
+            - Include all fields that define the value's meaning
+            - Normalize values (e.g., case-insensitive strings)
+            - Handle None values appropriately
+            - Convert collections to tuples for hashability
+        """
+        ...
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Structural equality based on equality components.
+
+        Two value objects are equal if they are of the same type and
+        have equal equality components in the same order.
+
+        Args:
+            other: Object to compare with
+
+        Returns:
+            True if objects are structurally equal, False otherwise
+        """
+        if self is other:
+            return True
+
+        if other is None:
+            return False
+
+        if not isinstance(other, ValueObject):
+            return False
+
+        # ValueObjects must be of the same concrete type and have same components
+        # Different ValueObject types should not be equal even with same components
+        if type(self) != type(other):
+            return False
+
+        return self._get_equality_components_list() == other._get_equality_components_list()
+
+    def __hash__(self) -> int:
+        """
+        Hash code based on equality components.
+
+        The hash is computed from all equality components to ensure
+        that equal objects have equal hash codes.
+
+        Returns:
+            Hash code for the value object
+        """
+        components = self._get_equality_components_list()
+        return hash(tuple(components))
+
+    def _get_equality_components_list(self) -> list[Any]:
+        """
+        Convert equality components to list for comparison.
+
+        This method handles the conversion of the iterator to a list
+        and ensures proper handling of unhashable types by converting
+        them to hashable equivalents. It also protects against circular
+        references by using object ids for recursive structures.
+
+        Returns:
+            List of equality components
+        """
+        components = []
+        seen_objects = set()
+
+        def process_component(component: Any) -> Any:
+            if component is None:
+                return None
+            elif isinstance(component, (list, set)):
+                # Check for circular reference
+                obj_id = id(component)
+                if obj_id in seen_objects:
+                    return f"<circular_ref:{obj_id}>"
+
+                seen_objects.add(obj_id)
+                try:
+                    if isinstance(component, set):
+                        result = tuple(sorted(process_component(item) for item in component))
+                    else:
+                        result = tuple(process_component(item) for item in component)
+                finally:
+                    seen_objects.remove(obj_id)
+                return result
+            elif isinstance(component, dict):
+                # Check for circular reference
+                obj_id = id(component)
+                if obj_id in seen_objects:
+                    return f"<circular_ref:{obj_id}>"
+
+                seen_objects.add(obj_id)
+                try:
+                    result = tuple(sorted((k, process_component(v)) for k, v in component.items()))
+                finally:
+                    seen_objects.remove(obj_id)
+                return result
+            else:
+                return component
+
+        for component in self.get_equality_components():
+            components.append(process_component(component))
+        return components
+
+    def __str__(self) -> str:
+        """
+        String representation showing type and key components.
+
+        Returns:
+            Human-readable string representation
+        """
+        class_name = self.__class__.__name__
+        components = self._get_equality_components_list()
+
+        if not components:
+            return f"{class_name}()"
+
+        # Show first few components for readability
+        if len(components) <= 3:
+            component_str = ", ".join(str(c) for c in components)
+        else:
+            component_str = ", ".join(str(c) for c in components[:3]) + ", ..."
+
+        return f"{class_name}({component_str})"
+
+    def __repr__(self) -> str:
+        """
+        Detailed string representation for debugging.
+
+        Returns:
+            Detailed string representation
+        """
+        return self.__str__()

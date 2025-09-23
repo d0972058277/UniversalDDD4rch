@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "node_modules",
+    "tests",
+    "examples",
+    "benchmarks",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}
