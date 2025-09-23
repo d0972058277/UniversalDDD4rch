@@ -62,7 +62,8 @@ type ValueObject interface {
 // Matches the contract interface exactly
 type Repository[TAggregate AggregateRoot[TID], TID EntityID] interface {
 	GetByID(ctx context.Context, id TID) (functional.Maybe[TAggregate], error)
-	Save(ctx context.Context, aggregate TAggregate) error
+	Add(ctx context.Context, aggregate TAggregate) error
+	Update(ctx context.Context, aggregate TAggregate) error
 	Delete(ctx context.Context, id TID) error
 	Exists(ctx context.Context, id TID) (bool, error)
 }
@@ -70,7 +71,8 @@ type Repository[TAggregate AggregateRoot[TID], TID EntityID] interface {
 // IRepository is an interface alias for Repository for compatibility
 type IRepository[TAggregate AggregateRoot[TID], TID EntityID] interface {
 	GetByID(ctx context.Context, id TID) (functional.Maybe[TAggregate], error)
-	Save(ctx context.Context, aggregate TAggregate) error
+	Add(ctx context.Context, aggregate TAggregate) error
+	Update(ctx context.Context, aggregate TAggregate) error
 	Delete(ctx context.Context, id TID) error
 	Exists(ctx context.Context, id TID) (bool, error)
 }
