@@ -109,7 +109,9 @@
       "Bash(./.specify/scripts/bash/create-new-feature.sh:*)",
       "Bash(git checkout:*)",
       "Bash(git branch:*)",
-      "Read(//Users/porridg3/GitHub/**)"
+      "Read(//Users/porridg3/GitHub/**)",
+      "Bash(chmod:*)",
+      "Bash(bash .specify/scripts/bash/check-prerequisites.sh:*)"
     ],
     "deny": [],
     "ask": []
