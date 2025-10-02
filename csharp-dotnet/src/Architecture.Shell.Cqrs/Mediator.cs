@@ -101,10 +101,18 @@ public sealed class Mediator : IMediator
                 $"Expected handler implementing '{handlerType.Name}'.");
         }
 
+        // Validate that the handler actually implements the expected interface
+        if (!handlerType.IsAssignableFrom(handler.GetType()))
+        {
+            throw new InvalidOperationException(
+                $"Handler for '{requestType.Name}' does not implement '{handlerType.Name}'. " +
+                $"Actual type: '{handler.GetType().Name}'.");
+        }
+
         return handler;
     }
 
-    private IEnumerable<object> ResolveBehaviors(Type requestType, Type responseType)
+    private List<BehaviorInfo> ResolveBehaviors(Type requestType, Type responseType)
     {
         // Construct behavior interface type: IPipelineBehavior<TRequest, TResponse>
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, responseType);
@@ -112,34 +120,58 @@ public sealed class Mediator : IMediator
 
         var behaviors = _serviceProvider.GetService(behaviorsEnumerableType) as IEnumerable<object>;
 
-        return behaviors ?? Enumerable.Empty<object>();
+        if (behaviors == null)
+            return new List<BehaviorInfo>();
+
+        // Extract behavior info (instance + order) using reflection to access Order property
+        var behaviorList = new List<BehaviorInfo>();
+        foreach (var behavior in behaviors)
+        {
+            var orderProperty = behavior.GetType().GetProperty(nameof(IPipelineBehavior<IBaseRequest, object>.Order));
+            var order = orderProperty != null ? (int)orderProperty.GetValue(behavior)! : 0;
+            behaviorList.Add(new BehaviorInfo(behavior, order));
+        }
+
+        return behaviorList;
     }
+
+    private sealed record BehaviorInfo(object Instance, int Order);
 
     private RequestHandlerDelegate<TResponse> BuildPipeline<TResponse>(
         IBaseRequest request,
         object handler,
-        IEnumerable<object> behaviors,
+        List<BehaviorInfo> behaviors,
         CancellationToken cancellationToken)
     {
         var requestType = request.GetType();
         var responseType = typeof(TResponse);
 
         // Terminal handler invocation
-        RequestHandlerDelegate<TResponse> handlerDelegate = () =>
-        {
-            var handleMethod = handler.GetType().GetMethod(nameof(IRequestHandler<IBaseRequest, object>.HandleAsync));
-            if (handleMethod == null)
-                throw new InvalidOperationException($"Handler for '{requestType.Name}' does not implement HandleAsync method.");
+        // We need to invoke the handler without using dynamic (which can't find methods on boxed objects)
+        // and without using MethodInfo.Invoke (which wraps exceptions in TargetInvocationException)
+        // Solution: Use Expression trees to compile a strongly-typed delegate
+        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, responseType);
+        var handleMethod = handlerType.GetMethod(nameof(IRequestHandler<IBaseRequest, object>.HandleAsync))!;
 
-            var result = handleMethod.Invoke(handler, new object[] { request, cancellationToken });
-            return (Task<TResponse>)result!;
-        };
+        // Create expression: (h, r, ct) => ((IRequestHandler<TRequest, TResponse>)h).HandleAsync((TRequest)r, ct)
+        var handlerParam = System.Linq.Expressions.Expression.Parameter(typeof(object), "h");
+        var requestParam = System.Linq.Expressions.Expression.Parameter(typeof(IBaseRequest), "r");
+        var ctParam = System.Linq.Expressions.Expression.Parameter(typeof(CancellationToken), "ct");
+
+        var castHandler = System.Linq.Expressions.Expression.Convert(handlerParam, handlerType);
+        var castRequest = System.Linq.Expressions.Expression.Convert(requestParam, requestType);
+        var methodCall = System.Linq.Expressions.Expression.Call(castHandler, handleMethod, castRequest, ctParam);
+
+        var lambda = System.Linq.Expressions.Expression.Lambda<Func<object, IBaseRequest, CancellationToken, Task<TResponse>>>(
+            methodCall, handlerParam, requestParam, ctParam);
+        var compiledHandler = lambda.Compile();
+
+        RequestHandlerDelegate<TResponse> handlerDelegate = () => compiledHandler(handler, request, cancellationToken);
 
         // Wrap handler with behaviors in reverse order (inner to outer)
         // Behaviors with lower Order values execute first (outer behaviors)
         var orderedBehaviors = behaviors
-            .Cast<dynamic>() // Use dynamic to access Order property
-            .OrderByDescending(b => (int)b.Order) // Reverse order for wrapping
+            .OrderByDescending(b => b.Order) // Reverse order for wrapping
             .ToList();
 
         // Validate behavior order and log warnings per BR-004
@@ -148,16 +180,36 @@ public sealed class Mediator : IMediator
         // Build pipeline by wrapping handler with behaviors
         RequestHandlerDelegate<TResponse> pipeline = handlerDelegate;
 
-        foreach (var behavior in orderedBehaviors)
+        foreach (var behaviorInfo in orderedBehaviors)
         {
             var currentPipeline = pipeline;
-            pipeline = () => behavior.HandleAsync((dynamic)request, currentPipeline, cancellationToken);
+            var behaviorInstance = behaviorInfo.Instance;
+
+            // Compile a strongly-typed delegate for behavior invocation
+            var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, responseType);
+            var behaviorMethod = behaviorType.GetMethod(nameof(IPipelineBehavior<IBaseRequest, object>.HandleAsync))!;
+
+            // Create expression: (b, r, cont, ct) => ((IPipelineBehavior<TRequest, TResponse>)b).HandleAsync((TRequest)r, cont, ct)
+            var behaviorParam = System.Linq.Expressions.Expression.Parameter(typeof(object), "b");
+            var requestParam2 = System.Linq.Expressions.Expression.Parameter(typeof(IBaseRequest), "r");
+            var contParam = System.Linq.Expressions.Expression.Parameter(typeof(RequestHandlerDelegate<TResponse>), "cont");
+            var ctParam2 = System.Linq.Expressions.Expression.Parameter(typeof(CancellationToken), "ct");
+
+            var castBehavior = System.Linq.Expressions.Expression.Convert(behaviorParam, behaviorType);
+            var castRequest2 = System.Linq.Expressions.Expression.Convert(requestParam2, requestType);
+            var methodCall2 = System.Linq.Expressions.Expression.Call(castBehavior, behaviorMethod, castRequest2, contParam, ctParam2);
+
+            var lambda2 = System.Linq.Expressions.Expression.Lambda<Func<object, IBaseRequest, RequestHandlerDelegate<TResponse>, CancellationToken, Task<TResponse>>>(
+                methodCall2, behaviorParam, requestParam2, contParam, ctParam2);
+            var compiledBehavior = lambda2.Compile();
+
+            pipeline = () => compiledBehavior(behaviorInstance, request, currentPipeline, cancellationToken);
         }
 
         return pipeline;
     }
 
-    private void ValidateBehaviorOrder(List<dynamic> behaviors, IBaseRequest request)
+    private void ValidateBehaviorOrder(List<BehaviorInfo> behaviors, IBaseRequest request)
     {
         // Recommended order:
         // 1. Validation (10)
@@ -167,20 +219,17 @@ public sealed class Mediator : IMediator
         // 5. Caching (50)
         // 6. Resilience (60)
 
-        var orderedByOrder = behaviors.OrderBy(b => (int)b.Order).ToList();
+        var orderedByOrder = behaviors.OrderBy(b => b.Order).ToList();
 
         // Check for dangerous orderings
         for (int i = 0; i < orderedByOrder.Count - 1; i++)
         {
             var current = orderedByOrder[i];
             var next = orderedByOrder[i + 1];
-            var currentName = current.GetType().Name as string;
-            var nextName = next.GetType().Name as string;
-            var currentOrder = (int)current.Order;
-            var nextOrder = (int)next.Order;
-
-            if (currentName == null || nextName == null)
-                continue;
+            var currentName = current.Instance.GetType().Name;
+            var nextName = next.Instance.GetType().Name;
+            var currentOrder = current.Order;
+            var nextOrder = next.Order;
 
             // Warning: Transaction before Validation
             if (currentName.Contains("UnitOfWork", StringComparison.Ordinal) &&

@@ -45,7 +45,12 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         ArgumentNullException.ThrowIfNull(continuation);
 
         // Skip transaction management for queries (BR-003)
-        if (request is not ICommand)
+        // Check both ICommand (void) and ICommand<TResult> (non-void commands)
+        var isCommand = request is ICommand ||
+                       request.GetType().GetInterfaces().Any(i =>
+                           i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommand<>));
+
+        if (!isCommand)
         {
             return await continuation().ConfigureAwait(false);
         }

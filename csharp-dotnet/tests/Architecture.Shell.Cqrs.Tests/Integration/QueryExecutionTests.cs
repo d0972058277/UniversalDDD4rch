@@ -23,7 +23,7 @@ public sealed class QueryExecutionTests
     {
         // Given: Mediator with UnitOfWork behavior and query handler
         var unitOfWork = new InMemoryUnitOfWork();
-        var handler = new TestQueryHandler();
+        var handler = new TestHelpers.TestQueryHandler();
         var behavior = new UnitOfWorkBehavior<TestHelpers.TestQuery, string>(unitOfWork);
 
         var serviceProvider = TestServiceProvider.CreateBuilder()

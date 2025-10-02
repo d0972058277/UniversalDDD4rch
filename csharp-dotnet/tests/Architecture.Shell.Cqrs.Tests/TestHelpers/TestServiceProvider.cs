@@ -12,6 +12,7 @@ namespace Architecture.Shell.Cqrs.Tests.TestHelpers;
 public sealed class TestServiceProvider : IServiceProvider
 {
     private readonly Dictionary<Type, object> _services = new();
+    private readonly Dictionary<Type, List<object>> _collections = new();
 
     /// <summary>
     /// Registers a service instance for a specific type.
@@ -30,10 +31,40 @@ public sealed class TestServiceProvider : IServiceProvider
     }
 
     /// <summary>
+    /// Adds a service to a collection for IEnumerable<T> resolution.
+    /// </summary>
+    public void AddToCollection(Type serviceType, object implementation)
+    {
+        if (!_collections.ContainsKey(serviceType))
+        {
+            _collections[serviceType] = new List<object>();
+        }
+        _collections[serviceType].Add(implementation);
+    }
+
+    /// <summary>
     /// Gets the service object of the specified type.
     /// </summary>
     public object? GetService(Type serviceType)
     {
+        // Check for IEnumerable<T> requests
+        if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+        {
+            var elementType = serviceType.GetGenericArguments()[0];
+            if (_collections.TryGetValue(elementType, out var collection))
+            {
+                // Create a typed array of the collection
+                var array = Array.CreateInstance(elementType, collection.Count);
+                for (int i = 0; i < collection.Count; i++)
+                {
+                    array.SetValue(collection[i], i);
+                }
+                return array;
+            }
+            // Return empty array if no collection found
+            return Array.CreateInstance(elementType, 0);
+        }
+
         return _services.TryGetValue(serviceType, out var service) ? service : null;
     }
 
@@ -73,7 +104,7 @@ public sealed class TestServiceProviderBuilder
         where TRequest : IBaseRequest
     {
         _behaviors.Add(behavior);
-        _provider.AddService(typeof(IPipelineBehavior<TRequest, TResponse>), behavior);
+        _provider.AddToCollection(typeof(IPipelineBehavior<TRequest, TResponse>), behavior);
         return this;
     }
 
@@ -124,7 +155,7 @@ public sealed class TestServiceProviderBuilder
 
             foreach (var behaviorInterface in behaviorInterfaces)
             {
-                _provider.AddService(behaviorInterface, behavior);
+                _provider.AddToCollection(behaviorInterface, behavior);
             }
         }
         return this;
