@@ -112,7 +112,8 @@
       "Read(//Users/porridg3/GitHub/**)",
       "Bash(chmod:*)",
       "Bash(bash .specify/scripts/bash/check-prerequisites.sh:*)",
-      "Bash(dotnet new:*)"
+      "Bash(dotnet new:*)",
+      "Bash(dotnet restore:*)"
     ],
     "deny": [],
     "ask": []

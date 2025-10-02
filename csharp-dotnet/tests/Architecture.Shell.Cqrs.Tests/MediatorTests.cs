@@ -136,11 +136,12 @@ public class MediatorTests
     }
 }
 
-// Test domain types
+// Test domain types - must be public for Moq proxy generation
 public record MediatorTestCommand : ICommand;
 public record TestCommandWithNoHandler : ICommand;
 
-public class TestCommandHandler1 : ICommandHandler<MediatorTestCommand>
+// Internal to prevent assembly scanning from picking up these duplicate test handlers
+internal class TestCommandHandler1 : ICommandHandler<MediatorTestCommand>
 {
     public Task<Result> HandleAsync(MediatorTestCommand request, CancellationToken cancellationToken)
     {
@@ -148,7 +149,7 @@ public class TestCommandHandler1 : ICommandHandler<MediatorTestCommand>
     }
 }
 
-public class TestCommandHandler2 : ICommandHandler<MediatorTestCommand>
+internal class TestCommandHandler2 : ICommandHandler<MediatorTestCommand>
 {
     public Task<Result> HandleAsync(MediatorTestCommand request, CancellationToken cancellationToken)
     {
