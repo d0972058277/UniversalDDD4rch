@@ -55,7 +55,7 @@ public class CancellableCommandHandler : ICommandHandler<LongRunningCommand>
             {
                 await Task.Delay(50, cancellationToken); // Check cancellation every 50ms
             }
-            return Result.Success();
+            return Result.Ok();
         }
         catch (OperationCanceledException)
         {

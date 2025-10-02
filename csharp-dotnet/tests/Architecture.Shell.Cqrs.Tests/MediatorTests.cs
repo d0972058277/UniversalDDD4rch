@@ -78,7 +78,7 @@ public class MediatorTests
 
         handler
             .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Ok());
 
         serviceProvider
             .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
@@ -133,7 +133,7 @@ public class TestCommandHandler1 : ICommandHandler<TestCommand>
 {
     public Task<Result> HandleAsync(TestCommand request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(Result.Success());
+        return Task.FromResult(Result.Ok());
     }
 }
 
@@ -141,6 +141,6 @@ public class TestCommandHandler2 : ICommandHandler<TestCommand>
 {
     public Task<Result> HandleAsync(TestCommand request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(Result.Success());
+        return Task.FromResult(Result.Ok());
     }
 }

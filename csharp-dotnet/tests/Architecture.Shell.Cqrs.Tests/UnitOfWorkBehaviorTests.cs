@@ -1,5 +1,6 @@
 using Architecture.Core.Functional;
 using Architecture.Shell.Cqrs;
+using Architecture.Shell.Cqrs.Behaviors;
 using Moq;
 
 namespace Architecture.Shell.Cqrs.Tests;
@@ -28,7 +29,7 @@ public class UnitOfWorkBehaviorTests
         RequestHandlerDelegate<Result> next = () =>
         {
             nextCalled = true;
-            return Task.FromResult(Result.Success());
+            return Task.FromResult(Result.Ok());
         };
 
         // When: Command is executed through UnitOfWork behavior
@@ -54,7 +55,7 @@ public class UnitOfWorkBehaviorTests
         RequestHandlerDelegate<Result> next = () =>
         {
             nextCalled = true;
-            return Task.FromResult(Result.Success());
+            return Task.FromResult(Result.Ok());
         };
 
         // When: Nested command is executed (active transaction already exists)
@@ -79,7 +80,7 @@ public class UnitOfWorkBehaviorTests
         var behavior = new UnitOfWorkBehavior<TestCommand, Result>(unitOfWorkMock.Object);
         var command = new TestCommand();
 
-        RequestHandlerDelegate<Result> next = () => Task.FromResult(Result.Success());
+        RequestHandlerDelegate<Result> next = () => Task.FromResult(Result.Ok());
 
         // When: Command attempts to execute with failing transaction provider
         var exception = await Record.ExceptionAsync(async () =>

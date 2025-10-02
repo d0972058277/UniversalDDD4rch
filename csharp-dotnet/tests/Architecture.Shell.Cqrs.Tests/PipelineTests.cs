@@ -29,7 +29,7 @@ public class PipelineTests
         var handler = new Mock<ICommandHandler<TestCommand>>();
         handler
             .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success())
+            .ReturnsAsync(Result.Ok())
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
@@ -66,7 +66,7 @@ public class PipelineTests
         var handler = new Mock<ICommandHandler<TestCommand>>();
         handler
             .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success())
+            .ReturnsAsync(Result.Ok())
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
@@ -116,7 +116,7 @@ public class PipelineTests
 
         var handler = new Mock<ICommandHandler<TestCommand>>();
         handler.Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Ok());
 
         serviceProvider
             .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
