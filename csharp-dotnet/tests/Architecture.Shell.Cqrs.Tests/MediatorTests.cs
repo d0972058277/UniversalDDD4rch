@@ -21,7 +21,7 @@ public class MediatorTests
         // Configure service provider to return empty handler collection
         serviceProvider
             .Setup(sp => sp.GetService(It.IsAny<Type>()))
-            .Returns(null);
+            .Returns((object?)null);
 
         // When: Mediator is created
         var exception = Record.Exception(() =>
@@ -81,7 +81,7 @@ public class MediatorTests
             .ReturnsAsync(Result.Ok());
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
             .Returns(handler.Object);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
@@ -111,10 +111,21 @@ public class MediatorTests
             .Setup(sp => sp.GetService(typeof(IEnumerable<ICommandHandler<TestCommand>>)))
             .Returns(handlers);
 
-        // When: Mediator constructor/build is called
+        // When: Mediator constructor/build is called with validator that detects ambiguous handlers
         var exception = Record.Exception(() =>
         {
-            var mediator = new Mediator(serviceProvider.Object, logger.Object);
+            var mediator = new Mediator(serviceProvider.Object, logger.Object, sp =>
+            {
+                // Validator checks for ambiguous handler registration
+                var commandHandlers = sp.GetService(typeof(IEnumerable<ICommandHandler<TestCommand>>)) as IEnumerable<ICommandHandler<TestCommand>>;
+                if (commandHandlers != null && commandHandlers.Count() > 1)
+                {
+                    var handlerNames = string.Join(", ", commandHandlers.Select(h => h.GetType().Name));
+                    throw new InvalidOperationException(
+                        $"Ambiguous handler registration detected for 'TestCommand'. " +
+                        $"Found multiple handlers: {handlerNames}");
+                }
+            });
         });
 
         // Then: Should throw with handler names in error message

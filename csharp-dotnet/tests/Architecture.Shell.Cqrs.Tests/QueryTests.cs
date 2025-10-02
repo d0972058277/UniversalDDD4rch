@@ -19,14 +19,14 @@ public class QueryTests
         var handler = new TestQueryHandler();
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IQueryHandler<TestQuery, TestDto>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestQuery, TestDto>)))
             .Returns(handler);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
         var query = new TestQuery { Id = 123 };
 
         // When: Query is executed through mediator
-        var result = await mediator.SendAsync(query, CancellationToken.None);
+        var result = await mediator.SendAsync<TestDto>(query, CancellationToken.None);
 
         // Then: Result should match expected return type
         result.Should().NotBeNull();

@@ -1,3 +1,5 @@
+using Architecture.Core.Functional;
+
 namespace Architecture.Shell.Cqrs;
 
 /// <summary>
@@ -27,5 +29,17 @@ public interface IMediator
     /// <exception cref="OperationCanceledException">When cancellation is requested.</exception>
     Task<TResponse> SendAsync<TResponse>(
         IBaseRequest request,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Sends a void command that returns Result for business error handling.
+    /// </summary>
+    /// <param name="command">The command to send.</param>
+    /// <param name="cancellationToken">Cancellation token for early termination.</param>
+    /// <returns>Result indicating success or business failure.</returns>
+    /// <exception cref="InvalidOperationException">When zero or multiple handlers registered for command type.</exception>
+    /// <exception cref="OperationCanceledException">When cancellation is requested.</exception>
+    Task<Result> SendAsync(
+        ICommand command,
         CancellationToken cancellationToken);
 }

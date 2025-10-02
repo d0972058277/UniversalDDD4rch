@@ -33,7 +33,7 @@ public class PipelineTests
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
             .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
@@ -70,7 +70,7 @@ public class PipelineTests
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
             .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
@@ -96,6 +96,11 @@ public class PipelineTests
         var loggerMock = new Mock<ILogger<IMediator>>();
         var loggedWarnings = new List<string>();
 
+        // Enable warning logging
+        loggerMock
+            .Setup(l => l.IsEnabled(LogLevel.Warning))
+            .Returns(true);
+
         // Capture warning logs
         loggerMock
             .Setup(l => l.Log(
@@ -106,20 +111,22 @@ public class PipelineTests
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
             .Callback((LogLevel level, EventId eventId, object state, Exception exception, Delegate formatter) =>
             {
-                loggedWarnings.Add(state.ToString()!);
+                var message = state?.ToString() ?? string.Empty;
+                loggedWarnings.Add(message);
             });
 
-        // Non-recommended order: Authorization (order 10) before Validation (order 5)
-        var authBehavior = new TrackingBehavior<TestCommand, Result>("Authorization", new List<string>(), order: 5);
-        var validationBehavior = new TrackingBehavior<TestCommand, Result>("Validation", new List<string>(), order: 10);
-        var behaviors = new IPipelineBehavior<TestCommand, Result>[] { authBehavior, validationBehavior };
+        // Non-recommended order: UnitOfWork (order 5) before Validation (order 10)
+        // This should trigger a warning because transaction opens before validation
+        var unitOfWorkBehavior = new UnitOfWorkTestBehavior<TestCommand, Result>(order: 5);
+        var validationBehavior = new ValidationTestBehavior<TestCommand, Result>(order: 10);
+        var behaviors = new IPipelineBehavior<TestCommand, Result>[] { unitOfWorkBehavior, validationBehavior };
 
         var handler = new Mock<ICommandHandler<TestCommand>>();
         handler.Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok());
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(ICommandHandler<TestCommand>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
             .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
@@ -162,5 +169,48 @@ public class TrackingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest,
         var response = await next();
         _executionLog.Add($"{_name}-After");
         return response;
+    }
+}
+
+// Test behaviors with type names matching warning detection logic
+public class UnitOfWorkTestBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IBaseRequest
+{
+    private readonly int _order;
+
+    public UnitOfWorkTestBehavior(int order)
+    {
+        _order = order;
+    }
+
+    public int Order => _order;
+
+    public async Task<TResponse> HandleAsync(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        return await next();
+    }
+}
+
+public class ValidationTestBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IBaseRequest
+{
+    private readonly int _order;
+
+    public ValidationTestBehavior(int order)
+    {
+        _order = order;
+    }
+
+    public int Order => _order;
+
+    public async Task<TResponse> HandleAsync(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        return await next();
     }
 }

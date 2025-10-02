@@ -19,7 +19,7 @@ public class CancellationTests
         var handler = new CancellableCommandHandler();
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(ICommandHandler<LongRunningCommand>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<LongRunningCommand, Result>)))
             .Returns(handler);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
@@ -30,11 +30,11 @@ public class CancellationTests
         var task = mediator.SendAsync(command, cts.Token);
         cts.CancelAfter(TimeSpan.FromMilliseconds(100)); // Cancel after 100ms
 
-        // Then: Handler should throw OperationCanceledException
+        // Then: Handler should throw OperationCanceledException (or TaskCanceledException)
         var exception = await Record.ExceptionAsync(async () => await task);
 
         exception.Should().NotBeNull();
-        exception.Should().BeOfType<OperationCanceledException>();
+        exception.Should().BeAssignableTo<OperationCanceledException>();
         handler.WasCancelled.Should().BeTrue();
     }
 }

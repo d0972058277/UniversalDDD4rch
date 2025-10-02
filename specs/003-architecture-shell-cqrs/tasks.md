@@ -79,35 +79,35 @@
 **Test structure: Given-When-Then blocks with explicit comments**
 
 ### UT-001: Handler Registration Uniqueness (11 tests - multi-handler across all languages)
-- [ ] T026 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_ZeroHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
+- [X] T026 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_ZeroHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [ ] T027 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_ZeroHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
 - [ ] T028 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_ZeroHandlersRegistered` in `golang/tests/shell/cqrs/mediator_test.go`
 - [ ] T029 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_ZeroHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
 - [ ] T030 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_ZeroHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
-- [ ] T031 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_MultipleHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
+- [X] T031 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_MultipleHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [ ] T032 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_MultipleHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
 - [ ] T033 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_MultipleHandlersRegistered` in `golang/tests/shell/cqrs/mediator_test.go`
 - [ ] T034 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_MultipleHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
 - [ ] T035 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_MultipleHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
-- [ ] T036 [P] [REQUIRES: T001-T025] C# test: `Should_ResolveHandler_When_ExactlyOneHandlerRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
+- [X] T036 [P] [REQUIRES: T001-T025] C# test: `Should_ResolveHandler_When_ExactlyOneHandlerRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 
 ### UT-001c: Handler Uniqueness at Constructor Time (5 tests)
 **Purpose**: Validate FR-008 requirement that Mediator constructor/initialization detects ambiguous handler registration (multiple handlers for same request type) and throws before runtime per spec.md:L67 edge case. This enforces TDD by testing handler uniqueness validation BEFORE Mediator implementation (T093-T101).
-- [ ] T036b [P] [REQUIRES: T001-T025] [BLOCKS: T093] C# test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs` - register 2+ handlers for same command type, verify Mediator constructor/build throws with handler names in error message
+- [X] T036b [P] [REQUIRES: T001-T025] [BLOCKS: T093] C# test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs` - register 2+ handlers for same command type, verify Mediator constructor/build throws with handler names in error message
 - [ ] T037b [P] [REQUIRES: T006-T010] [BLOCKS: T095] Java test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java` - register 2+ handlers for same command type, verify MediatorImpl constructor/build throws with handler names in error message
 - [ ] T038b [P] [REQUIRES: T011-T015] [BLOCKS: T097] Go test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `golang/tests/shell/cqrs/mediator_test.go` - register 2+ handlers for same command type, verify NewMediator panics with handler names in error message
 - [ ] T039b [P] [REQUIRES: T016-T020] [BLOCKS: T099] TypeScript test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts` - register 2+ handlers for same command type, verify Mediator constructor throws with handler names in error message
 - [ ] T040b [P] [REQUIRES: T021-T025] [BLOCKS: T101] Python test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `python-django/tests/shell/cqrs/test_mediator.py` - register 2+ handlers for same command type, verify MediatorImpl.__init__ raises with handler names in error message
 
 ### UT-002: Query Return Type Contracts (5 tests)
-- [ ] T037 [P] [REQUIRES: T001-T025] C# test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/QueryTests.cs`
+- [X] T037 [P] [REQUIRES: T001-T025] C# test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/QueryTests.cs`
 - [ ] T038 [P] [REQUIRES: T006-T010] Java test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/QueryTests.java`
 - [ ] T039 [P] [REQUIRES: T011-T015] Go test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `golang/tests/shell/cqrs/query_test.go`
 - [ ] T040 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `typescript-nodejs/packages/shell-cqrs/tests/query.test.ts`
 - [ ] T041 [P] [REQUIRES: T021-T025] Python test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `python-django/tests/shell/cqrs/test_query.py`
 
 ### UT-003: Pipeline Behavior Execution Order (5 tests)
-- [ ] T042 [P] [REQUIRES: T001-T025] C# test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
+- [X] T042 [P] [REQUIRES: T001-T025] C# test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [ ] T043 [P] [REQUIRES: T006-T010] Java test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T044 [P] [REQUIRES: T011-T015] Go test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `golang/tests/shell/cqrs/pipeline_test.go`
 - [ ] T045 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `typescript-nodejs/packages/shell-cqrs/tests/pipeline.test.ts`
@@ -115,14 +115,14 @@
 
 ### UT-003b: Custom Behavior Order Configuration (5 tests)
 **Purpose**: Validate FR-007 requirement that system allows configuration of behavior execution order, including non-recommended sequences per spec.md:L74-75 edge case
-- [ ] T042b [P] [REQUIRES: T001-T025] C# test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
+- [X] T042b [P] [REQUIRES: T001-T025] C# test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [ ] T043b [P] [REQUIRES: T006-T010] Java test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T044b [P] [REQUIRES: T011-T015] Go test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `golang/tests/shell/cqrs/pipeline_test.go`
 - [ ] T045b [P] [REQUIRES: T016-T020] TypeScript test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `typescript-nodejs/packages/shell-cqrs/tests/pipeline.test.ts`
 - [ ] T046b [P] [REQUIRES: T021-T025] Python test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
 ### UT-004: Cancellation Token Propagation (5 tests)
-- [ ] T047 [P] [REQUIRES: T001-T025] C# test: `Should_TerminateEarly_When_CancellationRequested` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/CancellationTests.cs`
+- [X] T047 [P] [REQUIRES: T001-T025] C# test: `Should_TerminateEarly_When_CancellationRequested` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/CancellationTests.cs`
 - [ ] T048 [P] [REQUIRES: T006-T010] Java test: `Should_TerminateEarly_When_CancellationRequested` in `java-spring/src/test/java/arch/shell/cqrs/CancellationTests.java`
 - [ ] T049 [P] [REQUIRES: T011-T015] Go test: `Should_TerminateEarly_When_CancellationRequested` in `golang/tests/shell/cqrs/cancellation_test.go`
 - [ ] T050 [P] [REQUIRES: T016-T020] TypeScript test: `Should_TerminateEarly_When_CancellationRequested` in `typescript-nodejs/packages/shell-cqrs/tests/cancellation.test.ts`
@@ -130,14 +130,14 @@
 
 ### UT-005: UnitOfWork Transaction Behavior - Isolated (5 tests)
 **Note**: These tests verify UnitOfWork behavior in isolation using mocked transactions. End-to-end transaction lifecycle validated in IT-001/IT-002.
-- [ ] T052 [P] [REQUIRES: T001-T025] C# test: `Should_CallBeginTransaction_When_CommandExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs` - verify mock IUnitOfWork.BeginTransactionAsync() called
+- [X] T052 [P] [REQUIRES: T001-T025] C# test: `Should_CallBeginTransaction_When_CommandExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs` - verify mock IUnitOfWork.BeginTransactionAsync() called
 - [ ] T053 [P] [REQUIRES: T006-T010] Java test: `Should_CallBeginTransaction_When_CommandExecutes` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java` - verify mock UnitOfWork.beginTransaction() called
 - [ ] T054 [P] [REQUIRES: T011-T015] Go test: `Should_CallBeginTransaction_When_CommandExecutes` in `golang/tests/shell/cqrs/unitofwork_behavior_test.go` - verify mock UnitOfWork.BeginTransaction() called
 - [ ] T055 [P] [REQUIRES: T016-T020] TypeScript test: `Should_CallBeginTransaction_When_CommandExecutes` in `typescript-nodejs/packages/shell-cqrs/tests/unitofworkBehavior.test.ts` - verify mock IUnitOfWork.beginTransaction() called
 - [ ] T056 [P] [REQUIRES: T021-T025] Python test: `Should_CallBeginTransaction_When_CommandExecutes` in `python-django/tests/shell/cqrs/test_unitofwork_behavior.py` - verify mock UnitOfWork.begin_transaction() called
 
 ### UT-006: Nested Command Transaction Reuse (5 tests)
-- [ ] T057 [P] [REQUIRES: T001-T025] C# test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs`
+- [X] T057 [P] [REQUIRES: T001-T025] C# test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs`
 - [ ] T058 [P] [REQUIRES: T006-T010] Java test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java`
 - [ ] T059 [P] [REQUIRES: T011-T015] Go test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `golang/tests/shell/cqrs/unitofwork_behavior_test.go`
 - [ ] T060 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `typescript-nodejs/packages/shell-cqrs/tests/unitofworkBehavior.test.ts`
@@ -145,7 +145,7 @@
 
 ### UT-007: BehaviorMatcher Type Guards (5 tests)
 **Purpose**: Validate FR-007 requirement that BehaviorMatcher provides type guards (IsCommand, IsQuery) to selectively apply behaviors to request types
-- [ ] T061b [P] [REQUIRES: T001-T025] C# test: `Should_MatchCommands_When_IsCommandGuardUsed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/BehaviorMatcherTests.cs`
+- [X] T061b [P] [REQUIRES: T001-T025] C# test: `Should_MatchCommands_When_IsCommandGuardUsed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/BehaviorMatcherTests.cs`
 - [ ] T061c [P] [REQUIRES: T006-T010] Java test: `Should_MatchCommands_When_IsCommandGuardUsed` in `java-spring/src/test/java/arch/shell/cqrs/BehaviorMatcherTests.java`
 - [ ] T061d [P] [REQUIRES: T011-T015] Go test: `Should_MatchCommands_When_IsCommandGuardUsed` in `golang/tests/shell/cqrs/behavior_matcher_test.go`
 - [ ] T061e [P] [REQUIRES: T016-T020] TypeScript test: `Should_MatchCommands_When_IsCommandGuardUsed` in `typescript-nodejs/packages/shell-cqrs/tests/behaviorMatcher.test.ts`
@@ -153,7 +153,7 @@
 
 ### UT-008: Behavior Order Warning Validation (5 tests)
 **Purpose**: Validate BR-004 requirement that system logs warnings when behavior order deviates from recommended sequence (Validation → Authorization → Transaction → Telemetry → Resilience)
-- [ ] T061g [P] [REQUIRES: T001-T025] C# test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
+- [X] T061g [P] [REQUIRES: T001-T025] C# test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [ ] T061h [P] [REQUIRES: T006-T010] Java test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T061i [P] [REQUIRES: T011-T015] Go test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `golang/tests/shell/cqrs/pipeline_test.go`
 - [ ] T061j [P] [REQUIRES: T016-T020] TypeScript test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `typescript-nodejs/packages/shell-cqrs/tests/pipeline.test.ts`

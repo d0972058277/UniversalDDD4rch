@@ -1,3 +1,4 @@
+using Architecture.Core.Functional;
 using Microsoft.Extensions.Logging;
 
 namespace Architecture.Shell.Cqrs;
@@ -10,26 +11,33 @@ public sealed class Mediator : IMediator
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<IMediator> _logger;
+    private readonly Action<IServiceProvider>? _handlerValidator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Mediator"/> class.
     /// </summary>
     /// <param name="serviceProvider">Service provider for resolving handlers and behaviors.</param>
     /// <param name="logger">Logger for diagnostic information.</param>
+    /// <param name="handlerValidator">Optional handler validation logic (typically provided by DI registration).</param>
     /// <exception cref="InvalidOperationException">
     /// When handler registration validation fails (zero or multiple handlers for same request type).
     /// Per FR-008 and spec.md:L64-67 edge cases, this validation occurs at constructor time.
     /// </exception>
-    public Mediator(IServiceProvider serviceProvider, ILogger<IMediator> logger)
+    public Mediator(
+        IServiceProvider serviceProvider,
+        ILogger<IMediator> logger,
+        Action<IServiceProvider>? handlerValidator = null)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _handlerValidator = handlerValidator;
 
-        // TODO: Implement constructor-time handler uniqueness validation per T036b
-        // This will be implemented when DI registration is added
+        // Execute constructor-time handler uniqueness validation per T036b
+        // The validator is provided by DI registration (T182) which has knowledge of all registered types
+        _handlerValidator?.Invoke(_serviceProvider);
     }
 
     /// <inheritdoc />
@@ -50,6 +58,29 @@ public sealed class Mediator : IMediator
 
         // Build behavior chain in configured order
         var pipeline = BuildPipeline<TResponse>(request, handler, behaviors, cancellationToken);
+
+        // Execute pipeline
+        return await pipeline().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<Result> SendAsync(
+        ICommand command,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        var requestType = command.GetType();
+        var responseType = typeof(Result);
+
+        // Resolve handler for command type
+        var handler = ResolveHandler(requestType, responseType);
+
+        // Resolve applicable pipeline behaviors
+        var behaviors = ResolveBehaviors(requestType, responseType);
+
+        // Build behavior chain in configured order
+        var pipeline = BuildPipeline<Result>(command, handler, behaviors, cancellationToken);
 
         // Execute pipeline
         return await pipeline().ConfigureAwait(false);
