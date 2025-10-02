@@ -37,11 +37,11 @@
 ## Phase 3.1: Setup (5 tasks per language = 25 total)
 
 ### C# .NET 8 Setup
-- [ ] T001 [P] Create project structure: `csharp-dotnet/src/Architecture.Shell.Cqrs/` and `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/`
-- [ ] T002 [P] Initialize .NET project: `dotnet new classlib` with .NET 8 target framework
-- [ ] T003 [P] Add dependencies: Microsoft.Extensions.DependencyInjection.Abstractions, Microsoft.Extensions.Logging
-- [ ] T004 [P] Configure EditorConfig and StyleCop analyzers
-- [ ] T005 [P] Create solution file and add projects: `dotnet new sln -n Architecture.Shell.Cqrs`
+- [X] T001 [P] Create project structure: `csharp-dotnet/src/Architecture.Shell.Cqrs/` and `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/`
+- [X] T002 [P] Initialize .NET project: `dotnet new classlib` with .NET 8 target framework
+- [X] T003 [P] Add dependencies: Microsoft.Extensions.DependencyInjection.Abstractions, Microsoft.Extensions.Logging
+- [X] T004 [P] Configure EditorConfig and StyleCop analyzers
+- [X] T005 [P] Create solution file and add projects: `dotnet new sln -n Architecture.Shell.Cqrs`
 
 ### Java Spring Setup
 - [ ] T006 [P] Create project structure: `java-spring/src/main/java/arch/shell/cqrs/` and `java-spring/src/test/java/arch/shell/cqrs/`
