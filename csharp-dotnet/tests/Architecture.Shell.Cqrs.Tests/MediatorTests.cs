@@ -46,19 +46,19 @@ public class MediatorTests
         var logger = new Mock<Microsoft.Extensions.Logging.ILogger<IMediator>>();
 
         // Configure to return multiple handlers (ambiguous)
-        var handler1 = new Mock<ICommandHandler<TestCommand>>();
-        var handler2 = new Mock<ICommandHandler<TestCommand>>();
+        var handler1 = new Mock<ICommandHandler<MediatorTestCommand>>();
+        var handler2 = new Mock<ICommandHandler<MediatorTestCommand>>();
         var handlers = new object[] { handler1.Object, handler2.Object };
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IEnumerable<ICommandHandler<TestCommand>>)))
+            .Setup(sp => sp.GetService(typeof(IEnumerable<ICommandHandler<MediatorTestCommand>>)))
             .Returns(handlers);
 
         // When: Attempting to create mediator or send command
         var exception = Record.Exception(() =>
         {
             var mediator = new Mediator(serviceProvider.Object, logger.Object);
-            var command = new TestCommand();
+            var command = new MediatorTestCommand();
             var task = mediator.SendAsync(command, CancellationToken.None);
             task.Wait();
         });
@@ -74,18 +74,18 @@ public class MediatorTests
         // Given: Exactly one handler registered for command type
         var serviceProvider = new Mock<IServiceProvider>();
         var logger = new Mock<Microsoft.Extensions.Logging.ILogger<IMediator>>();
-        var handler = new Mock<ICommandHandler<TestCommand>>();
+        var handler = new Mock<ICommandHandler<MediatorTestCommand>>();
 
         handler
-            .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(h => h.HandleAsync(It.IsAny<MediatorTestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok());
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<MediatorTestCommand, Result>)))
             .Returns(handler.Object);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
 
         // When: Command is sent through mediator
         var result = await mediator.SendAsync(command, CancellationToken.None);
@@ -105,10 +105,10 @@ public class MediatorTests
 
         var handler1 = new TestCommandHandler1();
         var handler2 = new TestCommandHandler2();
-        var handlers = new ICommandHandler<TestCommand>[] { handler1, handler2 };
+        var handlers = new ICommandHandler<MediatorTestCommand>[] { handler1, handler2 };
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IEnumerable<ICommandHandler<TestCommand>>)))
+            .Setup(sp => sp.GetService(typeof(IEnumerable<ICommandHandler<MediatorTestCommand>>)))
             .Returns(handlers);
 
         // When: Mediator constructor/build is called with validator that detects ambiguous handlers
@@ -117,7 +117,7 @@ public class MediatorTests
             var mediator = new Mediator(serviceProvider.Object, logger.Object, sp =>
             {
                 // Validator checks for ambiguous handler registration
-                var commandHandlers = sp.GetService(typeof(IEnumerable<ICommandHandler<TestCommand>>)) as IEnumerable<ICommandHandler<TestCommand>>;
+                var commandHandlers = sp.GetService(typeof(IEnumerable<ICommandHandler<MediatorTestCommand>>)) as IEnumerable<ICommandHandler<MediatorTestCommand>>;
                 if (commandHandlers != null && commandHandlers.Count() > 1)
                 {
                     var handlerNames = string.Join(", ", commandHandlers.Select(h => h.GetType().Name));
@@ -137,20 +137,20 @@ public class MediatorTests
 }
 
 // Test domain types
-public record TestCommand : ICommand;
+public record MediatorTestCommand : ICommand;
 public record TestCommandWithNoHandler : ICommand;
 
-public class TestCommandHandler1 : ICommandHandler<TestCommand>
+public class TestCommandHandler1 : ICommandHandler<MediatorTestCommand>
 {
-    public Task<Result> HandleAsync(TestCommand request, CancellationToken cancellationToken)
+    public Task<Result> HandleAsync(MediatorTestCommand request, CancellationToken cancellationToken)
     {
         return Task.FromResult(Result.Ok());
     }
 }
 
-public class TestCommandHandler2 : ICommandHandler<TestCommand>
+public class TestCommandHandler2 : ICommandHandler<MediatorTestCommand>
 {
-    public Task<Result> HandleAsync(TestCommand request, CancellationToken cancellationToken)
+    public Task<Result> HandleAsync(MediatorTestCommand request, CancellationToken cancellationToken)
     {
         return Task.FromResult(Result.Ok());
     }

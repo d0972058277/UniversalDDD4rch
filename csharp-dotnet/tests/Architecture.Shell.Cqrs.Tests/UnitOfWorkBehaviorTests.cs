@@ -22,8 +22,8 @@ public class UnitOfWorkBehaviorTests
         unitOfWorkMock.Setup(uow => uow.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var behavior = new UnitOfWorkBehavior<TestCommand, Result>(unitOfWorkMock.Object);
-        var command = new TestCommand();
+        var behavior = new UnitOfWorkBehavior<MediatorTestCommand, Result>(unitOfWorkMock.Object);
+        var command = new MediatorTestCommand();
         var nextCalled = false;
 
         RequestHandlerDelegate<Result> next = () =>
@@ -48,8 +48,8 @@ public class UnitOfWorkBehaviorTests
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         unitOfWorkMock.Setup(uow => uow.HasActiveTransaction).Returns(true);
 
-        var behavior = new UnitOfWorkBehavior<TestCommand, Result>(unitOfWorkMock.Object);
-        var command = new TestCommand();
+        var behavior = new UnitOfWorkBehavior<MediatorTestCommand, Result>(unitOfWorkMock.Object);
+        var command = new MediatorTestCommand();
         var nextCalled = false;
 
         RequestHandlerDelegate<Result> next = () =>
@@ -77,8 +77,8 @@ public class UnitOfWorkBehaviorTests
             .Setup(uow => uow.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Connection pool exhausted"));
 
-        var behavior = new UnitOfWorkBehavior<TestCommand, Result>(unitOfWorkMock.Object);
-        var command = new TestCommand();
+        var behavior = new UnitOfWorkBehavior<MediatorTestCommand, Result>(unitOfWorkMock.Object);
+        var command = new MediatorTestCommand();
 
         RequestHandlerDelegate<Result> next = () => Task.FromResult(Result.Ok());
 

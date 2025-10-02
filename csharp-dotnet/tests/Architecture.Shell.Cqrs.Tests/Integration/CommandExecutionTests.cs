@@ -25,19 +25,20 @@ public sealed class CommandExecutionTests
     {
         // Given: Mediator with UnitOfWork behavior
         var unitOfWork = new InMemoryUnitOfWork();
-        var handlers = new IRequestHandler[]
-        {
-            new TestCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new TestCommandHandler();
+        var behavior = new UnitOfWorkBehavior<TestCommand, Result<string>>(unitOfWork);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<TestCommand, Result<string>>(handler)
+            .AddBehavior<TestCommand, Result<string>>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new TestCommand("test data");
 
         // When: Command is executed successfully
-        var result = await mediator.SendAsync(command, CancellationToken.None);
+        var result = await mediator.SendAsync<Result<string>>(command, CancellationToken.None);
 
         // Then: Transaction is committed
         Assert.True(result.IsSuccess);
@@ -55,21 +56,22 @@ public sealed class CommandExecutionTests
     {
         // Given: Mediator with UnitOfWork behavior and handler that throws
         var unitOfWork = new InMemoryUnitOfWork();
-        var handlers = new IRequestHandler[]
-        {
-            new FailingCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new FailingCommandHandler();
+        var behavior = new UnitOfWorkBehavior<FailingCommand, Result<string>>(unitOfWork);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<FailingCommand, Result<string>>(handler)
+            .AddBehavior<FailingCommand, Result<string>>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new FailingCommand(ShouldThrow: true);
 
         // When: Command throws exception
         // Then: Transaction is rolled back
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => mediator.SendAsync(command, CancellationToken.None));
+            () => mediator.SendAsync<Result<string>>(command, CancellationToken.None));
 
         Assert.True(unitOfWork.IsRolledBack);
         Assert.False(unitOfWork.IsCommitted);
@@ -85,25 +87,34 @@ public sealed class CommandExecutionTests
     {
         // Given: Mediator with UnitOfWork behavior and nested command handler
         var unitOfWork = new InMemoryUnitOfWork();
-        var mediator = new Mediator(
-            Array.Empty<IRequestHandler>(),
-            Array.Empty<IPipelineBehavior>());
 
-        var handlers = new IRequestHandler[]
-        {
-            new OuterCommandHandler(mediator),
-            new InnerCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediatorWithBehavior = new Mediator(handlers, behaviors);
+        // Create handlers
+        var innerHandler = new InnerCommandHandler();
+
+        // Create two separate mediators for proper dependency injection
+        var innerServiceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<InnerCommand, Result<string>>(innerHandler)
+            .AddBehavior<InnerCommand, Result<string>>(new UnitOfWorkBehavior<InnerCommand, Result<string>>(unitOfWork))
+            .Build();
+
+        var innerLogger = new TestLogger<IMediator>();
+        var innerMediator = new Mediator(innerServiceProvider, innerLogger);
+
+        // Outer handler needs the mediator
+        var outerHandler = new OuterCommandHandler(innerMediator);
+
+        var outerServiceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<OuterCommand, Result<string>>(outerHandler)
+            .AddBehavior<OuterCommand, Result<string>>(new UnitOfWorkBehavior<OuterCommand, Result<string>>(unitOfWork))
+            .Build();
+
+        var outerLogger = new TestLogger<IMediator>();
+        var outerMediator = new Mediator(outerServiceProvider, outerLogger);
 
         var command = new OuterCommand("outer", "inner");
 
         // When: Outer command executes and sends inner command
-        var result = await mediatorWithBehavior.SendAsync(command, CancellationToken.None);
+        var result = await outerMediator.SendAsync<Result<string>>(command, CancellationToken.None);
 
         // Then: Transaction is committed once (shared across both commands)
         Assert.True(result.IsSuccess);
@@ -122,19 +133,20 @@ public sealed class CommandExecutionTests
     {
         // Given: Mediator with UnitOfWork behavior and handler that returns Result.Failure
         var unitOfWork = new InMemoryUnitOfWork();
-        var handlers = new IRequestHandler[]
-        {
-            new FailingCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new FailingCommandHandler();
+        var behavior = new UnitOfWorkBehavior<FailingCommand, Result<string>>(unitOfWork);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<FailingCommand, Result<string>>(handler)
+            .AddBehavior<FailingCommand, Result<string>>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new FailingCommand(ShouldThrow: false);
 
         // When: Handler returns Result.Failure (business error)
-        var result = await mediator.SendAsync(command, CancellationToken.None);
+        var result = await mediator.SendAsync<Result<string>>(command, CancellationToken.None);
 
         // Then: Transaction is committed (business failure is valid state)
         Assert.True(result.IsFailure);
@@ -145,25 +157,26 @@ public sealed class CommandExecutionTests
 
     /// <summary>
     /// IT-008b: Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure.
-    /// Validates BR-007/BR-008 for void commands returning Result&lt;Unit&gt;.Failure.
+    /// Validates BR-007/BR-008 for void commands returning Result.Failure.
     /// </summary>
     [Fact]
     public async Task Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure()
     {
         // Given: Mediator with void command handler that returns failure
         var unitOfWork = new InMemoryUnitOfWork();
-        var handlers = new IRequestHandler[]
-        {
-            new VoidCommandHandlerWithFailure()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new VoidCommandHandlerWithFailure();
+        var behavior = new UnitOfWorkBehavior<VoidTestCommand, Result>(unitOfWork);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<VoidTestCommand, Result>(handler)
+            .AddBehavior<VoidTestCommand, Result>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new VoidTestCommand("test");
 
-        // When: Handler returns Result<Unit>.Failure
+        // When: Handler returns Result.Failure
         var result = await mediator.SendAsync(command, CancellationToken.None);
 
         // Then: Transaction is committed
@@ -181,22 +194,24 @@ public sealed class CommandExecutionTests
     {
         // Given: Mediator with behavior that throws
         var unitOfWork = new InMemoryUnitOfWork();
-        var handlers = new IRequestHandler[]
-        {
-            new TestCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher()),
-            new ThrowingBehavior<IBaseRequest, object>()
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new TestCommandHandler();
+        var unitOfWorkBehavior = new UnitOfWorkBehavior<TestCommand, Result<string>>(unitOfWork, order: 10);
+        var throwingBehavior = new ThrowingBehavior<TestCommand, Result<string>>(order: 20);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<TestCommand, Result<string>>(handler)
+            .AddBehavior<TestCommand, Result<string>>(unitOfWorkBehavior)
+            .AddBehavior<TestCommand, Result<string>>(throwingBehavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new TestCommand("test");
 
         // When: Behavior throws exception
         // Then: Transaction is rolled back
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => mediator.SendAsync(command, CancellationToken.None));
+            () => mediator.SendAsync<Result<string>>(command, CancellationToken.None));
 
         Assert.True(unitOfWork.IsRolledBack);
         Assert.False(unitOfWork.IsCommitted);
@@ -219,7 +234,12 @@ public sealed class CommandExecutionTests
     private sealed class ThrowingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IBaseRequest
     {
-        public int Order => 50;
+        public ThrowingBehavior(int order = 50)
+        {
+            Order = order;
+        }
+
+        public int Order { get; }
 
         public Task<TResponse> HandleAsync(TRequest request, RequestHandlerDelegate<TResponse> continuation, CancellationToken cancellationToken)
         {

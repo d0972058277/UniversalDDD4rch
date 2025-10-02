@@ -60,7 +60,7 @@ public sealed class OuterCommandHandler : ICommandHandler<OuterCommand, Result<s
     public async Task<Result<string>> HandleAsync(OuterCommand request, CancellationToken cancellationToken)
     {
         // Send nested command
-        var innerResult = await _mediator.SendAsync(new InnerCommand(request.InnerData), cancellationToken);
+        var innerResult = await _mediator.SendAsync<Result<string>>(new InnerCommand(request.InnerData), cancellationToken);
 
         if (innerResult.IsFailure)
         {

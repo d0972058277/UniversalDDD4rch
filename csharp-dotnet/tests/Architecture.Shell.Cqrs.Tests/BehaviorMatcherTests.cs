@@ -15,7 +15,7 @@ public class BehaviorMatcherTests
         var commandMatcher = new CommandOnlyMatcher();
         var queryMatcher = new QueryOnlyMatcher();
 
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
         var query = new TestQuery { Id = 1 };
 
         // When: Matcher is evaluated against command and query
@@ -39,7 +39,7 @@ public class BehaviorMatcherTests
         // Given: BehaviorMatcher configured to match all requests
         var allMatcher = new AllRequestsMatcher();
 
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
         var query = new TestQuery { Id = 1 };
 
         // When: Matcher is evaluated

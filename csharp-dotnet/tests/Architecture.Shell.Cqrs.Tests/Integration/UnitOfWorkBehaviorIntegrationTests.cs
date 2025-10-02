@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Architecture.Core.Functional;
 using Architecture.Shell.Cqrs.Behaviors;
 using Architecture.Shell.Cqrs.Tests.TestHelpers;
 using Xunit;
@@ -27,21 +28,22 @@ public sealed class UnitOfWorkBehaviorIntegrationTests
         {
             ShouldFailOnBegin = true
         };
-        var handlers = new IRequestHandler[]
-        {
-            new TestCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new UnitOfWorkBehavior<IBaseRequest, object>(unitOfWork, new CommandOnlyMatcher())
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new TestCommandHandler();
+        var behavior = new UnitOfWorkBehavior<TestCommand, Result<string>>(unitOfWork);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<TestCommand, Result<string>>(handler)
+            .AddBehavior<TestCommand, Result<string>>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new TestCommand("provider failure test");
 
         // When: Transaction provider fails
         // Then: Exception propagates (fail-fast)
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => mediator.SendAsync(command, CancellationToken.None));
+            () => mediator.SendAsync<Result<string>>(command, CancellationToken.None));
 
         Assert.False(unitOfWork.HasActiveTransaction);
         Assert.False(unitOfWork.IsCommitted);

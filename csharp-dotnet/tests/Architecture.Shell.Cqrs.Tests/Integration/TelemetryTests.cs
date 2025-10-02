@@ -1,11 +1,10 @@
 // Copyright (c) 2025 Universal DDD Architecture. All rights reserved.
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Architecture.Core.Functional;
 using Architecture.Shell.Cqrs.Behaviors;
 using Architecture.Shell.Cqrs.Tests.TestHelpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -25,20 +24,21 @@ public sealed class TelemetryTests
     public async Task Should_LogDurationAndStatus_When_RequestProcessed()
     {
         // Given: Mediator with TelemetryBehavior
-        var logger = new NullLogger<TelemetryBehavior<IBaseRequest, object>>();
-        var handlers = new IRequestHandler[]
-        {
-            new TestCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new TelemetryBehavior<IBaseRequest, object>(logger)
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var telemetryLogger = new NullLogger<TelemetryBehavior<TestCommand, Result<string>>>();
+        var handler = new TestCommandHandler();
+        var behavior = new TelemetryBehavior<TestCommand, Result<string>>(telemetryLogger);
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<TestCommand, Result<string>>(handler)
+            .AddBehavior<TestCommand, Result<string>>(behavior)
+            .Build();
+
+        var mediatorLogger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, mediatorLogger);
         var command = new TestCommand("telemetry test");
 
         // When: Command is executed
-        var result = await mediator.SendAsync(command, CancellationToken.None);
+        var result = await mediator.SendAsync<Result<string>>(command, CancellationToken.None);
 
         // Then: Request completes successfully (telemetry logged to NullLogger)
         Assert.True(result.IsSuccess);

@@ -3,7 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Architecture.Shell.Cqrs.Behaviors;
+using Architecture.Core.Functional;
 using Architecture.Shell.Cqrs.Tests.TestHelpers;
 using Xunit;
 
@@ -23,21 +23,22 @@ public sealed class ValidationTests
     public async Task Should_AbortExecution_When_ValidationFails()
     {
         // Given: Mediator with validation behavior that throws
-        var handlers = new IRequestHandler[]
-        {
-            new TestCommandHandler()
-        };
-        var behaviors = new IPipelineBehavior[]
-        {
-            new FailingValidationBehavior<IBaseRequest, object>()
-        };
-        var mediator = new Mediator(handlers, behaviors);
+        var handler = new TestCommandHandler();
+        var behavior = new FailingValidationBehavior<TestCommand, Result<string>>();
+
+        var serviceProvider = TestServiceProvider.CreateBuilder()
+            .AddHandler<TestCommand, Result<string>>(handler)
+            .AddBehavior<TestCommand, Result<string>>(behavior)
+            .Build();
+
+        var logger = new TestLogger<IMediator>();
+        var mediator = new Mediator(serviceProvider, logger);
         var command = new TestCommand("validation test");
 
         // When: Validation fails
         // Then: Pipeline is short-circuited (handler never executes)
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => mediator.SendAsync(command, CancellationToken.None));
+            () => mediator.SendAsync<Result<string>>(command, CancellationToken.None));
     }
 
     /// <summary>

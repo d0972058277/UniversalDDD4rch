@@ -21,26 +21,26 @@ public class PipelineTests
         var serviceProvider = new Mock<IServiceProvider>();
         var logger = new Mock<ILogger<IMediator>>();
 
-        var behavior1 = new TrackingBehavior<TestCommand, Result>("Behavior1", executionLog, order: 10);
-        var behavior2 = new TrackingBehavior<TestCommand, Result>("Behavior2", executionLog, order: 20);
-        var behavior3 = new TrackingBehavior<TestCommand, Result>("Behavior3", executionLog, order: 30);
-        var behaviors = new IPipelineBehavior<TestCommand, Result>[] { behavior3, behavior1, behavior2 };
+        var behavior1 = new TrackingBehavior<MediatorTestCommand, Result>("Behavior1", executionLog, order: 10);
+        var behavior2 = new TrackingBehavior<MediatorTestCommand, Result>("Behavior2", executionLog, order: 20);
+        var behavior3 = new TrackingBehavior<MediatorTestCommand, Result>("Behavior3", executionLog, order: 30);
+        var behaviors = new IPipelineBehavior<MediatorTestCommand, Result>[] { behavior3, behavior1, behavior2 };
 
-        var handler = new Mock<ICommandHandler<TestCommand>>();
+        var handler = new Mock<ICommandHandler<MediatorTestCommand>>();
         handler
-            .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(h => h.HandleAsync(It.IsAny<MediatorTestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok())
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<MediatorTestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<MediatorTestCommand, Result>>)))
             .Returns(behaviors);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
 
         // When: Command is processed through pipeline
         await mediator.SendAsync(command, CancellationToken.None);
@@ -59,25 +59,25 @@ public class PipelineTests
         var logger = new Mock<ILogger<IMediator>>();
 
         // Non-recommended: Transaction (order 10) before Validation (order 20)
-        var transactionBehavior = new TrackingBehavior<TestCommand, Result>("Transaction", executionLog, order: 10);
-        var validationBehavior = new TrackingBehavior<TestCommand, Result>("Validation", executionLog, order: 20);
-        var behaviors = new IPipelineBehavior<TestCommand, Result>[] { transactionBehavior, validationBehavior };
+        var transactionBehavior = new TrackingBehavior<MediatorTestCommand, Result>("Transaction", executionLog, order: 10);
+        var validationBehavior = new TrackingBehavior<MediatorTestCommand, Result>("Validation", executionLog, order: 20);
+        var behaviors = new IPipelineBehavior<MediatorTestCommand, Result>[] { transactionBehavior, validationBehavior };
 
-        var handler = new Mock<ICommandHandler<TestCommand>>();
+        var handler = new Mock<ICommandHandler<MediatorTestCommand>>();
         handler
-            .Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(h => h.HandleAsync(It.IsAny<MediatorTestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok())
             .Callback(() => executionLog.Add("Handler"));
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<MediatorTestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<MediatorTestCommand, Result>>)))
             .Returns(behaviors);
 
         var mediator = new Mediator(serviceProvider.Object, logger.Object);
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
 
         // When: Command is processed
         var result = await mediator.SendAsync(command, CancellationToken.None);
@@ -117,23 +117,23 @@ public class PipelineTests
 
         // Non-recommended order: UnitOfWork (order 5) before Validation (order 10)
         // This should trigger a warning because transaction opens before validation
-        var unitOfWorkBehavior = new UnitOfWorkTestBehavior<TestCommand, Result>(order: 5);
-        var validationBehavior = new ValidationTestBehavior<TestCommand, Result>(order: 10);
-        var behaviors = new IPipelineBehavior<TestCommand, Result>[] { unitOfWorkBehavior, validationBehavior };
+        var unitOfWorkBehavior = new UnitOfWorkTestBehavior<MediatorTestCommand, Result>(order: 5);
+        var validationBehavior = new ValidationTestBehavior<MediatorTestCommand, Result>(order: 10);
+        var behaviors = new IPipelineBehavior<MediatorTestCommand, Result>[] { unitOfWorkBehavior, validationBehavior };
 
-        var handler = new Mock<ICommandHandler<TestCommand>>();
-        handler.Setup(h => h.HandleAsync(It.IsAny<TestCommand>(), It.IsAny<CancellationToken>()))
+        var handler = new Mock<ICommandHandler<MediatorTestCommand>>();
+        handler.Setup(h => h.HandleAsync(It.IsAny<MediatorTestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok());
 
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestCommand, Result>)))
+            .Setup(sp => sp.GetService(typeof(IRequestHandler<MediatorTestCommand, Result>)))
             .Returns(handler.Object);
         serviceProvider
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestCommand, Result>>)))
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<MediatorTestCommand, Result>>)))
             .Returns(behaviors);
 
         var mediator = new Mediator(serviceProvider.Object, loggerMock.Object);
-        var command = new TestCommand();
+        var command = new MediatorTestCommand();
 
         // When: Command is processed with non-recommended order
         await mediator.SendAsync(command, CancellationToken.None);
