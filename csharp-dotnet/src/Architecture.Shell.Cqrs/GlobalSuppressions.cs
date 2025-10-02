@@ -16,3 +16,4 @@ using System.Diagnostics.CodeAnalysis;
 
 // CA1848: LoggerMessage - Standard ILogger extension methods are acceptable for behaviors (low-frequency hot path)
 [assembly: SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Behavior logging is not on critical hot path; standard ILogger extensions provide adequate performance", Scope = "type", Target = "~T:Architecture.Shell.Cqrs.Behaviors.UnitOfWorkBehavior`2")]
+[assembly: SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Behavior logging is not on critical hot path; standard ILogger extensions provide adequate performance", Scope = "type", Target = "~T:Architecture.Shell.Cqrs.Behaviors.TelemetryBehavior`2")]

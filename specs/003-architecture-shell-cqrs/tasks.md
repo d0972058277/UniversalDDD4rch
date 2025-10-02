@@ -167,9 +167,9 @@
 **NOTE: This phase includes UnitOfWork interfaces (T112-T116) which were moved here from original Phase 3.5 to ensure they exist before UnitOfWorkBehavior implementations (T127-T131) in Phase 3.4**
 
 ### BaseRequest and Marker Interfaces (15 tasks - 3 per language)
-- [ ] T062 [P] [REQUIRES: T061] C# IBaseRequest interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IBaseRequest.cs`
-- [ ] T063 [P] [REQUIRES: T061] C# ICommand interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/ICommand.cs`
-- [ ] T064 [P] [REQUIRES: T061] C# IQuery<TResult> interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IQuery.cs`
+- [X] T062 [P] [REQUIRES: T061] C# IBaseRequest interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IBaseRequest.cs`
+- [X] T063 [P] [REQUIRES: T061] C# ICommand interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/ICommand.cs`
+- [X] T064 [P] [REQUIRES: T061] C# IQuery<TResult> interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IQuery.cs`
 - [ ] T065 [P] [REQUIRES: T061] Java BaseRequest interface in `java-spring/src/main/java/arch/shell/cqrs/BaseRequest.java`
 - [ ] T066 [P] [REQUIRES: T061] Java Command interface in `java-spring/src/main/java/arch/shell/cqrs/Command.java`
 - [ ] T067 [P] [REQUIRES: T061] Java Query<TResult> interface in `java-spring/src/main/java/arch/shell/cqrs/Query.java`
@@ -184,9 +184,9 @@
 - [ ] T076 [P] [REQUIRES: T061] Python QueryOf[TResult] class in `python-django/architecture/.../query.py`
 
 ### Handler Interfaces (15 tasks - 3 per language)
-- [ ] T077 [P] [REQUIRES: T061] C# IRequestHandler<TRequest, TResponse> in `csharp-dotnet/src/.../IRequestHandler.cs`
-- [ ] T078 [P] [REQUIRES: T061] C# ICommandHandler<TCommand> in `csharp-dotnet/src/.../ICommandHandler.cs`
-- [ ] T079 [P] [REQUIRES: T061] C# IQueryHandler<TQuery, TResult> in `csharp-dotnet/src/.../IQueryHandler.cs`
+- [X] T077 [P] [REQUIRES: T061] C# IRequestHandler<TRequest, TResponse> in `csharp-dotnet/src/.../IRequestHandler.cs`
+- [X] T078 [P] [REQUIRES: T061] C# ICommandHandler<TCommand> in `csharp-dotnet/src/.../ICommandHandler.cs`
+- [X] T079 [P] [REQUIRES: T061] C# IQueryHandler<TQuery, TResult> in `csharp-dotnet/src/.../IQueryHandler.cs`
 - [ ] T080 [P] [REQUIRES: T061] Java RequestHandler<TRequest, TResponse> in `java-spring/src/main/.../RequestHandler.java`
 - [ ] T081 [P] [REQUIRES: T061] Java CommandHandler<TCommand] in `java-spring/src/main/.../CommandHandler.java`
 - [ ] T082 [P] [REQUIRES: T061] Java QueryHandler<TQuery, TResult> in `java-spring/src/main/.../QueryHandler.java`
@@ -201,8 +201,8 @@
 - [ ] T091 [P] [REQUIRES: T061] Python QueryHandler[TQuery, TResult] in `python-django/architecture/.../query_handler.py`
 
 ### Mediator Interface and Implementation (15 tasks - 3 per language)
-- [ ] T092 [P] C# IMediator interface in `csharp-dotnet/src/.../IMediator.cs`
-- [ ] T093 C# Mediator implementation in `csharp-dotnet/src/.../Mediator.cs` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T036b]
+- [X] T092 [P] C# IMediator interface in `csharp-dotnet/src/.../IMediator.cs`
+- [X] T093 C# Mediator implementation in `csharp-dotnet/src/.../Mediator.cs` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T036b]
 - [ ] T094 [P] Java Mediator interface in `java-spring/src/main/.../Mediator.java`
 - [ ] T095 Java MediatorImpl implementation in `java-spring/src/main/.../MediatorImpl.java` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T037b]
 - [ ] T096 [P] Go Mediator interface in `golang/pkg/.../mediator.go`
@@ -213,8 +213,8 @@
 - [ ] T101 Python MediatorImpl implementation in `python-django/architecture/.../mediator_impl.py` with handler uniqueness validation in __init__ (raises if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T040b]
 
 ### Pipeline Behavior Interface (10 tasks - 2 per language)
-- [ ] T102 [P] C# IPipelineBehavior<TRequest, TResponse> in `csharp-dotnet/src/.../IPipelineBehavior.cs`
-- [ ] T103 [P] C# IBehaviorMatcher interface in `csharp-dotnet/src/.../IBehaviorMatcher.cs`
+- [X] T102 [P] C# IPipelineBehavior<TRequest, TResponse> in `csharp-dotnet/src/.../IPipelineBehavior.cs`
+- [X] T103 [P] C# IBehaviorMatcher interface in `csharp-dotnet/src/.../IBehaviorMatcher.cs`
 - [ ] T104 [P] Java PipelineBehavior<TRequest, TResponse> in `java-spring/src/main/.../PipelineBehavior.java`
 - [ ] T105 [P] Java BehaviorMatcher interface in `java-spring/src/main/.../BehaviorMatcher.java`
 - [ ] T106 [P] Go PipelineBehavior[TRequest, TResponse] in `golang/pkg/.../pipeline_behavior.go`
@@ -226,7 +226,7 @@
 
 ### UnitOfWork Interface (5 tasks) - MOVED HERE from Phase 3.5
 **CRITICAL: These interfaces must exist BEFORE UnitOfWorkBehavior implementations (T122-T126)**
-- [ ] T112 [P] C# IUnitOfWork interface in `csharp-dotnet/src/.../IUnitOfWork.cs`
+- [X] T112 [P] C# IUnitOfWork interface in `csharp-dotnet/src/.../IUnitOfWork.cs`
 - [ ] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
 - [ ] T114 [P] Go UnitOfWork interface in `golang/pkg/.../unit_of_work.go`
 - [ ] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/packages/.../IUnitOfWork.ts`
@@ -238,35 +238,35 @@
 **Cross-Cutting Concerns: Validation, Authorization, UnitOfWork, Telemetry, Caching**
 
 ### Validation Behavior (5 tasks)
-- [ ] T117 [P] C# ValidationBehavior in `csharp-dotnet/src/.../Behaviors/ValidationBehavior.cs` [REQUIRES: T093]
+- [X] T117 [P] C# ValidationBehavior in `csharp-dotnet/src/.../Behaviors/ValidationBehavior.cs` [REQUIRES: T093]
 - [ ] T118 [P] Java ValidationBehavior in `java-spring/src/main/.../behaviors/ValidationBehavior.java` [REQUIRES: T095]
 - [ ] T119 [P] Go validationBehavior in `golang/pkg/.../behaviors/validation_behavior.go` [REQUIRES: T097]
 - [ ] T120 [P] TypeScript ValidationBehavior in `typescript-nodejs/packages/.../behaviors/ValidationBehavior.ts` [REQUIRES: T099]
 - [ ] T121 [P] Python ValidationBehavior in `python-django/architecture/.../behaviors/validation_behavior.py` [REQUIRES: T101]
 
 ### Authorization Behavior (5 tasks)
-- [ ] T122 [P] C# AuthorizationBehavior in `csharp-dotnet/src/.../Behaviors/AuthorizationBehavior.cs` [REQUIRES: T093]
+- [X] T122 [P] C# AuthorizationBehavior in `csharp-dotnet/src/.../Behaviors/AuthorizationBehavior.cs` [REQUIRES: T093]
 - [ ] T123 [P] Java AuthorizationBehavior in `java-spring/src/main/.../behaviors/AuthorizationBehavior.java` [REQUIRES: T095]
 - [ ] T124 [P] Go authorizationBehavior in `golang/pkg/.../behaviors/authorization_behavior.go` [REQUIRES: T097]
 - [ ] T125 [P] TypeScript AuthorizationBehavior in `typescript-nodejs/packages/.../behaviors/AuthorizationBehavior.ts` [REQUIRES: T099]
 - [ ] T126 [P] Python AuthorizationBehavior in `python-django/architecture/.../behaviors/authorization_behavior.py` [REQUIRES: T101]
 
 ### UnitOfWork Behavior (5 tasks)
-- [ ] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
+- [X] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
 - [ ] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
 - [ ] T129 [P] Go unitOfWorkBehavior in `golang/pkg/.../behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
 - [ ] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/packages/.../behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
 - [ ] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture/.../behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
 
 ### Telemetry Behavior (5 tasks)
-- [ ] T132 [P] C# TelemetryBehavior in `csharp-dotnet/src/.../Behaviors/TelemetryBehavior.cs` [REQUIRES: T093]
+- [X] T132 [P] C# TelemetryBehavior in `csharp-dotnet/src/.../Behaviors/TelemetryBehavior.cs` [REQUIRES: T093]
 - [ ] T133 [P] Java TelemetryBehavior in `java-spring/src/main/.../behaviors/TelemetryBehavior.java` [REQUIRES: T095]
 - [ ] T134 [P] Go telemetryBehavior in `golang/pkg/.../behaviors/telemetry_behavior.go` [REQUIRES: T097]
 - [ ] T135 [P] TypeScript TelemetryBehavior in `typescript-nodejs/packages/.../behaviors/TelemetryBehavior.ts` [REQUIRES: T099]
 - [ ] T136 [P] Python TelemetryBehavior in `python-django/architecture/.../behaviors/telemetry_behavior.py` [REQUIRES: T101]
 
 ### Caching Behavior (5 tasks)
-- [ ] T137 [P] C# CachingBehavior in `csharp-dotnet/src/.../Behaviors/CachingBehavior.cs` [REQUIRES: T093]
+- [X] T137 [P] C# CachingBehavior in `csharp-dotnet/src/.../Behaviors/CachingBehavior.cs` [REQUIRES: T093]
 - [ ] T138 [P] Java CachingBehavior in `java-spring/src/main/.../behaviors/CachingBehavior.java` [REQUIRES: T095]
 - [ ] T139 [P] Go cachingBehavior in `golang/pkg/.../behaviors/caching_behavior.go` [REQUIRES: T097]
 - [ ] T140 [P] TypeScript CachingBehavior in `typescript-nodejs/packages/.../behaviors/CachingBehavior.ts` [REQUIRES: T099]
@@ -277,7 +277,7 @@
 ## Phase 3.5: InMemory UnitOfWork for Testing (5 tasks)
 
 ### InMemory UnitOfWork (for testing) (5 tasks)
-- [ ] T142 [P] C# InMemoryUnitOfWork in `csharp-dotnet/tests/.../InMemoryUnitOfWork.cs` [REQUIRES: T112]
+- [X] T142 [P] C# InMemoryUnitOfWork in `csharp-dotnet/tests/.../InMemoryUnitOfWork.cs` [REQUIRES: T112]
 - [ ] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
 - [ ] T144 [P] Go inMemoryUnitOfWork in `golang/tests/.../in_memory_unitofwork.go` [REQUIRES: T114]
 - [ ] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/packages/.../InMemoryUnitOfWork.ts` [REQUIRES: T115]
