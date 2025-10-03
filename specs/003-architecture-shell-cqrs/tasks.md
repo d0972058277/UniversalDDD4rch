@@ -58,11 +58,11 @@
 - [ ] T015 [P] Create go.mod and go.sum
 
 ### TypeScript Setup
-- [ ] T016 [P] Create project structure: `typescript-nodejs/packages/shell-cqrs/src/` and `typescript-nodejs/packages/shell-cqrs/tests/`
-- [ ] T017 [P] Initialize npm project with TypeScript 5.9+ and Node.js 22 LTS
-- [ ] T018 [P] Add dependencies: reflect-metadata, winston, inversify
-- [ ] T019 [P] Configure ESLint, Prettier, and Jest
-- [ ] T020 [P] Create tsconfig.json with strict mode
+- [X] T016 [P] Create project structure: `typescript-nodejs/packages/shell-cqrs/src/` and `typescript-nodejs/packages/shell-cqrs/tests/`
+- [X] T017 [P] Initialize npm project with TypeScript 5.9+ and Node.js 22 LTS
+- [X] T018 [P] Add dependencies: reflect-metadata, winston, inversify
+- [X] T019 [P] Configure ESLint, Prettier, and Jest
+- [X] T020 [P] Create tsconfig.json with strict mode
 
 ### Python Setup
 - [ ] T021 [P] Create project structure: `python-django/architecture/shell/cqrs/` and `python-django/tests/shell/cqrs/`
@@ -82,12 +82,12 @@
 - [X] T026 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_ZeroHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [X] T027 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_ZeroHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
 - [ ] T028 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_ZeroHandlersRegistered` in `golang/tests/shell/cqrs/mediator_test.go`
-- [ ] T029 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_ZeroHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
+- [X] T029 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_ZeroHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
 - [ ] T030 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_ZeroHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
 - [X] T031 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_MultipleHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [X] T032 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_MultipleHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
 - [ ] T033 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_MultipleHandlersRegistered` in `golang/tests/shell/cqrs/mediator_test.go`
-- [ ] T034 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_MultipleHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
+- [X] T034 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_MultipleHandlersRegistered` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts`
 - [ ] T035 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_MultipleHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
 - [X] T036 [P] [REQUIRES: T001-T025] C# test: `Should_ResolveHandler_When_ExactlyOneHandlerRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 
@@ -96,7 +96,7 @@
 - [X] T036b [P] [REQUIRES: T001-T025] [BLOCKS: T093] C# test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs` - register 2+ handlers for same command type, verify Mediator constructor/build throws with handler names in error message
 - [X] T037b [P] [REQUIRES: T006-T010] [BLOCKS: T095] Java test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java` - register 2+ handlers for same command type, verify MediatorImpl constructor/build throws with handler names in error message
 - [ ] T038b [P] [REQUIRES: T011-T015] [BLOCKS: T097] Go test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `golang/tests/shell/cqrs/mediator_test.go` - register 2+ handlers for same command type, verify NewMediator panics with handler names in error message
-- [ ] T039b [P] [REQUIRES: T016-T020] [BLOCKS: T099] TypeScript test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts` - register 2+ handlers for same command type, verify Mediator constructor throws with handler names in error message
+- [X] T039b [P] [REQUIRES: T016-T020] [BLOCKS: T099] TypeScript test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `typescript-nodejs/packages/shell-cqrs/tests/mediator.test.ts` - register 2+ handlers for same command type, verify Mediator constructor throws with handler names in error message
 - [ ] T040b [P] [REQUIRES: T021-T025] [BLOCKS: T101] Python test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `python-django/tests/shell/cqrs/test_mediator.py` - register 2+ handlers for same command type, verify MediatorImpl.__init__ raises with handler names in error message
 
 ### UT-002: Query Return Type Contracts (5 tests)

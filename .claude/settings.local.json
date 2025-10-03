@@ -116,7 +116,10 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet add:*)",
       "Bash(xargs:*)",
-      "Bash(dotnet remove package:*)"
+      "Bash(dotnet remove package:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(tree:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
