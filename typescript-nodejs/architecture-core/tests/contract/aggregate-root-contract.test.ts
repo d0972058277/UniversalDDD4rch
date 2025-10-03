@@ -204,7 +204,7 @@ describe('AggregateRoot Contract Tests', () => {
       const order = new TestOrder(orderId, 'CUST-001');
 
       // When - Simulate what a repository would do
-      // @ts-expect-error - Accessing protected member for testing
+      // @ts-ignore - Accessing protected member for testing
       order.incrementVersion();
 
       // Then
