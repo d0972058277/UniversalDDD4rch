@@ -14,6 +14,7 @@ public class InMemoryUnitOfWork implements UnitOfWork {
     private boolean isActive;
     private boolean wasCommitted;
     private boolean wasRolledBack;
+    private int beginTransactionCount = 0;
 
     @Override
     public UUID getTransactionId() {
@@ -30,6 +31,7 @@ public class InMemoryUnitOfWork implements UnitOfWork {
         if (isActive) {
             throw new IllegalStateException("Transaction already active");
         }
+        this.beginTransactionCount++;
         this.transactionId = UUID.randomUUID();
         this.isActive = true;
         this.wasCommitted = false;
@@ -63,10 +65,15 @@ public class InMemoryUnitOfWork implements UnitOfWork {
         return wasRolledBack;
     }
 
+    public int getBeginTransactionCount() {
+        return beginTransactionCount;
+    }
+
     public void reset() {
         this.transactionId = null;
         this.isActive = false;
         this.wasCommitted = false;
         this.wasRolledBack = false;
+        this.beginTransactionCount = 0;
     }
 }
