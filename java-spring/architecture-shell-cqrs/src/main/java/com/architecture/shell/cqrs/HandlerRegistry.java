@@ -86,7 +86,7 @@ public class HandlerRegistry {
 
                 throw new IllegalStateException(
                     String.format(
-                        "Ambiguous handler registration detected for '%s': [%s]. Constructor-time validation per FR-008.",
+                        "Multiple handlers registered for request type '%s': [%s]. Each request type must have exactly one handler.",
                         entry.getKey().getSimpleName(),
                         handlerNames
                     )
@@ -97,21 +97,37 @@ public class HandlerRegistry {
 
     /**
      * Resolves the request type handled by a given handler.
-     * Uses reflection on handler's implemented interfaces.
+     * Uses reflection on handler's implemented interfaces to extract TRequest generic parameter.
      */
     private Class<?> resolveRequestType(RequestHandler<?, ?> handler) {
-        // In a real implementation, this would use reflection to find TRequest generic parameter
-        // For this implementation, we'll use a simple approach
-        for (Class<?> iface : handler.getClass().getInterfaces()) {
-            if (RequestHandler.class.isAssignableFrom(iface) ||
-                CommandHandler.class.isAssignableFrom(iface) ||
-                QueryHandler.class.isAssignableFrom(iface)) {
-                // Extract generic type parameter (simplified - full reflection needed for production)
-                // This is a placeholder - real implementation would use TypeToken or similar
-                return BaseRequest.class; // Placeholder
+        // Search for RequestHandler/CommandHandler/QueryHandler interface in handler's type hierarchy
+        Class<?> handlerClass = handler.getClass();
+
+        // Try to find the generic interface from the handler's interfaces
+        java.lang.reflect.Type[] genericInterfaces = handlerClass.getGenericInterfaces();
+
+        for (java.lang.reflect.Type genericInterface : genericInterfaces) {
+            if (genericInterface instanceof java.lang.reflect.ParameterizedType paramType) {
+                Class<?> rawType = (Class<?>) paramType.getRawType();
+
+                // Check if this is RequestHandler, CommandHandler, or QueryHandler
+                if (RequestHandler.class.isAssignableFrom(rawType) ||
+                    CommandHandler.class.isAssignableFrom(rawType) ||
+                    QueryHandler.class.isAssignableFrom(rawType)) {
+
+                    // Get the first type argument (TRequest)
+                    java.lang.reflect.Type[] typeArgs = paramType.getActualTypeArguments();
+                    if (typeArgs.length > 0 && typeArgs[0] instanceof Class<?>) {
+                        return (Class<?>) typeArgs[0];
+                    }
+                }
             }
         }
-        throw new IllegalArgumentException("Handler does not implement RequestHandler interface");
+
+        throw new IllegalArgumentException(
+            "Handler " + handlerClass.getSimpleName() +
+            " does not implement RequestHandler/CommandHandler/QueryHandler with concrete type parameters"
+        );
     }
 
     /**

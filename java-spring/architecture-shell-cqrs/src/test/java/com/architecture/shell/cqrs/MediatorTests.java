@@ -15,17 +15,18 @@ class MediatorTests {
     /**
      * T027: UT-001 - Handler Registration Uniqueness
      * Given: No handlers registered for a command type
-     * When: Mediator is constructed with handler registry
+     * When: Mediator attempts to send command with no handler
      * Then: Should throw exception indicating zero handlers registered
      */
     @Test
     void should_ThrowException_When_ZeroHandlersRegistered() {
         // Given: Empty handler registry
         var handlerRegistry = new HandlerRegistry();
+        var mediator = new MediatorImpl(handlerRegistry);
 
-        // When: Attempting to create mediator with zero handlers for TestCommand
-        // Then: Should throw ConfigurationException
-        assertThatThrownBy(() -> new MediatorImpl(handlerRegistry))
+        // When: Attempting to send command with no registered handler
+        // Then: Should throw IllegalStateException at runtime
+        assertThatThrownBy(() -> mediator.send(new TestCommand()))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("No handler registered")
             .hasMessageContaining("TestCommand");
@@ -72,7 +73,7 @@ class MediatorTests {
         // Then: Should throw at construction time (not runtime) with handler names
         assertThatThrownBy(() -> new MediatorImpl(handlerRegistry))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("ambiguous")
+            .hasMessageContaining("Multiple handlers")
             .hasMessageContaining("TestCommandHandler1")
             .hasMessageContaining("TestCommandHandler2");
     }
