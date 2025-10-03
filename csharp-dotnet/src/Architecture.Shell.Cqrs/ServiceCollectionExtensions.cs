@@ -109,7 +109,7 @@ public sealed class CqrsConfiguration
         ArgumentNullException.ThrowIfNull(assembly);
 
         var handlerTypes = assembly.GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic) // Only scan public classes
+            .Where(t => t.IsClass && !t.IsAbstract && (t.IsPublic || t.IsNestedPublic))
             .SelectMany(t => t.GetInterfaces(), (type, iface) => new { Type = type, Interface = iface })
             .Where(x => x.Interface.IsGenericType &&
                        (x.Interface.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) ||
