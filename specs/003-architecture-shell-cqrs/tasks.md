@@ -289,49 +289,49 @@
 **CRITICAL: These tests validate end-to-end behavior**
 
 ### IT-001: Command Execution Lifecycle (5 tests)
-- [ ] T147 [P] C# test: `Should_CommitTransaction_When_CommandSucceeds` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` [REQUIRES: T093, T127, T142]
+- [X] T147 [P] C# test: `Should_CommitTransaction_When_CommandSucceeds` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` [REQUIRES: T093, T127, T142]
 - [ ] T148 [P] Java test: `Should_CommitTransaction_When_CommandSucceeds` in `java-spring/src/test/.../CommandExecutionTests.java` [REQUIRES: T095, T128, T143]
 - [ ] T149 [P] Go test: `Should_CommitTransaction_When_CommandSucceeds` in `golang/tests/.../command_execution_test.go` [REQUIRES: T097, T129, T144]
 - [ ] T150 [P] TypeScript test: `Should_CommitTransaction_When_CommandSucceeds` in `typescript-nodejs/packages/.../commandExecution.test.ts` [REQUIRES: T099, T130, T145]
 - [ ] T151 [P] Python test: `Should_CommitTransaction_When_CommandSucceeds` in `python-django/tests/.../test_command_execution.py` [REQUIRES: T101, T131, T146]
 
 ### IT-002: Command Execution Rollback (5 tests)
-- [ ] T152 [P] C# test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T147]
+- [X] T152 [P] C# test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T147]
 - [ ] T153 [P] Java test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T148]
 - [ ] T154 [P] Go test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T149]
 - [ ] T155 [P] TypeScript test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T150]
 - [ ] T156 [P] Python test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T151]
 
 ### IT-003: Nested Command Transaction Reuse (5 tests)
-- [ ] T157 [P] C# test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T147]
+- [X] T157 [P] C# test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T147]
 - [ ] T158 [P] Java test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T148]
 - [ ] T159 [P] Go test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T149]
 - [ ] T160 [P] TypeScript test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T150]
 - [ ] T161 [P] Python test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T151]
 
 ### IT-004: Query Execution Without Transaction (5 tests)
-- [ ] T162 [P] C# test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T093]
+- [X] T162 [P] C# test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T093]
 - [ ] T163 [P] Java test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T095]
 - [ ] T164 [P] Go test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T097]
 - [ ] T165 [P] TypeScript test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T099]
 - [ ] T166 [P] Python test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T101]
 
 ### IT-005: Query Caching Behavior (5 tests)
-- [ ] T167 [P] C# test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T137]
+- [X] T167 [P] C# test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T137]
 - [ ] T168 [P] Java test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T138]
 - [ ] T169 [P] Go test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T139]
 - [ ] T170 [P] TypeScript test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T140]
 - [ ] T171 [P] Python test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T141]
 
 ### IT-006: Telemetry Logging (5 tests)
-- [ ] T172 [P] C# test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T132]
+- [X] T172 [P] C# test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T132]
 - [ ] T173 [P] Java test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T133]
 - [ ] T174 [P] Go test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T134]
 - [ ] T175 [P] TypeScript test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T135]
 - [ ] T176 [P] Python test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T136]
 
 ### IT-007: Validation Behavior Short-Circuit (5 tests)
-- [ ] T177 [P] C# test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T117]
+- [X] T177 [P] C# test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T117]
 - [ ] T178 [P] Java test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T118]
 - [ ] T179 [P] Go test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T119]
 - [ ] T180 [P] TypeScript test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T120]
@@ -339,7 +339,7 @@
 
 ### IT-008: Transaction Commit on Business Failure (5 tests)
 **Purpose**: Validate BR-008 requirement that Result.Failure() triggers transaction commit (not rollback)
-- [ ] T211 [P] C# test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008 [REQUIRES: T147]
+- [X] T211 [P] C# test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008 [REQUIRES: T147]
 - [ ] T212 [P] Java test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008 [REQUIRES: T148]
 - [ ] T213 [P] Go test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `golang/tests/.../command_execution_test.go` per CONTRACT_TESTS.md IT-008 [REQUIRES: T149]
 - [ ] T214 [P] TypeScript test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `typescript-nodejs/packages/.../commandExecution.test.ts` per CONTRACT_TESTS.md IT-008 [REQUIRES: T150]
@@ -347,7 +347,7 @@
 
 ### IT-008b: Transaction Commit on Business Failure (Void Commands) (5 tests)
 **Purpose**: Validate BR-008 requirement for void commands returning Result<Unit>.Failure() (extends IT-008 coverage)
-- [ ] T211b [P] C# test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008b [REQUIRES: T147]
+- [X] T211b [P] C# test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008b [REQUIRES: T147]
 - [ ] T212b [P] Java test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008b [REQUIRES: T148]
 - [ ] T213b [P] Go test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `golang/tests/.../command_execution_test.go` per CONTRACT_TESTS.md IT-008b [REQUIRES: T149]
 - [ ] T214b [P] TypeScript test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `typescript-nodejs/packages/.../commandExecution.test.ts` per CONTRACT_TESTS.md IT-008b [REQUIRES: T150]
@@ -355,7 +355,7 @@
 
 ### IT-009: Transaction Provider Failure (5 tests)
 **Purpose**: Validate BR-006 requirement that UnitOfWork fails fast when BeginTransactionAsync() throws (connection pool exhaustion, database unavailability)
-- [ ] T216 [P] C# test: `Should_ThrowException_When_TransactionProviderFails` in `csharp-dotnet/tests/.../UnitOfWorkBehaviorTests.cs` per spec.md BR-006 [REQUIRES: T127]
+- [X] T216 [P] C# test: `Should_ThrowException_When_TransactionProviderFails` in `csharp-dotnet/tests/.../UnitOfWorkBehaviorTests.cs` per spec.md BR-006 [REQUIRES: T127]
 - [ ] T217 [P] Java test: `Should_ThrowException_When_TransactionProviderFails` in `java-spring/src/test/.../UnitOfWorkBehaviorTests.java` per spec.md BR-006 [REQUIRES: T128]
 - [ ] T218 [P] Go test: `Should_ThrowException_When_TransactionProviderFails` in `golang/tests/.../unitofwork_behavior_test.go` per spec.md BR-006 [REQUIRES: T129]
 - [ ] T219 [P] TypeScript test: `Should_ThrowException_When_TransactionProviderFails` in `typescript-nodejs/packages/.../unitofworkBehavior.test.ts` per spec.md BR-006 [REQUIRES: T130]
@@ -363,7 +363,7 @@
 
 ### IT-010: Behavior Exception Rollback (5 tests) - NEW
 **Purpose**: Validate spec.md edge case "behavior throws exception" triggers transaction rollback (extends IT-002 beyond handler exceptions)
-- [ ] T221 [P] C# test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per spec.md:L68-69 [REQUIRES: T147]
+- [X] T221 [P] C# test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per spec.md:L68-69 [REQUIRES: T147]
 - [ ] T222 [P] Java test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `java-spring/src/test/.../CommandExecutionTests.java` per spec.md:L68-69 [REQUIRES: T148]
 - [ ] T223 [P] Go test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `golang/tests/.../command_execution_test.go` per spec.md:L68-69 [REQUIRES: T149]
 - [ ] T224 [P] TypeScript test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `typescript-nodejs/packages/.../commandExecution.test.ts` per spec.md:L68-69 [REQUIRES: T150]
@@ -374,7 +374,7 @@
 ## Phase 3.7: DI Registration and Configuration (5 tasks)
 
 ### Dependency Injection Setup (5 tasks)
-- [ ] T182 C# AddCqrs extension method in `csharp-dotnet/src/.../ServiceCollectionExtensions.cs` [REQUIRES: T093-T146]
+- [X] T182 C# AddCqrs extension method in `csharp-dotnet/src/.../ServiceCollectionExtensions.cs` [REQUIRES: T093-T146]
 - [ ] T183 Java CqrsConfiguration class in `java-spring/src/main/.../config/CqrsConfiguration.java` [REQUIRES: T095-T146]
 - [ ] T184 Go WireCqrs function in `golang/pkg/.../wire.go` [REQUIRES: T097-T146]
 - [ ] T185 TypeScript CqrsModule for InversifyJS in `typescript-nodejs/packages/.../CqrsModule.ts` [REQUIRES: T099-T146]
@@ -385,7 +385,7 @@
 ## Phase 3.8: Quickstart Validation (5 tasks)
 
 ### Integration Example Tests (5 tests)
-- [ ] T187 [P] C# quickstart validation test in `csharp-dotnet/tests/.../QuickstartTests.cs` [REQUIRES: T182]
+- [X] T187 [P] C# quickstart validation test in `csharp-dotnet/tests/.../QuickstartTests.cs` [REQUIRES: T182]
 - [ ] T188 [P] Java quickstart validation test in `java-spring/src/test/.../QuickstartTests.java` [REQUIRES: T183]
 - [ ] T189 [P] Go quickstart validation test in `golang/tests/.../quickstart_test.go` [REQUIRES: T184]
 - [ ] T190 [P] TypeScript quickstart validation test in `typescript-nodejs/packages/.../quickstart.test.ts` [REQUIRES: T185]
@@ -396,7 +396,7 @@
 ## Phase 3.9: Polish (14 tasks)
 
 ### Documentation (5 tasks)
-- [ ] T192 [P] C# XML documentation comments for all public interfaces [REQUIRES: T182]
+- [X] T192 [P] C# XML documentation comments for all public interfaces [REQUIRES: T182]
 - [ ] T193 [P] Java Javadoc comments for all public interfaces [REQUIRES: T183]
 - [ ] T194 [P] Go godoc comments for all exported types [REQUIRES: T184]
 - [ ] T195 [P] TypeScript TSDoc comments for all public interfaces [REQUIRES: T185]
@@ -417,7 +417,7 @@
 **Functional Validation** (Blocking - must pass per NFR-002/BR-002):
 - **TransactionId Validation**: Verify telemetry logs for all 1000 command executions include non-null TransactionId field per BR-002 and NFR-002 requirement. Assert `telemetryEntries.All(e => e.TransactionId != null)` for commands (TransactionId NOT required for queries). This is a functional requirement, NOT a performance threshold.
 
-- [ ] T197 [P] C# performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T187]
+- [X] T197 [P] C# performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T187]
 - [ ] T198 [P] Java performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T188]
 - [ ] T199 [P] Go performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T189]
 - [ ] T200 [P] TypeScript performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T190]
@@ -426,7 +426,7 @@
 ### Architecture Compliance Tests (5 tasks) - BLOCKING GATE
 **CRITICAL: These tests MUST pass before final validation per spec.md:L72-73 constitutional requirement**
 
-- [ ] T206 [P] C# architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/ArchitectureTests.cs` using NetArchTest per CONTRACT_TESTS.md AT-001 [REQUIRES: T187, T197]
+- [X] T206 [P] C# architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/ArchitectureTests.cs` using NetArchTest per CONTRACT_TESTS.md AT-001 [REQUIRES: T187, T197]
 - [ ] T207 [P] Java architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/ArchitectureTests.java` using ArchUnit per CONTRACT_TESTS.md AT-001 [REQUIRES: T188, T198]
 - [ ] T208 [P] Go architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `golang/tests/shell/cqrs/architecture_test.go` using go/ast parser per CONTRACT_TESTS.md AT-001 [REQUIRES: T189, T199]
 - [ ] T209 [P] TypeScript architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `typescript-nodejs/packages/shell-cqrs/tests/architecture.test.ts` using TypeScript Compiler API per CONTRACT_TESTS.md AT-001 [REQUIRES: T190, T200]
@@ -437,7 +437,7 @@
 ## Phase 3.11: Final Validation (4 tasks)
 **CONSTITUTIONAL GATE: AT-001 architecture tests (T206-T210) MUST pass before final validation per Constitution Section II and Section III (all tests pass before task completion)**
 
-- [ ] T202 Run all C# tests: `dotnet test` in `csharp-dotnet/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T206]
+- [X] T202 Run all C# tests: `dotnet test` in `csharp-dotnet/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T206]
 - [ ] T203 Run all Java tests: `mvn test` in `java-spring/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T207]
 - [ ] T204 Run all Go tests: `go test ./...` in `golang/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T208]
 - [ ] T205 Run TypeScript+Python tests - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T209, T210]
