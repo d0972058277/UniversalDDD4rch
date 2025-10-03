@@ -151,9 +151,10 @@ ios/ or android/
 csharp-dotnet/src/Architecture.Shell.Cqrs/
 java-spring/src/main/java/arch/shell/cqrs/
 golang/pkg/shell/cqrs/
-typescript-nodejs/packages/shell-cqrs/
+typescript-nodejs/architecture-shell-cqrs/
 python-django/architecture/shell/cqrs/
 ```
+Note: TypeScript uses `architecture-shell-cqrs` directory (not `packages/shell-cqrs`) to align with Node.js package naming conventions and avoid gitignore conflicts with transient `packages/` directories.
 Each language maintains its own test structure following established patterns in Architecture.Core implementations.
 
 ## Phase 0: Outline & Research
