@@ -44,11 +44,11 @@
 - [X] T005 [P] Create solution file and add projects: `dotnet new sln -n Architecture.Shell.Cqrs`
 
 ### Java Spring Setup
-- [ ] T006 [P] Create project structure: `java-spring/src/main/java/arch/shell/cqrs/` and `java-spring/src/test/java/arch/shell/cqrs/`
-- [ ] T007 [P] Initialize Maven project with Java 21 and Spring Boot 3.2+
-- [ ] T008 [P] Add dependencies: JSR-330 (javax.inject), SLF4J, JUnit 5, Mockito
-- [ ] T009 [P] Configure Checkstyle and SpotBugs
-- [ ] T010 [P] Create pom.xml with dependency management
+- [X] T006 [P] Create project structure: `java-spring/src/main/java/arch/shell/cqrs/` and `java-spring/src/test/java/arch/shell/cqrs/`
+- [X] T007 [P] Initialize Maven project with Java 21 and Spring Boot 3.2+
+- [X] T008 [P] Add dependencies: JSR-330 (javax.inject), SLF4J, JUnit 5, Mockito
+- [X] T009 [P] Configure Checkstyle and SpotBugs
+- [X] T010 [P] Create pom.xml with dependency management
 
 ### Go Setup
 - [ ] T011 [P] Create project structure: `golang/pkg/shell/cqrs/` and `golang/tests/shell/cqrs/`
@@ -170,9 +170,9 @@
 - [X] T062 [P] [REQUIRES: T061] C# IBaseRequest interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IBaseRequest.cs`
 - [X] T063 [P] [REQUIRES: T061] C# ICommand interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/ICommand.cs`
 - [X] T064 [P] [REQUIRES: T061] C# IQuery<TResult> interface in `csharp-dotnet/src/Architecture.Shell.Cqrs/IQuery.cs`
-- [ ] T065 [P] [REQUIRES: T061] Java BaseRequest interface in `java-spring/src/main/java/arch/shell/cqrs/BaseRequest.java`
-- [ ] T066 [P] [REQUIRES: T061] Java Command interface in `java-spring/src/main/java/arch/shell/cqrs/Command.java`
-- [ ] T067 [P] [REQUIRES: T061] Java Query<TResult> interface in `java-spring/src/main/java/arch/shell/cqrs/Query.java`
+- [X] T065 [P] [REQUIRES: T061] Java BaseRequest interface in `java-spring/src/main/java/arch/shell/cqrs/BaseRequest.java`
+- [X] T066 [P] [REQUIRES: T061] Java Command interface in `java-spring/src/main/java/arch/shell/cqrs/Command.java`
+- [X] T067 [P] [REQUIRES: T061] Java Query<TResult> interface in `java-spring/src/main/java/arch/shell/cqrs/Query.java`
 - [ ] T068 [P] [REQUIRES: T061] Go BaseRequest interface in `golang/pkg/shell/cqrs/base_request.go`
 - [ ] T069 [P] [REQUIRES: T061] Go Command interface in `golang/pkg/shell/cqrs/command.go`
 - [ ] T070 [P] [REQUIRES: T061] Go QueryOf[TResult] interface in `golang/pkg/.../query.go`
@@ -187,9 +187,9 @@
 - [X] T077 [P] [REQUIRES: T061] C# IRequestHandler<TRequest, TResponse> in `csharp-dotnet/src/.../IRequestHandler.cs`
 - [X] T078 [P] [REQUIRES: T061] C# ICommandHandler<TCommand> in `csharp-dotnet/src/.../ICommandHandler.cs`
 - [X] T079 [P] [REQUIRES: T061] C# IQueryHandler<TQuery, TResult> in `csharp-dotnet/src/.../IQueryHandler.cs`
-- [ ] T080 [P] [REQUIRES: T061] Java RequestHandler<TRequest, TResponse> in `java-spring/src/main/.../RequestHandler.java`
-- [ ] T081 [P] [REQUIRES: T061] Java CommandHandler<TCommand] in `java-spring/src/main/.../CommandHandler.java`
-- [ ] T082 [P] [REQUIRES: T061] Java QueryHandler<TQuery, TResult> in `java-spring/src/main/.../QueryHandler.java`
+- [X] T080 [P] [REQUIRES: T061] Java RequestHandler<TRequest, TResponse> in `java-spring/src/main/.../RequestHandler.java`
+- [X] T081 [P] [REQUIRES: T061] Java CommandHandler<TCommand] in `java-spring/src/main/.../CommandHandler.java`
+- [X] T082 [P] [REQUIRES: T061] Java QueryHandler<TQuery, TResult> in `java-spring/src/main/.../QueryHandler.java`
 - [ ] T083 [P] [REQUIRES: T061] Go RequestHandler[TRequest, TResponse] in `golang/pkg/.../request_handler.go`
 - [ ] T084 [P] [REQUIRES: T061] Go CommandHandler[TCommand] in `golang/pkg/.../command_handler.go`
 - [ ] T085 [P] [REQUIRES: T061] Go QueryHandler[TQuery, TResult] in `golang/pkg/.../query_handler.go`
@@ -203,8 +203,8 @@
 ### Mediator Interface and Implementation (15 tasks - 3 per language)
 - [X] T092 [P] C# IMediator interface in `csharp-dotnet/src/.../IMediator.cs`
 - [X] T093 C# Mediator implementation in `csharp-dotnet/src/.../Mediator.cs` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T036b]
-- [ ] T094 [P] Java Mediator interface in `java-spring/src/main/.../Mediator.java`
-- [ ] T095 Java MediatorImpl implementation in `java-spring/src/main/.../MediatorImpl.java` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T037b]
+- [X] T094 [P] Java Mediator interface in `java-spring/src/main/.../Mediator.java`
+- [X] T095 Java MediatorImpl implementation in `java-spring/src/main/.../MediatorImpl.java` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T037b]
 - [ ] T096 [P] Go Mediator interface in `golang/pkg/.../mediator.go`
 - [ ] T097 Go mediatorImpl implementation in `golang/pkg/.../mediator_impl.go` with handler uniqueness validation in constructor (panics if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T038b]
 - [ ] T098 [P] TypeScript IMediator interface in `typescript-nodejs/packages/.../IMediator.ts`
@@ -215,8 +215,8 @@
 ### Pipeline Behavior Interface (10 tasks - 2 per language)
 - [X] T102 [P] C# IPipelineBehavior<TRequest, TResponse> in `csharp-dotnet/src/.../IPipelineBehavior.cs`
 - [X] T103 [P] C# IBehaviorMatcher interface in `csharp-dotnet/src/.../IBehaviorMatcher.cs`
-- [ ] T104 [P] Java PipelineBehavior<TRequest, TResponse> in `java-spring/src/main/.../PipelineBehavior.java`
-- [ ] T105 [P] Java BehaviorMatcher interface in `java-spring/src/main/.../BehaviorMatcher.java`
+- [X] T104 [P] Java PipelineBehavior<TRequest, TResponse> in `java-spring/src/main/.../PipelineBehavior.java`
+- [X] T105 [P] Java BehaviorMatcher interface in `java-spring/src/main/.../BehaviorMatcher.java`
 - [ ] T106 [P] Go PipelineBehavior[TRequest, TResponse] in `golang/pkg/.../pipeline_behavior.go`
 - [ ] T107 [P] Go BehaviorMatcher interface in `golang/pkg/.../behavior_matcher.go`
 - [ ] T108 [P] TypeScript IPipelineBehavior<TRequest, TResponse> in `typescript-nodejs/packages/.../IPipelineBehavior.ts`
@@ -227,7 +227,7 @@
 ### UnitOfWork Interface (5 tasks) - MOVED HERE from Phase 3.5
 **CRITICAL: These interfaces must exist BEFORE UnitOfWorkBehavior implementations (T122-T126)**
 - [X] T112 [P] C# IUnitOfWork interface in `csharp-dotnet/src/.../IUnitOfWork.cs`
-- [ ] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
+- [X] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
 - [ ] T114 [P] Go UnitOfWork interface in `golang/pkg/.../unit_of_work.go`
 - [ ] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/packages/.../IUnitOfWork.ts`
 - [ ] T116 [P] Python UnitOfWork protocol in `python-django/architecture/.../unit_of_work.py`
@@ -253,7 +253,7 @@
 
 ### UnitOfWork Behavior (5 tasks)
 - [X] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
-- [ ] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
+- [X] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
 - [ ] T129 [P] Go unitOfWorkBehavior in `golang/pkg/.../behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
 - [ ] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/packages/.../behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
 - [ ] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture/.../behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
@@ -278,7 +278,7 @@
 
 ### InMemory UnitOfWork (for testing) (5 tasks)
 - [X] T142 [P] C# InMemoryUnitOfWork in `csharp-dotnet/tests/.../InMemoryUnitOfWork.cs` [REQUIRES: T112]
-- [ ] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
+- [X] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
 - [ ] T144 [P] Go inMemoryUnitOfWork in `golang/tests/.../in_memory_unitofwork.go` [REQUIRES: T114]
 - [ ] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/packages/.../InMemoryUnitOfWork.ts` [REQUIRES: T115]
 - [ ] T146 [P] Python InMemoryUnitOfWork in `python-django/tests/.../in_memory_unitofwork.py` [REQUIRES: T116]

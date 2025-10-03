@@ -39,6 +39,7 @@
     <modules>
         <module>architecture-core</module>
         <module>architecture-core-spring</module>
+        <module>architecture-shell-cqrs</module>
         <module>examples/quickstart</module>
         <module>examples/spring-boot-app</module>
         <module>benchmarks</module>
