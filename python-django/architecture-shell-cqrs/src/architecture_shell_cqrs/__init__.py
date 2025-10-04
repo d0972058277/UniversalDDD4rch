@@ -10,6 +10,7 @@ from architecture_shell_cqrs.mediator import Mediator
 from architecture_shell_cqrs.handlers import ICommandHandler, IQueryHandler
 from architecture_shell_cqrs.behaviors import IPipelineBehavior
 from architecture_shell_cqrs.requests import ICommand, IQuery
+from architecture_shell_cqrs.unit import Unit, UnitType
 
 __version__ = "2.0.0"
 
@@ -20,4 +21,6 @@ __all__ = [
     "IPipelineBehavior",
     "ICommand",
     "IQuery",
+    "Unit",
+    "UnitType",
 ]
