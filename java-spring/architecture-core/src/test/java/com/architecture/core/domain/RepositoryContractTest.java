@@ -105,7 +105,7 @@ class RepositoryContractTest {
             TestEntityId id = new TestEntityId("TEST-001");
 
             // When
-            CompletableFuture<Boolean> future = repository.existsAsync(id, CancellationToken.none());
+            CompletableFuture<Result<Boolean>> future = repository.existsAsync(id, CancellationToken.none());
 
             // Then
             assertThat(future).isNotNull();
@@ -261,11 +261,12 @@ class RepositoryContractTest {
             TestEntityId id = new TestEntityId("TEST-001");
 
             // When
-            Boolean result = repository.existsAsync(id, CancellationToken.none()).join();
+            Result<Boolean> result = repository.existsAsync(id, CancellationToken.none()).join();
 
             // Then
             assertThat(result).isNotNull();
-            assertThat(result).isFalse(); // False because entity doesn't exist
+            assertThat(result.isSuccess()).isTrue();
+            assertThat(result.getValue()).isFalse(); // False because entity doesn't exist
         }
 
         @ParameterizedTest(name = "Operation {0} should handle errors gracefully")
@@ -441,15 +442,15 @@ class RepositoryContractTest {
         }
 
         @Override
-        public CompletableFuture<Boolean> existsAsync(TestEntityId id, CancellationToken cancellationToken) {
+        public CompletableFuture<Result<Boolean>> existsAsync(TestEntityId id, CancellationToken cancellationToken) {
             return CompletableFuture.supplyAsync(() -> {
                 cancellationToken.throwIfCancellationRequested();
                 if (failureMode) {
                     // In failure mode, return false instead of throwing
-                    return false;
+                    return Result.success(false);
                 }
                 // Simulate entity doesn't exist
-                return false;
+                return Result.success(false);
             });
         }
     }

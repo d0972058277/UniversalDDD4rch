@@ -8,7 +8,7 @@ User input:
 
 $ARGUMENTS
 
-1. Run the check-prerequisites script with `--json` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. Use `.specify/scripts/powershell/check-task-prerequisites.ps1` on Windows or `.specify/scripts/bash/check-prerequisites.sh` on macOS/Linux. All paths must be absolute.
+1. Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute.
 2. Load and analyze available design documents:
    - Always read plan.md for tech stack and libraries
    - IF EXISTS: Read data-model.md for entities

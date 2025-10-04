@@ -1,0 +1,92 @@
+
+> @architecture/shell-cqrs@2.0.0 test
+> jest
+
+  console.log
+    
+    === Mediator Performance Benchmark ===
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:100:13)
+
+  console.log
+    Runtime: Node.js v24.2.0
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:101:13)
+
+  console.log
+    Platform: darwin arm64
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:102:13)
+
+  console.log
+    Iterations: 1000
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:103:13)
+
+  console.log
+    p50 (median): 0.00ms
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:104:13)
+
+  console.log
+    p95: 0.00ms
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:105:13)
+
+  console.log
+    p99: 0.00ms
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:106:13)
+
+  console.log
+    Average: 0.00ms
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:107:13)
+
+  console.log
+    =======================================
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:108:13)
+
+  console.log
+    
+    === Pipeline Overhead Comparison ===
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:185:13)
+
+  console.log
+    Without behaviors: 0ms total (0.00ms avg)
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:186:13)
+
+  console.log
+    With behaviors: 0ms total (0.00ms avg)
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:187:13)
+
+  console.log
+    Overhead per request: 0.00ms
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:188:13)
+
+  console.log
+    =====================================
+
+      at Object.<anonymous> (tests/integration/performance.test.ts:189:13)
+
+  console.log
+    
+    === Query Handlers Analyzed ===
+
+      at Object.<anonymous> (tests/integration/architecture.test.ts:210:13)
+
+  console.log
+      (No query handlers found - this is expected for core module without domain examples)
+
+      at Object.<anonymous> (tests/integration/architecture.test.ts:212:15)
+
+  console.log
+    ===============================
+
+      at Object.<anonymous> (tests/integration/architecture.test.ts:216:13)
+

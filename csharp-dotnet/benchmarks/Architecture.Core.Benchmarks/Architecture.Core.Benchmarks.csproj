@@ -8,6 +8,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <IsPackable>false</IsPackable>
+    <!-- Suppress CA1515 for benchmark projects - public types are required by BenchmarkDotNet -->
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

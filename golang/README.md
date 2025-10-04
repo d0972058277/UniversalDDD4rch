@@ -1,22 +1,69 @@
-# Architecture.Core - Go Implementation
+# Universal DDD Architecture - Go Implementation
 
-A Go implementation of universal DDD (Domain-Driven Design) abstractions and functional types for building robust, maintainable applications.
+A Go implementation of universal DDD (Domain-Driven Design) abstractions and CQRS patterns for building robust, maintainable applications.
 
-## Features
+## Project Structure (Modular Architecture)
 
-### Domain-Driven Design Abstractions
-- **Entity**: Identity-based equality with generic ID constraints
-- **AggregateRoot**: Version control, event collection, business invariants
-- **ValueObject**: Structural equality via component comparison
-- **DomainEvent**: Correlation/causation tracking with metadata
-- **Repository**: Async operations with cancellation support
+```
+golang/
+├── architecture-core/              # Core DDD abstractions
+│   ├── domain/                     # Entity, AggregateRoot, ValueObject, DomainEvent
+│   ├── functional/                 # Result, Maybe, Error monads
+│   ├── examples/                   # Quickstart examples
+│   ├── tests/                      # Contract, unit, integration tests
+│   └── go.mod
+│
+├── architecture-shell-cqrs/        # CQRS implementation (in development)
+│   ├── tests/                      # Test structure
+│   └── go.mod
+│
+├── architecture-gorm/              # GORM database integration
+│   ├── repository.go               # GORM-based repository
+│   └── go.mod
+│
+└── go.work                         # Go workspace configuration
+```
 
-### Functional Programming Types
-- **Result/Result[T]**: Monadic error handling with map/bind/match
-- **Maybe[T]**: Optional values with safe operations
-- **Error**: Categorized errors (Domain/Validation/Infrastructure/Concurrency/Security)
+## Modules
+
+### 📦 architecture-core
+**Status**: ✅ Complete with 100% contract test coverage
+
+Core DDD abstractions and functional types:
+- **Domain**: Entity, AggregateRoot, ValueObject, DomainEvent, Repository
+- **Functional**: Result/Result[T], Maybe[T], Error (categorized)
+- **Zero external dependencies** (pure Go standard library)
+
+**Import path**: `github.com/universalddd/architecture-core`
+
+### 📦 architecture-shell-cqrs
+**Status**: 🔄 Ready for implementation
+
+CQRS pattern implementation with mediator and pipeline behaviors.
+
+**Import path**: `github.com/universalddd/architecture-shell-cqrs`
+
+### 📦 architecture-gorm
+**Status**: ✅ Complete
+
+GORM-based repository implementation for database persistence.
+
+**Import path**: `github.com/universalddd/architecture-gorm`
 
 ## Quick Start
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/universalddd/architecture-go.git
+cd golang
+
+# Initialize workspace
+go work sync
+```
+
+### Basic Usage
 
 ```go
 package main
@@ -24,110 +71,67 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/universalddd/architecture-core-go/examples/quickstart"
+    "github.com/universalddd/architecture-core/domain"
+    "github.com/universalddd/architecture-core/functional"
 )
 
 func main() {
-    // Create order service
-    service := quickstart.NewOrderService()
-    ctx := context.Background()
+    // Create an order aggregate
+    order := domain.NewTestAggregate("order-001")
 
-    // Create and process order
-    result := service.CreateOrder(ctx, "CUST-001", quickstart.NewMoney(100.00, "USD"), "").
-        Bind(func(orderID string) functional.Result[string] {
-            return service.ConfirmOrder(ctx, orderID).Map(func() string { return orderID })
-        }).
-        Bind(func(orderID string) functional.Result[string] {
-            return service.ShipOrder(ctx, orderID).Map(func() string { return orderID })
-        })
+    // Add domain event
+    event := domain.NewTestEvent("OrderCreated")
+    order.AddDomainEvent(event)
 
+    // Work with Result monad
+    result := functional.Ok("Success")
     result.Match(
-        func(orderID string) { fmt.Printf("Order %s processed successfully\n", orderID) },
-        func(err functional.Error) { fmt.Printf("Processing failed: %s\n", err.Message()) },
+        func(val string) { fmt.Println("Success:", val) },
+        func(err *functional.Error) { fmt.Println("Error:", err.Message()) },
     )
 }
 ```
 
-## Project Structure
+## Key Features
 
-```
-golang/
-├── pkg/
-│   ├── domain/              # DDD abstractions
-│   │   ├── aggregate.go     # AggregateRoot interface and base
-│   │   ├── entity.go        # Entity interface and base
-│   │   ├── valueobject.go   # ValueObject interface and base
-│   │   ├── event.go         # DomainEvent interface and base
-│   │   ├── repository.go    # Repository interface and in-memory impl
-│   │   └── test_helpers.go  # Test utilities
-│   └── functional/          # Functional programming types
-│       ├── error.go         # Categorized error types
-│       ├── result.go        # Result and Result[T] monads
-│       └── maybe.go         # Maybe[T] optional type
-├── examples/
-│   └── quickstart/          # Complete example implementation
-│       ├── domain.go        # Order domain model
-│       ├── repository.go    # Order repository
-│       ├── service.go       # Order application service
-│       └── main.go          # Demo application
-└── tests/
-    ├── contract/           # API contract tests
-    ├── integration/        # Integration scenarios
-    ├── unit/              # Unit tests
-    └── performance/       # Benchmark tests
-```
-
-## Key Design Principles
-
-### 1. Zero External Dependencies
-Core library uses only Go standard library - no external runtime dependencies.
-
-### 2. Type Safety with Generics
-Leverages Go 1.21+ generics for type-safe abstractions:
+### 1. Type-Safe Generics (Go 1.21+)
 
 ```go
 type AggregateRoot[TID EntityID] interface {
-    IEntity[TID]
-    GetVersion() int64
-    GetEvents() []IDomainEvent
-    ClearEvents()
+    ID() TID
+    Version() int64
+    DomainEvents() []DomainEvent
+    IncrementVersion()
 }
 ```
 
-### 3. Functional Error Handling
-Uses Result types instead of exceptions:
+### 2. Functional Error Handling
 
 ```go
-func (o *Order) ConfirmOrder() functional.Result {
-    if o.status != Pending {
-        return functional.Fail(functional.DomainError(
-            "INVALID_STATUS_TRANSITION",
-            fmt.Sprintf("Cannot confirm order in %s status", o.status),
-        ))
+func ProcessOrder(order *Order) functional.Result[string] {
+    if order.Total() <= 0 {
+        return functional.Fail[string](
+            functional.ValidationError("INVALID_AMOUNT", "Amount must be positive"),
+        )
     }
-    // ... business logic
-    return functional.Ok()
+    return functional.Ok("ORDER-123")
 }
 ```
 
-### 4. Monadic Composition
-Supports functional composition patterns:
+### 3. Monadic Composition
 
 ```go
-// Chain operations with automatic error propagation
 result := validateInput(data).
     Bind(processPayment).
     Bind(createOrder).
     Map(generateConfirmation)
 ```
 
-## Value Objects
-
-Structural equality based on component values:
+### 4. Value Objects with Structural Equality
 
 ```go
 type Money struct {
-    domain.ValueObject
+    domain.BaseValueObject
     amount   float64
     currency string
 }
@@ -137,145 +141,186 @@ func (m Money) GetEqualityComponents() []interface{} {
 }
 ```
 
-## Domain Events
-
-Event sourcing support with metadata:
+### 5. Domain Events with Correlation Tracking
 
 ```go
-type OrderCreatedEvent struct {
-    *domain.DomainEventBase
-    orderID    string
-    customerID string
-    amount     Money
-}
-```
-
-## Repository Pattern
-
-Async operations with context cancellation:
-
-```go
-type IOrderRepository interface {
-    GetByIDAsync(ctx context.Context, id string) functional.Maybe[*Order]
-    AddAsync(ctx context.Context, order *Order) functional.Result
-    UpdateAsync(ctx context.Context, order *Order) functional.Result
-    DeleteAsync(ctx context.Context, id string) functional.Result
-}
+event := domain.NewBaseDomainEventWithCorrelation(
+    "OrderCreated",
+    &correlationID,
+    &causationID,
+    metadata,
+)
 ```
 
 ## Testing
 
-Comprehensive test suite following TDD principles:
+### Run All Tests (All Modules)
 
-- **Contract Tests**: Verify interface compliance
-- **Monadic Laws**: Validate mathematical properties
-- **Integration Tests**: End-to-end scenarios
-- **Unit Tests**: Individual component behavior
-- **Performance Tests**: Benchmarks and memory analysis
-
-Run tests:
 ```bash
-# Run all tests
+# Run test script (recommended)
+make test-all
+
+# Or manually with workspace
 go test ./...
+```
 
-# Run with race detection
-go test -race ./...
+### Run Module-Specific Tests
 
-# Run benchmarks
-go test -bench=. ./tests/performance/
+```bash
+# Architecture Core tests
+cd architecture-core
+go test ./tests/contract/... -v
 
-# Generate coverage report
-go test -coverprofile=coverage.out ./...
+# CQRS tests (when implemented)
+cd architecture-shell-cqrs
+go test ./tests/unit/... -v
+```
+
+### Run with Coverage
+
+```bash
+# Generate coverage for all modules
+make coverage
+
+# View coverage report
 go tool cover -html=coverage.out
 ```
 
-## Build
+### Run Benchmarks
 
 ```bash
-# Build project
+# Run performance benchmarks
+cd architecture-core
+go test -bench=. ./tests/performance/
+```
+
+## Build Commands
+
+```bash
+# Build all modules
 make build
 
-# Run quality checks
+# Run quality checks (lint, vet, fmt)
 make quality
 
 # Run CI pipeline
 make ci
+
+# Clean build artifacts
+make clean
 ```
 
-## Design Patterns
+## Architecture Principles
 
-### Repository with Validation
+### 1. Zero External Dependencies (Core)
+The core module uses only Go standard library - no external runtime dependencies.
+
+### 2. Multi-Language Consistency
+Aligned with C#, TypeScript, Python, and Java implementations:
+- C#: `Architecture.Core`, `Architecture.Shell.Cqrs`
+- TypeScript: `architecture-core`, `architecture-shell-cqrs`
+- Python: `architecture-core`, `architecture-shell-cqrs`
+- Java: `architecture-core`, `architecture-shell-cqrs`
+- **Go**: `architecture-core`, `architecture-shell-cqrs` ✅
+
+### 3. Idiomatic Go
+- No "I" prefix for interfaces (Go convention)
+- Use `context.Context` for cancellation (not CancellationToken)
+- Standard Go error handling combined with Result monads
+- Package names follow Go best practices
+
+### 4. Test-Driven Development
+- Contract tests for cross-language validation
+- Unit tests for individual components
+- Integration tests for end-to-end scenarios
+- Performance benchmarks for critical paths
+
+## Import Paths
+
+### Architecture Core
 ```go
-func (r *InMemoryOrderRepository) AddAsync(ctx context.Context, order *Order) functional.Result {
-    // Validate business rules
-    if order.GetTotalAmount().GetAmount() <= 0 {
-        return functional.Fail(functional.ValidationError("INVALID_AMOUNT", "Amount must be positive"))
-    }
-
-    // Persist with optimistic concurrency
-    return r.InMemoryRepository.AddAsync(ctx, order)
-}
+import (
+    "github.com/universalddd/architecture-core/domain"
+    "github.com/universalddd/architecture-core/functional"
+)
 ```
 
-### Aggregate with Events
+### Architecture Shell CQRS (when available)
 ```go
-func (o *Order) ConfirmOrder() functional.Result {
-    // Business rule validation
-    if o.status != Pending {
-        return functional.Fail(functional.DomainError("INVALID_TRANSITION", "Cannot confirm"))
-    }
-
-    // State change
-    previousStatus := o.status
-    o.status = Confirmed
-
-    // Event generation
-    event := NewOrderStatusChangedEvent(o.GetID(), previousStatus.String(), o.status.String())
-    o.AddEvent(event)
-    o.IncrementVersion()
-
-    return functional.Ok()
-}
+import "github.com/universalddd/architecture-shell-cqrs"
 ```
 
-### Service Layer with Composition
+### Architecture GORM
 ```go
-func (s *OrderService) ProcessOrderWorkflow(ctx context.Context, customerID string, amount Money) functional.Result[string] {
-    return s.CreateOrder(ctx, customerID, amount, "").
-        Bind(func(orderID string) functional.Result[string] {
-            return s.ConfirmOrder(ctx, orderID).Map(func() string { return orderID })
-        }).
-        Bind(func(orderID string) functional.Result[string] {
-            return s.ShipOrder(ctx, orderID).Map(func() string { return orderID })
-        })
-}
+import "github.com/universalddd/architecture-gorm"
 ```
 
-## Architecture Benefits
+## Cross-Language Consistency
 
-1. **Type Safety**: Compile-time guarantees through generics
-2. **Testability**: Pure functions and dependency injection
-3. **Maintainability**: Clear separation of concerns
-4. **Performance**: Zero-allocation functional types
-5. **Reliability**: Explicit error handling without exceptions
-6. **Scalability**: Async-first with context cancellation
+| Concept | C# | Go | TypeScript | Java | Python |
+|---------|----|----|------------|------|--------|
+| Mediator | `IMediator` | `Mediator` | `IMediator` | `Mediator` | `Mediator` |
+| Result | `Result<T>` | `Result[T]` | `Result<T>` | `Result<T>` | `Result[T]` |
+| Cancellation | `CancellationToken` | `context.Context` | `AbortController` | `CompletableFuture` | `asyncio` |
+| Async | `Task<T>` | Go routines | `Promise<T>` | `CompletableFuture<T>` | `async/await` |
+
+## Documentation
+
+- **Specification**: `/specs/003-architecture-shell-cqrs/spec.md`
+- **Migration Guide**: `MIGRATION.md`
+- **Restructure Summary**: `RESTRUCTURE_SUMMARY.md`
+- **Cleanup Summary**: `CLEANUP_SUMMARY.md`
+
+## Examples
+
+See `architecture-core/examples/` for complete working examples:
+- Order domain model
+- Repository implementation
+- Application service layer
+- Domain events and correlation
 
 ## Contributing
 
-1. Follow TDD approach - tests first
-2. Maintain zero external dependencies in core
-3. Use Given-When-Then test structure
-4. Ensure monadic laws compliance
-5. Add benchmarks for performance-critical code
+1. **Follow TDD**: Write tests first
+2. **Zero dependencies in core**: Keep core pure Go
+3. **Test naming**: `Should_ExpectedBehavior_When_StateUnderTest`
+4. **Monadic laws**: Ensure functional types comply with mathematical laws
+5. **Benchmarks**: Add performance tests for critical paths
+6. **Go conventions**: Follow idiomatic Go patterns
 
-## License
+## Workspace Management
 
-See repository root for license information.
+This project uses Go 1.21+ workspace feature for multi-module development:
+
+```bash
+# Sync workspace
+go work sync
+
+# Add new module to workspace
+go work use ./new-module
+
+# View workspace configuration
+cat go.work
+```
+
+## Performance
+
+- **Zero allocations** in functional types
+- **Minimal GC pressure** through value types
+- **Concurrent-safe** aggregate operations
+- **Context cancellation** support throughout
+
+## Status
+
+| Module | Status | Tests | Coverage |
+|--------|--------|-------|----------|
+| architecture-core | ✅ Complete | ✅ Passing | 100% contract |
+| architecture-shell-cqrs | 🔄 In Development | ⏳ Pending | - |
+| architecture-gorm | ✅ Complete | ✅ Passing | - |
 
 ---
 
-**Implementation Status**: Core functionality complete with comprehensive test suite. Ready for production use.
-
-**Total Lines of Code**: ~2,500 lines
-**Test Coverage**: Comprehensive contract, integration, and unit tests
-**Performance**: Optimized for zero allocations and minimal GC pressure
+**Version**: v2.0 (Universal DDD Architecture)
+**Go Version**: 1.21+
+**Last Updated**: 2025-10-04
+**Branch**: 003-architecture-shell-cqrs

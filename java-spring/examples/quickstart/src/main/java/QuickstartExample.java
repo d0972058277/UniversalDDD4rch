@@ -387,11 +387,11 @@ public class QuickstartExample {
         }
 
         @Override
-        public CompletableFuture<Boolean> existsAsync(
+        public CompletableFuture<Result<Boolean>> existsAsync(
             OrderId id,
             com.architecture.core.infrastructure.CancellationToken cancellationToken
         ) {
-            return CompletableFuture.completedFuture(orders.containsKey(id));
+            return CompletableFuture.completedFuture(Result.success(orders.containsKey(id)));
         }
 
         @Override

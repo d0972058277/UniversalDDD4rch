@@ -317,19 +317,21 @@ class OrderRepositoryIntegrationTest {
     void Should_CheckExistenceCorrectly_When_OrderExistsOrNot() throws ExecutionException, InterruptedException {
         // Given
         when(mockRepository.existsAsync(eq(testOrderId), any(CancellationToken.class)))
-            .thenReturn(CompletableFuture.completedFuture(true));
+            .thenReturn(CompletableFuture.completedFuture(Result.success(true)));
 
         OrderId nonExistentId = new OrderId("ORD-999999");
         when(mockRepository.existsAsync(eq(nonExistentId), any(CancellationToken.class)))
-            .thenReturn(CompletableFuture.completedFuture(false));
+            .thenReturn(CompletableFuture.completedFuture(Result.success(false)));
 
         // When
-        Boolean existsResult = mockRepository.existsAsync(testOrderId, CancellationToken.none()).get();
-        Boolean notExistsResult = mockRepository.existsAsync(nonExistentId, CancellationToken.none()).get();
+        Result<Boolean> existsResult = mockRepository.existsAsync(testOrderId, CancellationToken.none()).get();
+        Result<Boolean> notExistsResult = mockRepository.existsAsync(nonExistentId, CancellationToken.none()).get();
 
         // Then
-        assertThat(existsResult).isTrue();
-        assertThat(notExistsResult).isFalse();
+        assertThat(existsResult.isSuccess()).isTrue();
+        assertThat(existsResult.getValue()).isTrue();
+        assertThat(notExistsResult.isSuccess()).isTrue();
+        assertThat(notExistsResult.getValue()).isFalse();
 
         verify(mockRepository, times(1)).existsAsync(eq(testOrderId), any(CancellationToken.class));
         verify(mockRepository, times(1)).existsAsync(eq(nonExistentId), any(CancellationToken.class));

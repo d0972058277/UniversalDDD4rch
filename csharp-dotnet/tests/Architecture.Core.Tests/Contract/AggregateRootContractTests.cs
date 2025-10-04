@@ -1,5 +1,7 @@
+using Architecture.Core.Domain.Aggregates;
 using Architecture.Core.Domain.Entities;
 using Architecture.Core.Domain.Events;
+using Architecture.Core.Domain.ValueObjects;
 using Architecture.Core.Functional;
 using System;
 using System.Collections.Generic;
@@ -45,13 +47,6 @@ namespace Architecture.Core.Tests.Contract
             {
                 TestData = testData ?? throw new ArgumentNullException(nameof(testData));
             }
-
-            protected override IEnumerable<object> GetEqualityComponents()
-            {
-                foreach (var component in base.GetEqualityComponents())
-                    yield return component;
-                yield return TestData;
-            }
         }
 
         // Test aggregate root implementation
@@ -76,9 +71,9 @@ namespace Architecture.Core.Tests.Contract
                 IncrementVersion();
             }
 
-            public void AddTestEvent(string eventData)
+            public void AddTestEvent(string eventData, string? correlationId = null, string? causationId = null)
             {
-                AddEvent(new TestDomainEvent(eventData));
+                AddEvent(new TestDomainEvent(eventData, correlationId, causationId));
             }
         }
 
@@ -168,10 +163,9 @@ namespace Architecture.Core.Tests.Contract
                 var aggregate = new TestAggregateRoot(id);
                 var correlationId = "correlation-123";
                 var causationId = "causation-456";
-                var eventWithMetadata = new TestDomainEvent("Event with metadata", correlationId, causationId);
 
                 // When: Adding event with metadata
-                aggregate.AddEvent(eventWithMetadata);
+                aggregate.AddTestEvent("Event with metadata", correlationId, causationId);
 
                 // Then: Metadata should be preserved
                 var retrievedEvent = aggregate.Events
@@ -180,7 +174,7 @@ namespace Architecture.Core.Tests.Contract
 
                 Assert.Equal(correlationId, retrievedEvent.CorrelationId);
                 Assert.Equal(causationId, retrievedEvent.CausationId);
-                Assert.True(retrievedEvent.OccurredAt > DateTime.MinValue);
+                Assert.True(retrievedEvent.OccurredAt > DateTimeOffset.MinValue);
             }
 
             [Fact]

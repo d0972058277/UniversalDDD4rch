@@ -211,7 +211,7 @@ public abstract class SpringDataRepositoryAdapter<
 
     @Override
     @Async
-    public CompletableFuture<Boolean> existsAsync(TId id, CancellationToken cancellationToken) {
+    public CompletableFuture<Result<Boolean>> existsAsync(TId id, CancellationToken cancellationToken) {
         Objects.requireNonNull(id, "ID cannot be null");
         Objects.requireNonNull(cancellationToken, "Cancellation token cannot be null");
 
@@ -224,10 +224,10 @@ public abstract class SpringDataRepositoryAdapter<
 
                 cancellationToken.throwIfCancellationRequested();
 
-                return exists;
+                return Result.success(exists);
 
             } catch (OperationCancelledException e) {
-                return false; // Cancelled operations return false
+                return Result.success(false); // Cancelled operations return false
             } catch (DataAccessException e) {
                 throw new ResultException(
                     createInfrastructureError("Repository.Exists.Failed",
