@@ -137,7 +137,8 @@
       "Bash(bash:*)",
       "Bash(echo \"Exit code: $?\")",
       "Bash(go get:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
