@@ -242,35 +242,35 @@
 - [X] T118 [P] Java ValidationBehavior in `java-spring/src/main/.../behaviors/ValidationBehavior.java` [REQUIRES: T095]
 - [ ] T119 [P] Go validationBehavior in `golang/pkg/.../behaviors/validation_behavior.go` [REQUIRES: T097]
 - [X] T120 [P] TypeScript ValidationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/ValidationBehavior.ts` [REQUIRES: T099]
-- [ ] T121 [P] Python ValidationBehavior in `python-django/architecture/.../behaviors/validation_behavior.py` [REQUIRES: T101]
+- [X] T121 [P] Python ValidationBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/validation_behavior.py` [REQUIRES: T101]
 
 ### Authorization Behavior (5 tasks)
 - [X] T122 [P] C# AuthorizationBehavior in `csharp-dotnet/src/.../Behaviors/AuthorizationBehavior.cs` [REQUIRES: T093]
 - [X] T123 [P] Java AuthorizationBehavior in `java-spring/src/main/.../behaviors/AuthorizationBehavior.java` [REQUIRES: T095]
 - [ ] T124 [P] Go authorizationBehavior in `golang/pkg/.../behaviors/authorization_behavior.go` [REQUIRES: T097]
 - [X] T125 [P] TypeScript AuthorizationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/AuthorizationBehavior.ts` [REQUIRES: T099]
-- [ ] T126 [P] Python AuthorizationBehavior in `python-django/architecture/.../behaviors/authorization_behavior.py` [REQUIRES: T101]
+- [X] T126 [P] Python AuthorizationBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/authorization_behavior.py` [REQUIRES: T101]
 
 ### UnitOfWork Behavior (5 tasks)
 - [X] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
 - [X] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
 - [ ] T129 [P] Go unitOfWorkBehavior in `golang/pkg/.../behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
 - [X] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
-- [ ] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture/.../behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
+- [X] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
 
 ### Telemetry Behavior (5 tasks)
 - [X] T132 [P] C# TelemetryBehavior in `csharp-dotnet/src/.../Behaviors/TelemetryBehavior.cs` [REQUIRES: T093]
 - [X] T133 [P] Java TelemetryBehavior in `java-spring/src/main/.../behaviors/TelemetryBehavior.java` [REQUIRES: T095]
 - [ ] T134 [P] Go telemetryBehavior in `golang/pkg/.../behaviors/telemetry_behavior.go` [REQUIRES: T097]
 - [X] T135 [P] TypeScript TelemetryBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/TelemetryBehavior.ts` [REQUIRES: T099]
-- [ ] T136 [P] Python TelemetryBehavior in `python-django/architecture/.../behaviors/telemetry_behavior.py` [REQUIRES: T101]
+- [X] T136 [P] Python TelemetryBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/telemetry_behavior.py` [REQUIRES: T101]
 
 ### Caching Behavior (5 tasks)
 - [X] T137 [P] C# CachingBehavior in `csharp-dotnet/src/.../Behaviors/CachingBehavior.cs` [REQUIRES: T093]
 - [X] T138 [P] Java CachingBehavior in `java-spring/src/main/.../behaviors/CachingBehavior.java` [REQUIRES: T095]
 - [ ] T139 [P] Go cachingBehavior in `golang/pkg/.../behaviors/caching_behavior.go` [REQUIRES: T097]
 - [X] T140 [P] TypeScript CachingBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/CachingBehavior.ts` [REQUIRES: T099]
-- [ ] T141 [P] Python CachingBehavior in `python-django/architecture/.../behaviors/caching_behavior.py` [REQUIRES: T101]
+- [X] T141 [P] Python CachingBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/caching_behavior.py` [REQUIRES: T101]
 
 ---
 
