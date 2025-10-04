@@ -121,8 +121,25 @@ class UnitOfWorkBehavior(IPipelineBehavior[TRequest, TResponse]):
 
     def _is_command(self, request) -> bool:
         """Type guard to detect command requests."""
-        # Check if request implements ICommand protocol
-        return isinstance(request, ICommand)
+        # Check for explicit _is_command marker attribute
+        if hasattr(request, '_is_command') and request._is_command:
+            return True
+
+        # Check if class name ends with 'Command' (convention-based detection)
+        class_name = type(request).__name__
+        if class_name.endswith('Command'):
+            return True
+
+        # Check if explicitly inherits from ICommand (not just structural match)
+        # We need to check the actual base classes, not just isinstance
+        # because Protocol structural typing makes all objects match empty protocols
+        from architecture_shell_cqrs.requests import ICommand as CommandType
+        for base in type(request).__mro__:
+            if base is CommandType:
+                return True
+
+        # Not a command - treat as query
+        return False
 
 
 __all__ = ["UnitOfWorkBehavior", "ILogger"]
