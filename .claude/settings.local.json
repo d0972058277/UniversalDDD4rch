@@ -135,7 +135,8 @@
       "Bash(make test:*)",
       "Bash(make:*)",
       "Bash(bash:*)",
-      "Bash(echo \"Exit code: $?\")"
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(go get:*)"
     ],
     "deny": [],
     "ask": []
