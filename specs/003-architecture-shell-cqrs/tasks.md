@@ -103,14 +103,14 @@
 - [X] T037 [P] [REQUIRES: T001-T025] C# test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/QueryTests.cs`
 - [X] T038 [P] [REQUIRES: T006-T010] Java test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/QueryTests.java`
 - [ ] T039 [P] [REQUIRES: T011-T015] Go test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `golang/tests/shell/cqrs/query_test.go`
-- [ ] T040 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/query.test.ts`
+- [X] T040 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/query.test.ts`
 - [ ] T041 [P] [REQUIRES: T021-T025] Python test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `python-django/tests/shell/cqrs/test_query.py`
 
 ### UT-003: Pipeline Behavior Execution Order (5 tests)
 - [X] T042 [P] [REQUIRES: T001-T025] C# test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T043 [P] [REQUIRES: T006-T010] Java test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T044 [P] [REQUIRES: T011-T015] Go test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `golang/tests/shell/cqrs/pipeline_test.go`
-- [ ] T045 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
+- [X] T045 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [ ] T046 [P] [REQUIRES: T021-T025] Python test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
 ### UT-003b: Custom Behavior Order Configuration (5 tests)
@@ -118,14 +118,14 @@
 - [X] T042b [P] [REQUIRES: T001-T025] C# test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T043b [P] [REQUIRES: T006-T010] Java test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T044b [P] [REQUIRES: T011-T015] Go test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `golang/tests/shell/cqrs/pipeline_test.go`
-- [ ] T045b [P] [REQUIRES: T016-T020] TypeScript test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
+- [X] T045b [P] [REQUIRES: T016-T020] TypeScript test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [ ] T046b [P] [REQUIRES: T021-T025] Python test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
 ### UT-004: Cancellation Token Propagation (5 tests)
 - [X] T047 [P] [REQUIRES: T001-T025] C# test: `Should_TerminateEarly_When_CancellationRequested` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/CancellationTests.cs`
 - [X] T048 [P] [REQUIRES: T006-T010] Java test: `Should_TerminateEarly_When_CancellationRequested` in `java-spring/src/test/java/arch/shell/cqrs/CancellationTests.java`
 - [ ] T049 [P] [REQUIRES: T011-T015] Go test: `Should_TerminateEarly_When_CancellationRequested` in `golang/tests/shell/cqrs/cancellation_test.go`
-- [ ] T050 [P] [REQUIRES: T016-T020] TypeScript test: `Should_TerminateEarly_When_CancellationRequested` in `typescript-nodejs/architecture-shell-cqrs/tests/cancellation.test.ts`
+- [X] T050 [P] [REQUIRES: T016-T020] TypeScript test: `Should_TerminateEarly_When_CancellationRequested` in `typescript-nodejs/architecture-shell-cqrs/tests/cancellation.test.ts`
 - [ ] T051 [P] [REQUIRES: T021-T025] Python test: `Should_TerminateEarly_When_CancellationRequested` in `python-django/tests/shell/cqrs/test_cancellation.py`
 
 ### UT-005: UnitOfWork Transaction Behavior - Isolated (5 tests)
@@ -133,14 +133,14 @@
 - [X] T052 [P] [REQUIRES: T001-T025] C# test: `Should_CallBeginTransaction_When_CommandExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs` - verify mock IUnitOfWork.BeginTransactionAsync() called
 - [X] T053 [P] [REQUIRES: T006-T010] Java test: `Should_CallBeginTransaction_When_CommandExecutes` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java` - verify mock UnitOfWork.beginTransaction() called
 - [ ] T054 [P] [REQUIRES: T011-T015] Go test: `Should_CallBeginTransaction_When_CommandExecutes` in `golang/tests/shell/cqrs/unitofwork_behavior_test.go` - verify mock UnitOfWork.BeginTransaction() called
-- [ ] T055 [P] [REQUIRES: T016-T020] TypeScript test: `Should_CallBeginTransaction_When_CommandExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` - verify mock IUnitOfWork.beginTransaction() called
+- [X] T055 [P] [REQUIRES: T016-T020] TypeScript test: `Should_CallBeginTransaction_When_CommandExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` - verify mock IUnitOfWork.beginTransaction() called
 - [ ] T056 [P] [REQUIRES: T021-T025] Python test: `Should_CallBeginTransaction_When_CommandExecutes` in `python-django/tests/shell/cqrs/test_unitofwork_behavior.py` - verify mock UnitOfWork.begin_transaction() called
 
 ### UT-006: Nested Command Transaction Reuse (5 tests)
 - [X] T057 [P] [REQUIRES: T001-T025] C# test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs`
 - [X] T058 [P] [REQUIRES: T006-T010] Java test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java`
 - [ ] T059 [P] [REQUIRES: T011-T015] Go test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `golang/tests/shell/cqrs/unitofwork_behavior_test.go`
-- [ ] T060 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts`
+- [X] T060 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts`
 - [ ] T061 [P] [REQUIRES: T021-T025] Python test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `python-django/tests/shell/cqrs/test_unitofwork_behavior.py`
 
 ### UT-007: BehaviorMatcher Type Guards (5 tests)
@@ -148,7 +148,7 @@
 - [X] T061b [P] [REQUIRES: T001-T025] C# test: `Should_MatchCommands_When_IsCommandGuardUsed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/BehaviorMatcherTests.cs`
 - [X] T061c [P] [REQUIRES: T006-T010] Java test: `Should_MatchCommands_When_IsCommandGuardUsed` in `java-spring/src/test/java/arch/shell/cqrs/BehaviorMatcherTests.java`
 - [ ] T061d [P] [REQUIRES: T011-T015] Go test: `Should_MatchCommands_When_IsCommandGuardUsed` in `golang/tests/shell/cqrs/behavior_matcher_test.go`
-- [ ] T061e [P] [REQUIRES: T016-T020] TypeScript test: `Should_MatchCommands_When_IsCommandGuardUsed` in `typescript-nodejs/architecture-shell-cqrs/tests/behaviorMatcher.test.ts`
+- [X] T061e [P] [REQUIRES: T016-T020] TypeScript test: `Should_MatchCommands_When_IsCommandGuardUsed` in `typescript-nodejs/architecture-shell-cqrs/tests/behaviorMatcher.test.ts`
 - [ ] T061f [P] [REQUIRES: T021-T025] Python test: `Should_MatchCommands_When_IsCommandGuardUsed` in `python-django/tests/shell/cqrs/test_behavior_matcher.py`
 
 ### UT-008: Behavior Order Warning Validation (5 tests)
@@ -156,7 +156,7 @@
 - [X] T061g [P] [REQUIRES: T001-T025] C# test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T061h [P] [REQUIRES: T006-T010] Java test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
 - [ ] T061i [P] [REQUIRES: T011-T015] Go test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `golang/tests/shell/cqrs/pipeline_test.go`
-- [ ] T061j [P] [REQUIRES: T016-T020] TypeScript test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
+- [X] T061j [P] [REQUIRES: T016-T020] TypeScript test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [ ] T061k [P] [REQUIRES: T021-T025] [BLOCKS: T062] Python test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
 ---
@@ -176,9 +176,9 @@
 - [ ] T068 [P] [REQUIRES: T061] Go BaseRequest interface in `golang/pkg/shell/cqrs/base_request.go`
 - [ ] T069 [P] [REQUIRES: T061] Go Command interface in `golang/pkg/shell/cqrs/command.go`
 - [ ] T070 [P] [REQUIRES: T061] Go QueryOf[TResult] interface in `golang/pkg/.../query.go`
-- [ ] T071 [P] [REQUIRES: T061] TypeScript BaseRequest interface in `typescript-nodejs/architecture-shell-cqrs/src/BaseRequest.ts`
-- [ ] T072 [P] [REQUIRES: T061] TypeScript Command interface in `typescript-nodejs/architecture-shell-cqrs/src/Command.ts`
-- [ ] T073 [P] [REQUIRES: T061] TypeScript Query<TResult> interface in `typescript-nodejs/architecture-shell-cqrs/src/Query.ts`
+- [X] T071 [P] [REQUIRES: T061] TypeScript BaseRequest interface in `typescript-nodejs/architecture-shell-cqrs/src/BaseRequest.ts`
+- [X] T072 [P] [REQUIRES: T061] TypeScript Command interface in `typescript-nodejs/architecture-shell-cqrs/src/Command.ts`
+- [X] T073 [P] [REQUIRES: T061] TypeScript Query<TResult> interface in `typescript-nodejs/architecture-shell-cqrs/src/Query.ts`
 - [ ] T074 [P] [REQUIRES: T061] Python BaseRequest class in `python-django/architecture/.../base_request.py`
 - [ ] T075 [P] [REQUIRES: T061] Python Command class in `python-django/architecture/.../command.py`
 - [ ] T076 [P] [REQUIRES: T061] Python QueryOf[TResult] class in `python-django/architecture/.../query.py`
@@ -193,9 +193,9 @@
 - [ ] T083 [P] [REQUIRES: T061] Go RequestHandler[TRequest, TResponse] in `golang/pkg/.../request_handler.go`
 - [ ] T084 [P] [REQUIRES: T061] Go CommandHandler[TCommand] in `golang/pkg/.../command_handler.go`
 - [ ] T085 [P] [REQUIRES: T061] Go QueryHandler[TQuery, TResult] in `golang/pkg/.../query_handler.go`
-- [ ] T086 [P] [REQUIRES: T061] TypeScript IRequestHandler<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IRequestHandler.ts`
-- [ ] T087 [P] [REQUIRES: T061] TypeScript ICommandHandler<TCommand> in `typescript-nodejs/architecture-shell-cqrs/src/ICommandHandler.ts`
-- [ ] T088 [P] [REQUIRES: T061] TypeScript IQueryHandler<TQuery, TResult> in `typescript-nodejs/architecture-shell-cqrs/src/IQueryHandler.ts`
+- [X] T086 [P] [REQUIRES: T061] TypeScript IRequestHandler<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IRequestHandler.ts`
+- [X] T087 [P] [REQUIRES: T061] TypeScript ICommandHandler<TCommand> in `typescript-nodejs/architecture-shell-cqrs/src/ICommandHandler.ts`
+- [X] T088 [P] [REQUIRES: T061] TypeScript IQueryHandler<TQuery, TResult> in `typescript-nodejs/architecture-shell-cqrs/src/IQueryHandler.ts`
 - [ ] T089 [P] [REQUIRES: T061] Python RequestHandler[TRequest, TResponse] in `python-django/architecture/.../request_handler.py`
 - [ ] T090 [P] [REQUIRES: T061] Python CommandHandler[TCommand] in `python-django/architecture/.../command_handler.py`
 - [ ] T091 [P] [REQUIRES: T061] Python QueryHandler[TQuery, TResult] in `python-django/architecture/.../query_handler.py`
@@ -207,8 +207,8 @@
 - [X] T095 Java MediatorImpl implementation in `java-spring/src/main/.../MediatorImpl.java` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T037b]
 - [ ] T096 [P] Go Mediator interface in `golang/pkg/.../mediator.go`
 - [ ] T097 Go mediatorImpl implementation in `golang/pkg/.../mediator_impl.go` with handler uniqueness validation in constructor (panics if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T038b]
-- [ ] T098 [P] TypeScript IMediator interface in `typescript-nodejs/architecture-shell-cqrs/src/IMediator.ts`
-- [ ] T099 TypeScript Mediator implementation in `typescript-nodejs/architecture-shell-cqrs/src/Mediator.ts` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T039b]
+- [X] T098 [P] TypeScript IMediator interface in `typescript-nodejs/architecture-shell-cqrs/src/IMediator.ts`
+- [X] T099 TypeScript Mediator implementation in `typescript-nodejs/architecture-shell-cqrs/src/Mediator.ts` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T039b]
 - [ ] T100 [P] Python Mediator protocol in `python-django/architecture/.../mediator.py`
 - [ ] T101 Python MediatorImpl implementation in `python-django/architecture/.../mediator_impl.py` with handler uniqueness validation in __init__ (raises if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T040b]
 
@@ -219,8 +219,8 @@
 - [X] T105 [P] Java BehaviorMatcher interface in `java-spring/src/main/.../BehaviorMatcher.java`
 - [ ] T106 [P] Go PipelineBehavior[TRequest, TResponse] in `golang/pkg/.../pipeline_behavior.go`
 - [ ] T107 [P] Go BehaviorMatcher interface in `golang/pkg/.../behavior_matcher.go`
-- [ ] T108 [P] TypeScript IPipelineBehavior<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IPipelineBehavior.ts`
-- [ ] T109 [P] TypeScript IBehaviorMatcher interface in `typescript-nodejs/architecture-shell-cqrs/src/IBehaviorMatcher.ts`
+- [X] T108 [P] TypeScript IPipelineBehavior<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IPipelineBehavior.ts`
+- [X] T109 [P] TypeScript IBehaviorMatcher interface in `typescript-nodejs/architecture-shell-cqrs/src/IBehaviorMatcher.ts`
 - [ ] T110 [P] Python PipelineBehavior[TRequest, TResponse] in `python-django/architecture/.../pipeline_behavior.py`
 - [ ] T111 [P] Python BehaviorMatcher protocol in `python-django/architecture/.../behavior_matcher.py`
 
@@ -229,7 +229,7 @@
 - [X] T112 [P] C# IUnitOfWork interface in `csharp-dotnet/src/.../IUnitOfWork.cs`
 - [X] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
 - [ ] T114 [P] Go UnitOfWork interface in `golang/pkg/.../unit_of_work.go`
-- [ ] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/architecture-shell-cqrs/src/IUnitOfWork.ts`
+- [X] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/architecture-shell-cqrs/src/IUnitOfWork.ts`
 - [ ] T116 [P] Python UnitOfWork protocol in `python-django/architecture/.../unit_of_work.py`
 
 ---
@@ -241,35 +241,35 @@
 - [X] T117 [P] C# ValidationBehavior in `csharp-dotnet/src/.../Behaviors/ValidationBehavior.cs` [REQUIRES: T093]
 - [X] T118 [P] Java ValidationBehavior in `java-spring/src/main/.../behaviors/ValidationBehavior.java` [REQUIRES: T095]
 - [ ] T119 [P] Go validationBehavior in `golang/pkg/.../behaviors/validation_behavior.go` [REQUIRES: T097]
-- [ ] T120 [P] TypeScript ValidationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/ValidationBehavior.ts` [REQUIRES: T099]
+- [X] T120 [P] TypeScript ValidationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/ValidationBehavior.ts` [REQUIRES: T099]
 - [ ] T121 [P] Python ValidationBehavior in `python-django/architecture/.../behaviors/validation_behavior.py` [REQUIRES: T101]
 
 ### Authorization Behavior (5 tasks)
 - [X] T122 [P] C# AuthorizationBehavior in `csharp-dotnet/src/.../Behaviors/AuthorizationBehavior.cs` [REQUIRES: T093]
 - [X] T123 [P] Java AuthorizationBehavior in `java-spring/src/main/.../behaviors/AuthorizationBehavior.java` [REQUIRES: T095]
 - [ ] T124 [P] Go authorizationBehavior in `golang/pkg/.../behaviors/authorization_behavior.go` [REQUIRES: T097]
-- [ ] T125 [P] TypeScript AuthorizationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/AuthorizationBehavior.ts` [REQUIRES: T099]
+- [X] T125 [P] TypeScript AuthorizationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/AuthorizationBehavior.ts` [REQUIRES: T099]
 - [ ] T126 [P] Python AuthorizationBehavior in `python-django/architecture/.../behaviors/authorization_behavior.py` [REQUIRES: T101]
 
 ### UnitOfWork Behavior (5 tasks)
 - [X] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
 - [X] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
 - [ ] T129 [P] Go unitOfWorkBehavior in `golang/pkg/.../behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
-- [ ] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
+- [X] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
 - [ ] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture/.../behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
 
 ### Telemetry Behavior (5 tasks)
 - [X] T132 [P] C# TelemetryBehavior in `csharp-dotnet/src/.../Behaviors/TelemetryBehavior.cs` [REQUIRES: T093]
 - [X] T133 [P] Java TelemetryBehavior in `java-spring/src/main/.../behaviors/TelemetryBehavior.java` [REQUIRES: T095]
 - [ ] T134 [P] Go telemetryBehavior in `golang/pkg/.../behaviors/telemetry_behavior.go` [REQUIRES: T097]
-- [ ] T135 [P] TypeScript TelemetryBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/TelemetryBehavior.ts` [REQUIRES: T099]
+- [X] T135 [P] TypeScript TelemetryBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/TelemetryBehavior.ts` [REQUIRES: T099]
 - [ ] T136 [P] Python TelemetryBehavior in `python-django/architecture/.../behaviors/telemetry_behavior.py` [REQUIRES: T101]
 
 ### Caching Behavior (5 tasks)
 - [X] T137 [P] C# CachingBehavior in `csharp-dotnet/src/.../Behaviors/CachingBehavior.cs` [REQUIRES: T093]
 - [X] T138 [P] Java CachingBehavior in `java-spring/src/main/.../behaviors/CachingBehavior.java` [REQUIRES: T095]
 - [ ] T139 [P] Go cachingBehavior in `golang/pkg/.../behaviors/caching_behavior.go` [REQUIRES: T097]
-- [ ] T140 [P] TypeScript CachingBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/CachingBehavior.ts` [REQUIRES: T099]
+- [X] T140 [P] TypeScript CachingBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/CachingBehavior.ts` [REQUIRES: T099]
 - [ ] T141 [P] Python CachingBehavior in `python-django/architecture/.../behaviors/caching_behavior.py` [REQUIRES: T101]
 
 ---
@@ -280,7 +280,7 @@
 - [X] T142 [P] C# InMemoryUnitOfWork in `csharp-dotnet/tests/.../InMemoryUnitOfWork.cs` [REQUIRES: T112]
 - [X] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
 - [ ] T144 [P] Go inMemoryUnitOfWork in `golang/tests/.../in_memory_unitofwork.go` [REQUIRES: T114]
-- [ ] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/architecture-shell-cqrs/tests/InMemoryUnitOfWork.ts` [REQUIRES: T115]
+- [X] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/architecture-shell-cqrs/tests/InMemoryUnitOfWork.ts` [REQUIRES: T115]
 - [ ] T146 [P] Python InMemoryUnitOfWork in `python-django/tests/.../in_memory_unitofwork.py` [REQUIRES: T116]
 
 ---
@@ -292,49 +292,49 @@
 - [X] T147 [P] C# test: `Should_CommitTransaction_When_CommandSucceeds` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` [REQUIRES: T093, T127, T142]
 - [X] T148 [P] Java test: `Should_CommitTransaction_When_CommandSucceeds` in `java-spring/src/test/.../CommandExecutionTests.java` [REQUIRES: T095, T128, T143]
 - [ ] T149 [P] Go test: `Should_CommitTransaction_When_CommandSucceeds` in `golang/tests/.../command_execution_test.go` [REQUIRES: T097, T129, T144]
-- [ ] T150 [P] TypeScript test: `Should_CommitTransaction_When_CommandSucceeds` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` [REQUIRES: T099, T130, T145]
+- [X] T150 [P] TypeScript test: `Should_CommitTransaction_When_CommandSucceeds` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` [REQUIRES: T099, T130, T145]
 - [ ] T151 [P] Python test: `Should_CommitTransaction_When_CommandSucceeds` in `python-django/tests/.../test_command_execution.py` [REQUIRES: T101, T131, T146]
 
 ### IT-002: Command Execution Rollback (5 tests)
 - [X] T152 [P] C# test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T147]
 - [X] T153 [P] Java test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T148]
 - [ ] T154 [P] Go test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T149]
-- [ ] T155 [P] TypeScript test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T150]
+- [X] T155 [P] TypeScript test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T150]
 - [ ] T156 [P] Python test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T151]
 
 ### IT-003: Nested Command Transaction Reuse (5 tests)
 - [X] T157 [P] C# test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T147]
 - [X] T158 [P] Java test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T148]
 - [ ] T159 [P] Go test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T149]
-- [ ] T160 [P] TypeScript test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T150]
+- [X] T160 [P] TypeScript test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T150]
 - [ ] T161 [P] Python test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T151]
 
 ### IT-004: Query Execution Without Transaction (5 tests)
 - [X] T162 [P] C# test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T093]
 - [X] T163 [P] Java test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T095]
 - [ ] T164 [P] Go test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T097]
-- [ ] T165 [P] TypeScript test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T099]
+- [X] T165 [P] TypeScript test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T099]
 - [ ] T166 [P] Python test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T101]
 
 ### IT-005: Query Caching Behavior (5 tests)
 - [X] T167 [P] C# test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T137]
 - [X] T168 [P] Java test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T138]
 - [ ] T169 [P] Go test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T139]
-- [ ] T170 [P] TypeScript test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T140]
+- [X] T170 [P] TypeScript test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T140]
 - [ ] T171 [P] Python test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T141]
 
 ### IT-006: Telemetry Logging (5 tests)
 - [X] T172 [P] C# test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T132]
 - [X] T173 [P] Java test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T133]
 - [ ] T174 [P] Go test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T134]
-- [ ] T175 [P] TypeScript test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T135]
+- [X] T175 [P] TypeScript test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T135]
 - [ ] T176 [P] Python test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T136]
 
 ### IT-007: Validation Behavior Short-Circuit (5 tests)
 - [X] T177 [P] C# test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T117]
 - [X] T178 [P] Java test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T118]
 - [ ] T179 [P] Go test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T119]
-- [ ] T180 [P] TypeScript test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T120]
+- [X] T180 [P] TypeScript test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T120]
 - [ ] T181 [P] Python test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T121]
 
 ### IT-008: Transaction Commit on Business Failure (5 tests)
@@ -342,7 +342,7 @@
 - [X] T211 [P] C# test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008 [REQUIRES: T147]
 - [X] T212 [P] Java test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008 [REQUIRES: T148]
 - [ ] T213 [P] Go test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `golang/tests/.../command_execution_test.go` per CONTRACT_TESTS.md IT-008 [REQUIRES: T149]
-- [ ] T214 [P] TypeScript test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008 [REQUIRES: T150]
+- [X] T214 [P] TypeScript test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008 [REQUIRES: T150]
 - [ ] T215 [P] Python test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `python-django/tests/.../test_command_execution.py` per CONTRACT_TESTS.md IT-008 [REQUIRES: T151]
 
 ### IT-008b: Transaction Commit on Business Failure (Void Commands) (5 tests)
@@ -350,7 +350,7 @@
 - [X] T211b [P] C# test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008b [REQUIRES: T147]
 - [X] T212b [P] Java test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008b [REQUIRES: T148]
 - [ ] T213b [P] Go test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `golang/tests/.../command_execution_test.go` per CONTRACT_TESTS.md IT-008b [REQUIRES: T149]
-- [ ] T214b [P] TypeScript test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008b [REQUIRES: T150]
+- [X] T214b [P] TypeScript test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008b [REQUIRES: T150]
 - [ ] T215b [P] Python test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `python-django/tests/.../test_command_execution.py` per CONTRACT_TESTS.md IT-008b [REQUIRES: T151]
 
 ### IT-009: Transaction Provider Failure (5 tests)
@@ -358,7 +358,7 @@
 - [X] T216 [P] C# test: `Should_ThrowException_When_TransactionProviderFails` in `csharp-dotnet/tests/.../UnitOfWorkBehaviorTests.cs` per spec.md BR-006 [REQUIRES: T127]
 - [X] T217 [P] Java test: `Should_ThrowException_When_TransactionProviderFails` in `java-spring/src/test/.../UnitOfWorkBehaviorTests.java` per spec.md BR-006 [REQUIRES: T128]
 - [ ] T218 [P] Go test: `Should_ThrowException_When_TransactionProviderFails` in `golang/tests/.../unitofwork_behavior_test.go` per spec.md BR-006 [REQUIRES: T129]
-- [ ] T219 [P] TypeScript test: `Should_ThrowException_When_TransactionProviderFails` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` per spec.md BR-006 [REQUIRES: T130]
+- [X] T219 [P] TypeScript test: `Should_ThrowException_When_TransactionProviderFails` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` per spec.md BR-006 [REQUIRES: T130]
 - [ ] T220 [P] Python test: `Should_ThrowException_When_TransactionProviderFails` in `python-django/tests/.../test_unitofwork_behavior.py` per spec.md BR-006 [REQUIRES: T131]
 
 ### IT-010: Behavior Exception Rollback (5 tests) - NEW
@@ -366,7 +366,7 @@
 - [X] T221 [P] C# test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per spec.md:L68-69 [REQUIRES: T147]
 - [X] T222 [P] Java test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `java-spring/src/test/.../CommandExecutionTests.java` per spec.md:L68-69 [REQUIRES: T148]
 - [ ] T223 [P] Go test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `golang/tests/.../command_execution_test.go` per spec.md:L68-69 [REQUIRES: T149]
-- [ ] T224 [P] TypeScript test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per spec.md:L68-69 [REQUIRES: T150]
+- [X] T224 [P] TypeScript test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per spec.md:L68-69 [REQUIRES: T150]
 - [ ] T225 [P] Python test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `python-django/tests/.../test_command_execution.py` per spec.md:L68-69 [REQUIRES: T151]
 
 ---
@@ -377,7 +377,7 @@
 - [X] T182 C# AddCqrs extension method in `csharp-dotnet/src/.../ServiceCollectionExtensions.cs` [REQUIRES: T093-T146]
 - [X] T183 Java CqrsConfiguration class in `java-spring/src/main/.../config/CqrsConfiguration.java` [REQUIRES: T095-T146]
 - [ ] T184 Go WireCqrs function in `golang/pkg/.../wire.go` [REQUIRES: T097-T146]
-- [ ] T185 TypeScript CqrsModule for InversifyJS in `typescript-nodejs/architecture-shell-cqrs/src/CqrsModule.ts` [REQUIRES: T099-T146]
+- [X] T185 TypeScript CqrsModule for InversifyJS in `typescript-nodejs/architecture-shell-cqrs/src/CqrsModule.ts` [REQUIRES: T099-T146]
 - [ ] T186 Python setup_cqrs function in `python-django/architecture/.../setup.py` [REQUIRES: T101-T146]
 
 ---
@@ -388,7 +388,7 @@
 - [X] T187 [P] C# quickstart validation test in `csharp-dotnet/tests/.../QuickstartTests.cs` [REQUIRES: T182]
 - [X] T188 [P] Java quickstart validation test in `java-spring/src/test/.../QuickstartTests.java` [REQUIRES: T183]
 - [ ] T189 [P] Go quickstart validation test in `golang/tests/.../quickstart_test.go` [REQUIRES: T184]
-- [ ] T190 [P] TypeScript quickstart validation test in `typescript-nodejs/architecture-shell-cqrs/tests/quickstart.test.ts` [REQUIRES: T185]
+- [X] T190 [P] TypeScript quickstart validation test in `typescript-nodejs/architecture-shell-cqrs/tests/quickstart.test.ts` [REQUIRES: T185]
 - [ ] T191 [P] Python quickstart validation test in `python-django/tests/.../test_quickstart.py` [REQUIRES: T186]
 
 ---
@@ -399,7 +399,7 @@
 - [X] T192 [P] C# XML documentation comments for all public interfaces [REQUIRES: T182]
 - [X] T193 [P] Java Javadoc comments for all public interfaces [REQUIRES: T183]
 - [ ] T194 [P] Go godoc comments for all exported types [REQUIRES: T184]
-- [ ] T195 [P] TypeScript TSDoc comments for all public interfaces [REQUIRES: T185]
+- [X] T195 [P] TypeScript TSDoc comments for all public interfaces [REQUIRES: T185]
 - [ ] T196 [P] Python docstrings for all public classes [REQUIRES: T186]
 
 ### Performance Validation (5 tasks)
@@ -420,7 +420,7 @@
 - [X] T197 [P] C# performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T187]
 - [X] T198 [P] Java performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T188]
 - [ ] T199 [P] Go performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T189]
-- [ ] T200 [P] TypeScript performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T190]
+- [X] T200 [P] TypeScript performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T190]
 - [ ] T201 [P] Python performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T191]
 
 ### Architecture Compliance Tests (5 tasks) - BLOCKING GATE
@@ -429,7 +429,7 @@
 - [X] T206 [P] C# architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/ArchitectureTests.cs` using NetArchTest per CONTRACT_TESTS.md AT-001 [REQUIRES: T187, T197]
 - [X] T207 [P] Java architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/ArchitectureTests.java` using ArchUnit per CONTRACT_TESTS.md AT-001 [REQUIRES: T188, T198]
 - [ ] T208 [P] Go architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `golang/tests/shell/cqrs/architecture_test.go` using go/ast parser per CONTRACT_TESTS.md AT-001 [REQUIRES: T189, T199]
-- [ ] T209 [P] TypeScript architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/architecture.test.ts` using TypeScript Compiler API per CONTRACT_TESTS.md AT-001 [REQUIRES: T190, T200]
+- [X] T209 [P] TypeScript architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/architecture.test.ts` using TypeScript Compiler API per CONTRACT_TESTS.md AT-001 [REQUIRES: T190, T200]
 - [ ] T210 [P] Python architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `python-django/tests/shell/cqrs/test_architecture.py` using ast.NodeVisitor per CONTRACT_TESTS.md AT-001 [REQUIRES: T191, T201]
 
 ---

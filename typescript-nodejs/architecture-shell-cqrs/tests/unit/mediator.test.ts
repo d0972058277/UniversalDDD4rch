@@ -1,4 +1,7 @@
 import 'reflect-metadata';
+import { Mediator } from '../../src/Mediator';
+import { Command } from '../../src/Command';
+import { ICommandHandler } from '../../src/ICommandHandler';
 
 /**
  * UT-001: Handler Registration Uniqueness Tests
@@ -6,34 +9,68 @@ import 'reflect-metadata';
  *
  * These tests follow TDD principles: they MUST fail before implementation exists.
  */
+
+// Test command
+class TestCommand implements Command {
+  _isCommand = true as const;
+  __phantom?: void;
+  constructor(public readonly value: string) {}
+}
+
 describe('MediatorTests', () => {
   // UT-001: T029
   test('Should_ThrowException_When_ZeroHandlersRegistered', async () => {
-    // Given: No handlers registered for a specific command type
-    // When: Mediator attempts to send a command with no handler
-    // Then: Should throw an exception indicating no handler found
+    // Given: Mediator with no handlers registered
+    const mediator = new Mediator([]);
+    const signal = new AbortController().signal;
 
-    // TODO: Implement test once Mediator interface exists
-    expect(true).toBe(false); // Intentional failure - awaiting implementation
+    // When: Attempting to send command with no handler
+    const command = new TestCommand('test');
+
+    // Then: Should throw exception indicating no handler found
+    await expect(mediator.send(command, signal)).rejects.toThrow(
+      'No handler registered for request type: TestCommand'
+    );
   });
 
   // UT-001: T034
   test('Should_ThrowException_When_MultipleHandlersRegistered', async () => {
     // Given: Multiple handlers registered for same command type
-    // When: Attempting to send command
-    // Then: Should throw exception about ambiguous handler registration
+    const handler1: ICommandHandler<TestCommand> = {
+      async handle(_request: TestCommand, _signal: AbortSignal): Promise<void> {},
+    };
 
-    // TODO: Implement test once Mediator interface exists
-    expect(true).toBe(false); // Intentional failure - awaiting implementation
+    const handler2: ICommandHandler<TestCommand> = {
+      async handle(_request: TestCommand, _signal: AbortSignal): Promise<void> {},
+    };
+
+    // When/Then: Mediator constructor should throw on ambiguous registration
+    expect(() => {
+      new Mediator([
+        { requestType: TestCommand, handler: handler1 },
+        { requestType: TestCommand, handler: handler2 },
+      ]);
+    }).toThrow('Multiple handlers registered for request types: TestCommand');
   });
 
   // UT-001c: T039b
   test('Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers', () => {
     // Given: Mediator configuration with 2+ handlers for same command type
+    const handler1: ICommandHandler<TestCommand> = {
+      async handle(_request: TestCommand, _signal: AbortSignal): Promise<void> {},
+    };
+
+    const handler2: ICommandHandler<TestCommand> = {
+      async handle(_request: TestCommand, _signal: AbortSignal): Promise<void> {},
+    };
+
     // When: Mediator constructor is called
     // Then: Should throw with handler names in error message
-
-    // TODO: Implement test once Mediator implementation exists
-    expect(true).toBe(false); // Intentional failure - awaiting implementation
+    expect(() => {
+      new Mediator([
+        { requestType: TestCommand, handler: handler1 },
+        { requestType: TestCommand, handler: handler2 },
+      ]);
+    }).toThrow(/Multiple handlers.*TestCommand/);
   });
 });
