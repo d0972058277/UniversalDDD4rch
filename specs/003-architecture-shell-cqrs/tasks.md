@@ -440,7 +440,7 @@
 - [X] T202 Run all C# tests: `dotnet test` in `csharp-dotnet/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T206]
 - [X] T203 Run all Java tests: `mvn test` in `java-spring/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T207]
 - [ ] T204 Run all Go tests: `go test ./...` in `golang/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T208]
-- [ ] T205 Run TypeScript+Python tests - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T209, T210]
+- [X] T205 Run TypeScript+Python tests - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T209, T210]
 
 ---
 

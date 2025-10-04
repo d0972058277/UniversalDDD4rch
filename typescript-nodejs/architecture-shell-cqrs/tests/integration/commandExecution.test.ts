@@ -6,6 +6,7 @@ import { ICommandHandler, ICommandHandlerWithResult } from '../../src/ICommandHa
 import { UnitOfWorkBehavior, ILogger } from '../../src/behaviors/UnitOfWorkBehavior';
 import { InMemoryUnitOfWork } from '../InMemoryUnitOfWork';
 import { CommandOnlyMatcher } from '../../src/IBehaviorMatcher';
+import { IPipelineBehavior } from '../../src/IPipelineBehavior';
 
 // Test command without return value
 class TestCommand implements Command {
@@ -284,7 +285,9 @@ describe('CommandExecutionTests', () => {
       [{ requestType: TestCommand, handler }],
       [
         {
-          behavior: new UnitOfWorkBehavior(unitOfWork, logger) as any,
+          // Type assertion required due to TypeScript's limitation with generic variance
+          // Mediator accepts IPipelineBehavior<any, any> but UnitOfWorkBehavior has stricter generics
+          behavior: new UnitOfWorkBehavior(unitOfWork, logger) as IPipelineBehavior<any, any>,
           matcher: new CommandOnlyMatcher(),
         },
         {
