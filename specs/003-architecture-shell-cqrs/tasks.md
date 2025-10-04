@@ -281,7 +281,7 @@
 - [X] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
 - [ ] T144 [P] Go inMemoryUnitOfWork in `golang/tests/.../in_memory_unitofwork.go` [REQUIRES: T114]
 - [X] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/architecture-shell-cqrs/tests/InMemoryUnitOfWork.ts` [REQUIRES: T115]
-- [ ] T146 [P] Python InMemoryUnitOfWork in `python-django/tests/.../in_memory_unitofwork.py` [REQUIRES: T116]
+- [X] T146 [P] Python InMemoryUnitOfWork in `python-django/architecture-shell-cqrs/tests/in_memory_unitofwork.py` [REQUIRES: T116]
 
 ---
 
