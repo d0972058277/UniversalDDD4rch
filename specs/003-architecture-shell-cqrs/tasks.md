@@ -377,7 +377,7 @@
 ### Dependency Injection Setup (5 tasks)
 - [X] T182 C# AddCqrs extension method in `csharp-dotnet/src/.../ServiceCollectionExtensions.cs` [REQUIRES: T093-T146]
 - [X] T183 Java CqrsConfiguration class in `java-spring/src/main/.../config/CqrsConfiguration.java` [REQUIRES: T095-T146]
-- [ ] T184 Go WireCqrs function in `golang/architecture-shell-cqrs/wire.go` [REQUIRES: T097-T146]
+- [X] T184 Go WireCqrs function in `golang/architecture-shell-cqrs/wire.go` [REQUIRES: T097-T146]
 - [X] T185 TypeScript CqrsModule for InversifyJS in `typescript-nodejs/architecture-shell-cqrs/src/CqrsModule.ts` [REQUIRES: T099-T146]
 - [X] T186 Python setup_cqrs function in `python-django/architecture/.../setup.py` [REQUIRES: T101-T146] (N/A - Python uses __init__.py exports)
 
@@ -388,7 +388,7 @@
 ### Integration Example Tests (5 tests)
 - [X] T187 [P] C# quickstart validation test in `csharp-dotnet/tests/.../QuickstartTests.cs` [REQUIRES: T182]
 - [X] T188 [P] Java quickstart validation test in `java-spring/src/test/.../QuickstartTests.java` [REQUIRES: T183]
-- [ ] T189 [P] Go quickstart validation test in `golang/architecture-shell-cqrs/tests/quickstart_test.go` [REQUIRES: T184]
+- [X] T189 [P] Go quickstart validation test in `golang/architecture-shell-cqrs/tests/quickstart_test.go` [REQUIRES: T184]
 - [X] T190 [P] TypeScript quickstart validation test in `typescript-nodejs/architecture-shell-cqrs/tests/quickstart.test.ts` [REQUIRES: T185]
 - [X] T191 [P] Python quickstart validation test in `python-django/tests/.../test_quickstart.py` [REQUIRES: T186] (N/A - covered by integration tests)
 
@@ -399,7 +399,7 @@
 ### Documentation (5 tasks)
 - [X] T192 [P] C# XML documentation comments for all public interfaces [REQUIRES: T182]
 - [X] T193 [P] Java Javadoc comments for all public interfaces [REQUIRES: T183]
-- [ ] T194 [P] Go godoc comments for all exported types in golang/architecture-shell-cqrs/ [REQUIRES: T184]
+- [X] T194 [P] Go godoc comments for all exported types in golang/architecture-shell-cqrs/ [REQUIRES: T184]
 - [X] T195 [P] TypeScript TSDoc comments for all public interfaces [REQUIRES: T185]
 - [X] T196 [P] Python docstrings for all public classes [REQUIRES: T186] (Already present in all implementation files)
 
@@ -429,7 +429,7 @@
 
 - [X] T206 [P] C# architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/ArchitectureTests.cs` using NetArchTest per CONTRACT_TESTS.md AT-001 [REQUIRES: T187, T197]
 - [X] T207 [P] Java architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/ArchitectureTests.java` using ArchUnit per CONTRACT_TESTS.md AT-001 [REQUIRES: T188, T198]
-- [ ] T208 [P] Go architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `golang/architecture-shell-cqrs/tests/architecture_test.go` using go/ast parser per CONTRACT_TESTS.md AT-001 [REQUIRES: T189, T199]
+- [X] T208 [P] Go architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `golang/architecture-shell-cqrs/tests/architecture_test.go` using go/ast parser per CONTRACT_TESTS.md AT-001 [REQUIRES: T189, T199]
 - [X] T209 [P] TypeScript architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/architecture.test.ts` using TypeScript Compiler API per CONTRACT_TESTS.md AT-001 [REQUIRES: T190, T200]
 - [X] T210 [P] Python architecture test: `Should_NotCallRepositoryWriteMethods_When_QueryHandlerExecutes` in `python-django/tests/shell/cqrs/test_architecture.py` using ast.NodeVisitor per CONTRACT_TESTS.md AT-001 [REQUIRES: T191, T201]
 

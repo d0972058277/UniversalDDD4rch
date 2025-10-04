@@ -138,7 +138,12 @@
       "Bash(echo \"Exit code: $?\")",
       "Bash(go get:*)",
       "Read(//tmp/**)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(head:*)",
+      "Bash(done)",
+      "Bash(while read file)"
     ],
     "deny": [],
     "ask": []
