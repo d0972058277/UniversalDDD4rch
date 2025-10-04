@@ -123,7 +123,13 @@
       "Bash(npm run test:*)",
       "Bash(git log:*)",
       "Bash(npx eslint:*)",
-      "Bash(npm run lint:fix:*)"
+      "Bash(npm run lint:fix:*)",
+      "Bash(export PYTHONPATH=/Users/porridg3/GitHub/UniversalDDD4rch/python-django/architecture-core/src)",
+      "Bash(export PYTHONPATH=src)",
+      "Bash(pytest:*)",
+      "Bash(./run-tests.sh:*)",
+      "Bash(export PYTHONPATH=src:..)",
+      "Bash(./test-all.sh:*)"
     ],
     "deny": [],
     "ask": []
