@@ -42,7 +42,7 @@ class TrackingBehavior implements IPipelineBehavior<TestCommand, void> {
     this.executionLog.push(`${this.name}-after`);
   }
 
-  private name: string;
+  private readonly name: string;
 }
 
 describe('PipelineTests', () => {

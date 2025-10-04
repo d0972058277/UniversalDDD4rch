@@ -2,7 +2,14 @@
   "name": "@architecture/shell-cqrs",
   "version": "2.0.0",
   "description": "CQRS mediator pattern implementation for Universal DDD Architecture",
-  "keywords": ["ddd", "cqrs", "mediator", "architecture", "command", "query"],
+  "keywords": [
+    "ddd",
+    "cqrs",
+    "mediator",
+    "architecture",
+    "command",
+    "query"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -29,12 +36,16 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.1.2",
     "jest": "^29.7.0",
     "prettier": "^3.0.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.9.0"
   },
-  "files": ["dist/**/*", "README.md"],
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },

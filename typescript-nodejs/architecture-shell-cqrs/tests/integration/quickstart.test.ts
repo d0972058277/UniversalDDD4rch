@@ -27,12 +27,12 @@ class Result<T> {
   }
 
   get value(): T {
-    if (!this.isSuccess) throw new Error('Cannot get value from failed result');
+    if (!this.isSuccess) {throw new Error('Cannot get value from failed result');}
     return this._value!;
   }
 
   get error(): string {
-    if (this.isSuccess) throw new Error('Cannot get error from successful result');
+    if (this.isSuccess) {throw new Error('Cannot get error from successful result');}
     return this._error!;
   }
 

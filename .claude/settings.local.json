@@ -121,7 +121,9 @@
       "Bash(tree:*)",
       "Bash(git reset:*)",
       "Bash(npm run test:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run lint:fix:*)"
     ],
     "deny": [],
     "ask": []

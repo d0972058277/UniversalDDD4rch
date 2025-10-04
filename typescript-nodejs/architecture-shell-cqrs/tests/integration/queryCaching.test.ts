@@ -8,7 +8,7 @@ import { IPipelineBehavior } from '../../src/IPipelineBehavior';
 
 // In-memory cache implementation for testing
 class InMemoryCache implements ICache {
-  private store: Map<string, any> = new Map();
+  private readonly store: Map<string, any> = new Map();
 
   async get<T>(key: string): Promise<T | undefined> {
     return this.store.get(key);
