@@ -7,6 +7,22 @@ export abstract class ValueObject {
   private _hashCode?: number;
 
   /**
+   * Type guard to check if an object has an equals method
+   */
+  private hasEqualsMethod(obj: unknown): obj is { equals(other: unknown): boolean } {
+    return typeof obj === 'object' && obj !== null && 'equals' in obj &&
+           typeof (obj as Record<string, unknown>).equals === 'function';
+  }
+
+  /**
+   * Type guard to check if an object has a getHashCode method
+   */
+  private hasGetHashCodeMethod(obj: unknown): obj is { getHashCode(): number } {
+    return typeof obj === 'object' && obj !== null && 'getHashCode' in obj &&
+           typeof (obj as Record<string, unknown>).getHashCode === 'function';
+  }
+
+  /**
    * Returns the components that define the equality of this value object.
    * Subclasses must implement this method to specify which properties
    * should be used for equality comparison.
@@ -171,9 +187,8 @@ export abstract class ValueObject {
     }
 
     // Handle objects with equals method
-    if (typeof component1 === 'object' && 'equals' in component1 &&
-        typeof (component1 as any).equals === 'function') {
-      return (component1 as any).equals(component2);
+    if (this.hasEqualsMethod(component1)) {
+      return component1.equals(component2);
     }
 
     // Handle Date objects
@@ -267,9 +282,8 @@ export abstract class ValueObject {
       return hash;
     }
 
-    if (typeof component === 'object' && 'getHashCode' in component &&
-        typeof (component as any).getHashCode === 'function') {
-      return (component as any).getHashCode();
+    if (this.hasGetHashCodeMethod(component)) {
+      return component.getHashCode();
     }
 
     // For other objects, use string representation

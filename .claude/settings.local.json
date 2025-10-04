@@ -119,7 +119,8 @@
       "Bash(dotnet remove package:*)",
       "Bash(git check-ignore:*)",
       "Bash(tree:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []

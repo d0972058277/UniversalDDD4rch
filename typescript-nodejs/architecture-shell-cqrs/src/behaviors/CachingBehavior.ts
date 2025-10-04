@@ -146,11 +146,14 @@ export class CachingBehavior<
     }
 
     // Serialize query properties to JSON with sorted keys
-    const properties = { ...request };
-    delete (properties as any).cacheTtlSeconds;
-    delete (properties as any).cacheKey;
+    // Exclude caching metadata from the cache key calculation
+    const { cacheTtlSeconds, cacheKey, ...properties } = request as TRequest &
+      ICacheable;
 
-    const serialized = JSON.stringify(properties, Object.keys(properties).sort());
+    const serialized = JSON.stringify(
+      properties,
+      Object.keys(properties).sort()
+    );
     return `${request.constructor.name}:${serialized}`;
   }
 }

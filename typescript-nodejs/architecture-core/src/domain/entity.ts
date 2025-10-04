@@ -110,6 +110,30 @@ export abstract class Entity<TId extends object> implements IEntity<TId> {
   }
 
   /**
+   * Type guard to check if an object has an equals method
+   */
+  private hasEqualsMethod(obj: unknown): obj is { equals(other: unknown): boolean } {
+    return typeof obj === 'object' && obj !== null && 'equals' in obj &&
+           typeof (obj as Record<string, unknown>).equals === 'function';
+  }
+
+  /**
+   * Type guard to check if an object has a getHashCode method
+   */
+  private hasGetHashCodeMethod(obj: unknown): obj is { getHashCode(): number } {
+    return typeof obj === 'object' && obj !== null && 'getHashCode' in obj &&
+           typeof (obj as Record<string, unknown>).getHashCode === 'function';
+  }
+
+  /**
+   * Type guard to check if an object has a toString method
+   */
+  private hasToStringMethod(obj: unknown): obj is { toString(): string } {
+    return typeof obj === 'object' && obj !== null && 'toString' in obj &&
+           typeof (obj as Record<string, unknown>).toString === 'function';
+  }
+
+  /**
    * Compares two entity IDs for equality.
    * @param id1 First ID
    * @param id2 Second ID
@@ -121,9 +145,8 @@ export abstract class Entity<TId extends object> implements IEntity<TId> {
     }
 
     // Handle objects with equals method
-    if (typeof id1 === 'object' && id1 !== null && 'equals' in id1 &&
-        typeof (id1 as any).equals === 'function') {
-      return (id1 as any).equals(id2);
+    if (this.hasEqualsMethod(id1)) {
+      return id1.equals(id2);
     }
 
     // Handle objects with toString comparison
@@ -160,14 +183,12 @@ export abstract class Entity<TId extends object> implements IEntity<TId> {
       return id;
     }
 
-    if (typeof id === 'object' && 'getHashCode' in id &&
-        typeof (id as any).getHashCode === 'function') {
-      return (id as any).getHashCode();
+    if (this.hasGetHashCodeMethod(id)) {
+      return id.getHashCode();
     }
 
-    if (typeof id === 'object' && id !== null && 'toString' in id &&
-        typeof (id as any).toString === 'function') {
-      return this.stringHashCode((id as any).toString());
+    if (this.hasToStringMethod(id)) {
+      return this.stringHashCode(id.toString());
     }
 
     // For other objects, use string representation
@@ -192,9 +213,8 @@ export abstract class Entity<TId extends object> implements IEntity<TId> {
       return String(id);
     }
 
-    if (typeof id === 'object' && id !== null && 'toString' in id &&
-        typeof (id as any).toString === 'function') {
-      return (id as any).toString();
+    if (this.hasToStringMethod(id)) {
+      return id.toString();
     }
 
     return JSON.stringify(id);

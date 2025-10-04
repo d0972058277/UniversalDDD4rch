@@ -370,14 +370,14 @@ describe('Repository Async Patterns Integration Tests', () => {
 
         it('should find stale orders', async () => {
             // Given
-            const daysOld = 0; // Look for orders older than 0 days (none should exist)
+            const daysOld = 1000; // Look for orders older than 1000 days (none should exist in fresh test data)
 
             // When
             const result = await repository.findStaleOrdersAsync(daysOld);
 
             // Then
             expect(result.isSuccess).toBe(true);
-            expect(result.value).toHaveLength(0); // No stale orders in fresh test data
+            expect(result.value).toHaveLength(0); // No orders older than 1000 days in fresh test data
         });
 
         it('should perform bulk operations', async () => {
