@@ -320,21 +320,21 @@
 ### IT-005: Query Caching Behavior (5 tests)
 - [X] T167 [P] C# test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T137]
 - [X] T168 [P] Java test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T138]
-- [ ] T169 [P] Go test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T139]
+- [X] T169 [P] Go test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T139]
 - [X] T170 [P] TypeScript test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T140]
 - [X] T171 [P] Python test: `Should_ReturnCachedResult_When_QueryExecutedTwice` [REQUIRES: T141]
 
 ### IT-006: Telemetry Logging (5 tests)
 - [X] T172 [P] C# test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T132]
 - [X] T173 [P] Java test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T133]
-- [ ] T174 [P] Go test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T134]
+- [X] T174 [P] Go test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T134]
 - [X] T175 [P] TypeScript test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T135]
 - [X] T176 [P] Python test: `Should_LogDurationAndStatus_When_RequestProcessed` [REQUIRES: T136]
 
 ### IT-007: Validation Behavior Short-Circuit (5 tests)
 - [X] T177 [P] C# test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T117]
 - [X] T178 [P] Java test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T118]
-- [ ] T179 [P] Go test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T119]
+- [X] T179 [P] Go test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T119]
 - [X] T180 [P] TypeScript test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T120]
 - [X] T181 [P] Python test: `Should_AbortExecution_When_ValidationFails` [REQUIRES: T121]
 
@@ -358,7 +358,7 @@
 **Purpose**: Validate BR-006 requirement that UnitOfWork fails fast when BeginTransactionAsync() throws (connection pool exhaustion, database unavailability)
 - [X] T216 [P] C# test: `Should_ThrowException_When_TransactionProviderFails` in `csharp-dotnet/tests/.../UnitOfWorkBehaviorTests.cs` per spec.md BR-006 [REQUIRES: T127]
 - [X] T217 [P] Java test: `Should_ThrowException_When_TransactionProviderFails` in `java-spring/src/test/.../UnitOfWorkBehaviorTests.java` per spec.md BR-006 [REQUIRES: T128]
-- [ ] T218 [P] Go test: `Should_ThrowException_When_TransactionProviderFails` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go` per spec.md BR-006 [REQUIRES: T129]
+- [X] T218 [P] Go test: `Should_ThrowException_When_TransactionProviderFails` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go` per spec.md BR-006 [REQUIRES: T129]
 - [X] T219 [P] TypeScript test: `Should_ThrowException_When_TransactionProviderFails` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` per spec.md BR-006 [REQUIRES: T130]
 - [X] T220 [P] Python test: `Should_ThrowException_When_TransactionProviderFails` in `python-django/tests/.../test_unitofwork_behavior.py` per spec.md BR-006 [REQUIRES: T131]
 
@@ -420,7 +420,7 @@
 
 - [X] T197 [P] C# performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T187]
 - [X] T198 [P] Java performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T188]
-- [ ] T199 [P] Go performance tests in golang/architecture-shell-cqrs/tests/performance_test.go: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T189]
+- [X] T199 [P] Go performance tests in golang/architecture-shell-cqrs/tests/performance_test.go: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T189]
 - [X] T200 [P] TypeScript performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T190]
 - [X] T201 [P] Python performance tests: measure mediator overhead per acceptance criteria above + validate TransactionId logging for all command executions [REQUIRES: T191]
 
@@ -440,7 +440,7 @@
 
 - [X] T202 Run all C# tests: `dotnet test` in `csharp-dotnet/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T206]
 - [X] T203 Run all Java tests: `mvn test` in `java-spring/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T207]
-- [ ] T204 Run all Go tests: `go test ./...` in `golang/architecture-shell-cqrs/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T208]
+- [X] T204 Run all Go tests: `go test ./...` in `golang/architecture-shell-cqrs/` - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T208]
 - [X] T205 Run TypeScript+Python tests - verify 100% pass rate INCLUDING AT-001 architecture test compliance [REQUIRES: T209, T210]
 
 ---

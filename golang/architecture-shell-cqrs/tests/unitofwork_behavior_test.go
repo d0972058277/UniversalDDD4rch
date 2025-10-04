@@ -189,3 +189,132 @@ func (b *MockNestedUnitOfWorkBehavior) Handle(ctx context.Context, request inter
 func (b *MockNestedUnitOfWorkBehavior) Order() int {
 	return 30
 }
+
+// T218: Should_ThrowException_When_TransactionProviderFails
+// Validates that UnitOfWork fails fast when transaction provider unavailable (BR-006)
+func TestShould_ThrowException_When_TransactionProviderFails(t *testing.T) {
+	// Given: UnitOfWork that fails to begin transaction (DB unavailable, connection pool exhausted)
+	mockUnitOfWork := &FailingMockUnitOfWork{
+		shouldFailBeginTransaction: true,
+		failureMessage:             "Connection pool exhausted",
+	}
+
+	command := &TransactionProviderFailureCommand{ID: "tx-fail-1"}
+	handler := &TransactionProviderFailureCommandHandler{}
+
+	handlers := map[string]interface{}{
+		"*tests.TransactionProviderFailureCommand": handler,
+	}
+
+	// Use behavior that propagates transaction provider failures
+	behaviors := []interface{}{
+		&FailingUnitOfWorkBehavior{unitOfWork: mockUnitOfWork},
+	}
+
+	mediator := cqrs.NewMediator(handlers, behaviors)
+	ctx := context.Background()
+
+	// When: Command attempts to execute with failing transaction provider
+	result, err := mediator.Send(ctx, command)
+
+	// Then: Exception should propagate (fail-fast per BR-006)
+	assert.Error(t, err, "Should return error when transaction provider fails")
+	assert.Nil(t, result, "Should not return result when transaction fails to begin")
+	assert.Contains(t, err.Error(), "Connection pool exhausted", "Error should contain failure message")
+	assert.False(t, handler.Executed, "Handler should not execute when transaction fails to begin")
+}
+
+// FailingMockUnitOfWork simulates transaction provider failures
+type FailingMockUnitOfWork struct {
+	shouldFailBeginTransaction bool
+	failureMessage             string
+	transactionID              string
+	hasActiveTransaction       bool
+}
+
+func (m *FailingMockUnitOfWork) TransactionID() string {
+	return m.transactionID
+}
+
+func (m *FailingMockUnitOfWork) HasActiveTransaction() bool {
+	return m.hasActiveTransaction
+}
+
+func (m *FailingMockUnitOfWork) BeginTransaction(ctx context.Context) error {
+	if m.shouldFailBeginTransaction {
+		return &TransactionProviderError{Message: m.failureMessage}
+	}
+	m.hasActiveTransaction = true
+	return nil
+}
+
+func (m *FailingMockUnitOfWork) Commit(ctx context.Context) error {
+	m.hasActiveTransaction = false
+	return nil
+}
+
+func (m *FailingMockUnitOfWork) Rollback(ctx context.Context) error {
+	m.hasActiveTransaction = false
+	return nil
+}
+
+// TransactionProviderError simulates infrastructure errors
+type TransactionProviderError struct {
+	Message string
+}
+
+func (e *TransactionProviderError) Error() string {
+	return e.Message
+}
+
+// FailingUnitOfWorkBehavior behavior that propagates transaction provider failures
+type FailingUnitOfWorkBehavior struct {
+	unitOfWork *FailingMockUnitOfWork
+}
+
+func (b *FailingUnitOfWorkBehavior) Handle(ctx context.Context, request interface{}, next func() (interface{}, error)) (interface{}, error) {
+	// Check if request is a command
+	if _, isCommand := request.(interface{ IsCommand() }); !isCommand {
+		return next()
+	}
+
+	// Check for existing transaction
+	if !b.unitOfWork.HasActiveTransaction() {
+		if err := b.unitOfWork.BeginTransaction(ctx); err != nil {
+			// Fail fast - propagate transaction provider error
+			return nil, err
+		}
+	}
+
+	// Execute handler
+	result, err := next()
+
+	if err != nil {
+		b.unitOfWork.Rollback(ctx)
+		return nil, err
+	}
+
+	b.unitOfWork.Commit(ctx)
+	return result, nil
+}
+
+func (b *FailingUnitOfWorkBehavior) Order() int {
+	return 30
+}
+
+// Test command types for transaction provider failure testing
+type TransactionProviderFailureCommand struct {
+	ID string
+}
+
+func (c *TransactionProviderFailureCommand) IsRequest() {}
+func (c *TransactionProviderFailureCommand) IsCommand() {}
+
+type TransactionProviderFailureCommandHandler struct {
+	Executed bool
+}
+
+func (h *TransactionProviderFailureCommandHandler) Handle(ctx context.Context, cmd *TransactionProviderFailureCommand) (interface{}, error) {
+	h.Executed = true
+	return struct{}{}, nil
+}
