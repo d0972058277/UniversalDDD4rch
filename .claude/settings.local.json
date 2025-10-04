@@ -129,7 +129,8 @@
       "Bash(pytest:*)",
       "Bash(./run-tests.sh:*)",
       "Bash(export PYTHONPATH=src:..)",
-      "Bash(./test-all.sh:*)"
+      "Bash(./test-all.sh:*)",
+      "Bash(export:*)"
     ],
     "deny": [],
     "ask": []

@@ -179,9 +179,9 @@
 - [X] T071 [P] [REQUIRES: T061] TypeScript BaseRequest interface in `typescript-nodejs/architecture-shell-cqrs/src/BaseRequest.ts`
 - [X] T072 [P] [REQUIRES: T061] TypeScript Command interface in `typescript-nodejs/architecture-shell-cqrs/src/Command.ts`
 - [X] T073 [P] [REQUIRES: T061] TypeScript Query<TResult> interface in `typescript-nodejs/architecture-shell-cqrs/src/Query.ts`
-- [ ] T074 [P] [REQUIRES: T061] Python BaseRequest class in `python-django/architecture/.../base_request.py`
-- [ ] T075 [P] [REQUIRES: T061] Python Command class in `python-django/architecture/.../command.py`
-- [ ] T076 [P] [REQUIRES: T061] Python QueryOf[TResult] class in `python-django/architecture/.../query.py`
+- [X] T074 [P] [REQUIRES: T061] Python BaseRequest class in `python-django/architecture/.../base_request.py`
+- [X] T075 [P] [REQUIRES: T061] Python Command class in `python-django/architecture/.../command.py`
+- [X] T076 [P] [REQUIRES: T061] Python QueryOf[TResult] class in `python-django/architecture/.../query.py`
 
 ### Handler Interfaces (15 tasks - 3 per language)
 - [X] T077 [P] [REQUIRES: T061] C# IRequestHandler<TRequest, TResponse> in `csharp-dotnet/src/.../IRequestHandler.cs`
@@ -196,9 +196,9 @@
 - [X] T086 [P] [REQUIRES: T061] TypeScript IRequestHandler<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IRequestHandler.ts`
 - [X] T087 [P] [REQUIRES: T061] TypeScript ICommandHandler<TCommand> in `typescript-nodejs/architecture-shell-cqrs/src/ICommandHandler.ts`
 - [X] T088 [P] [REQUIRES: T061] TypeScript IQueryHandler<TQuery, TResult> in `typescript-nodejs/architecture-shell-cqrs/src/IQueryHandler.ts`
-- [ ] T089 [P] [REQUIRES: T061] Python RequestHandler[TRequest, TResponse] in `python-django/architecture/.../request_handler.py`
-- [ ] T090 [P] [REQUIRES: T061] Python CommandHandler[TCommand] in `python-django/architecture/.../command_handler.py`
-- [ ] T091 [P] [REQUIRES: T061] Python QueryHandler[TQuery, TResult] in `python-django/architecture/.../query_handler.py`
+- [X] T089 [P] [REQUIRES: T061] Python RequestHandler[TRequest, TResponse] in `python-django/architecture/.../request_handler.py`
+- [X] T090 [P] [REQUIRES: T061] Python CommandHandler[TCommand] in `python-django/architecture/.../command_handler.py`
+- [X] T091 [P] [REQUIRES: T061] Python QueryHandler[TQuery, TResult] in `python-django/architecture/.../query_handler.py`
 
 ### Mediator Interface and Implementation (15 tasks - 3 per language)
 - [X] T092 [P] C# IMediator interface in `csharp-dotnet/src/.../IMediator.cs`
@@ -221,8 +221,8 @@
 - [ ] T107 [P] Go BehaviorMatcher interface in `golang/pkg/.../behavior_matcher.go`
 - [X] T108 [P] TypeScript IPipelineBehavior<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IPipelineBehavior.ts`
 - [X] T109 [P] TypeScript IBehaviorMatcher interface in `typescript-nodejs/architecture-shell-cqrs/src/IBehaviorMatcher.ts`
-- [ ] T110 [P] Python PipelineBehavior[TRequest, TResponse] in `python-django/architecture/.../pipeline_behavior.py`
-- [ ] T111 [P] Python BehaviorMatcher protocol in `python-django/architecture/.../behavior_matcher.py`
+- [X] T110 [P] Python PipelineBehavior[TRequest, TResponse] in `python-django/architecture/.../pipeline_behavior.py`
+- [X] T111 [P] Python BehaviorMatcher protocol in `python-django/architecture/.../behavior_matcher.py`
 
 ### UnitOfWork Interface (5 tasks) - MOVED HERE from Phase 3.5
 **CRITICAL: These interfaces must exist BEFORE UnitOfWorkBehavior implementations (T122-T126)**
@@ -230,7 +230,7 @@
 - [X] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
 - [ ] T114 [P] Go UnitOfWork interface in `golang/pkg/.../unit_of_work.go`
 - [X] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/architecture-shell-cqrs/src/IUnitOfWork.ts`
-- [ ] T116 [P] Python UnitOfWork protocol in `python-django/architecture/.../unit_of_work.py`
+- [X] T116 [P] Python UnitOfWork protocol in `python-django/architecture/.../unit_of_work.py`
 
 ---
 
