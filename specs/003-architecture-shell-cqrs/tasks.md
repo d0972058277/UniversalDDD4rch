@@ -103,14 +103,14 @@
 ### UT-002: Query Return Type Contracts (5 tests)
 - [X] T037 [P] [REQUIRES: T001-T025] C# test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/QueryTests.cs`
 - [X] T038 [P] [REQUIRES: T006-T010] Java test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `java-spring/src/test/java/arch/shell/cqrs/QueryTests.java`
-- [ ] T039 [P] [REQUIRES: T011-T015] Go test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `golang/architecture-shell-cqrs/tests/query_test.go`
+- [X] T039 [P] [REQUIRES: T011-T015] Go test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `golang/architecture-shell-cqrs/tests/query_test.go`
 - [X] T040 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/query.test.ts`
 - [X] T041 [P] [REQUIRES: T021-T025] Python test: `Should_ReturnCorrectType_When_QueryHandlerExecutes` in `python-django/tests/shell/cqrs/test_query.py`
 
 ### UT-003: Pipeline Behavior Execution Order (5 tests)
 - [X] T042 [P] [REQUIRES: T001-T025] C# test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T043 [P] [REQUIRES: T006-T010] Java test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
-- [ ] T044 [P] [REQUIRES: T011-T015] Go test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
+- [X] T044 [P] [REQUIRES: T011-T015] Go test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
 - [X] T045 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [X] T046 [P] [REQUIRES: T021-T025] Python test: `Should_ExecuteBehaviorsInOrder_When_RequestProcessed` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
@@ -118,14 +118,14 @@
 **Purpose**: Validate FR-007 requirement that system allows configuration of behavior execution order, including non-recommended sequences per spec.md:L74-75 edge case
 - [X] T042b [P] [REQUIRES: T001-T025] C# test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T043b [P] [REQUIRES: T006-T010] Java test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
-- [ ] T044b [P] [REQUIRES: T011-T015] Go test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
+- [X] T044b [P] [REQUIRES: T011-T015] Go test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
 - [X] T045b [P] [REQUIRES: T016-T020] TypeScript test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [X] T046b [P] [REQUIRES: T021-T025] Python test: `Should_AllowCustomOrder_When_BehaviorsConfiguredOutOfRecommendedSequence` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
 ### UT-004: Cancellation Token Propagation (5 tests)
 - [X] T047 [P] [REQUIRES: T001-T025] C# test: `Should_TerminateEarly_When_CancellationRequested` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/CancellationTests.cs`
 - [X] T048 [P] [REQUIRES: T006-T010] Java test: `Should_TerminateEarly_When_CancellationRequested` in `java-spring/src/test/java/arch/shell/cqrs/CancellationTests.java`
-- [ ] T049 [P] [REQUIRES: T011-T015] Go test: `Should_TerminateEarly_When_CancellationRequested` in `golang/architecture-shell-cqrs/tests/cancellation_test.go`
+- [X] T049 [P] [REQUIRES: T011-T015] Go test: `Should_TerminateEarly_When_CancellationRequested` in `golang/architecture-shell-cqrs/tests/cancellation_test.go`
 - [X] T050 [P] [REQUIRES: T016-T020] TypeScript test: `Should_TerminateEarly_When_CancellationRequested` in `typescript-nodejs/architecture-shell-cqrs/tests/cancellation.test.ts`
 - [X] T051 [P] [REQUIRES: T021-T025] Python test: `Should_TerminateEarly_When_CancellationRequested` in `python-django/tests/shell/cqrs/test_cancellation.py`
 
@@ -133,14 +133,14 @@
 **Note**: These tests verify UnitOfWork behavior in isolation using mocked transactions. End-to-end transaction lifecycle validated in IT-001/IT-002.
 - [X] T052 [P] [REQUIRES: T001-T025] C# test: `Should_CallBeginTransaction_When_CommandExecutes` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs` - verify mock IUnitOfWork.BeginTransactionAsync() called
 - [X] T053 [P] [REQUIRES: T006-T010] Java test: `Should_CallBeginTransaction_When_CommandExecutes` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java` - verify mock UnitOfWork.beginTransaction() called
-- [ ] T054 [P] [REQUIRES: T011-T015] Go test: `Should_CallBeginTransaction_When_CommandExecutes` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go` - verify mock UnitOfWork.BeginTransaction() called
+- [X] T054 [P] [REQUIRES: T011-T015] Go test: `Should_CallBeginTransaction_When_CommandExecutes` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go` - verify mock UnitOfWork.BeginTransaction() called
 - [X] T055 [P] [REQUIRES: T016-T020] TypeScript test: `Should_CallBeginTransaction_When_CommandExecutes` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts` - verify mock IUnitOfWork.beginTransaction() called
 - [X] T056 [P] [REQUIRES: T021-T025] Python test: `Should_CallBeginTransaction_When_CommandExecutes` in `python-django/tests/shell/cqrs/test_unitofwork_behavior.py` - verify mock UnitOfWork.begin_transaction() called
 
 ### UT-006: Nested Command Transaction Reuse (5 tests)
 - [X] T057 [P] [REQUIRES: T001-T025] C# test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/UnitOfWorkBehaviorTests.cs`
 - [X] T058 [P] [REQUIRES: T006-T010] Java test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `java-spring/src/test/java/arch/shell/cqrs/UnitOfWorkBehaviorTests.java`
-- [ ] T059 [P] [REQUIRES: T011-T015] Go test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go`
+- [X] T059 [P] [REQUIRES: T011-T015] Go test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `golang/architecture-shell-cqrs/tests/unitofwork_behavior_test.go`
 - [X] T060 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `typescript-nodejs/architecture-shell-cqrs/tests/unitofworkBehavior.test.ts`
 - [X] T061 [P] [REQUIRES: T021-T025] Python test: `Should_ReuseTransaction_When_NestedCommandExecuted` in `python-django/tests/shell/cqrs/test_unitofwork_behavior.py`
 
@@ -148,7 +148,7 @@
 **Purpose**: Validate FR-007 requirement that BehaviorMatcher provides type guards (IsCommand, IsQuery) to selectively apply behaviors to request types
 - [X] T061b [P] [REQUIRES: T001-T025] C# test: `Should_MatchCommands_When_IsCommandGuardUsed` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/BehaviorMatcherTests.cs`
 - [X] T061c [P] [REQUIRES: T006-T010] Java test: `Should_MatchCommands_When_IsCommandGuardUsed` in `java-spring/src/test/java/arch/shell/cqrs/BehaviorMatcherTests.java`
-- [ ] T061d [P] [REQUIRES: T011-T015] Go test: `Should_MatchCommands_When_IsCommandGuardUsed` in `golang/architecture-shell-cqrs/tests/behavior_matcher_test.go`
+- [X] T061d [P] [REQUIRES: T011-T015] Go test: `Should_MatchCommands_When_IsCommandGuardUsed` in `golang/architecture-shell-cqrs/tests/behavior_matcher_test.go`
 - [X] T061e [P] [REQUIRES: T016-T020] TypeScript test: `Should_MatchCommands_When_IsCommandGuardUsed` in `typescript-nodejs/architecture-shell-cqrs/tests/behaviorMatcher.test.ts`
 - [X] T061f [P] [REQUIRES: T021-T025] Python test: `Should_MatchCommands_When_IsCommandGuardUsed` in `python-django/tests/shell/cqrs/test_behavior_matcher.py`
 
@@ -156,7 +156,7 @@
 **Purpose**: Validate BR-004 requirement that system logs warnings when behavior order deviates from recommended sequence (Validation → Authorization → Transaction → Telemetry → Resilience)
 - [X] T061g [P] [REQUIRES: T001-T025] C# test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/PipelineTests.cs`
 - [X] T061h [P] [REQUIRES: T006-T010] Java test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `java-spring/src/test/java/arch/shell/cqrs/PipelineTests.java`
-- [ ] T061i [P] [REQUIRES: T011-T015] Go test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
+- [X] T061i [P] [REQUIRES: T011-T015] Go test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `golang/architecture-shell-cqrs/tests/pipeline_test.go`
 - [X] T061j [P] [REQUIRES: T016-T020] TypeScript test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `typescript-nodejs/architecture-shell-cqrs/tests/pipeline.test.ts`
 - [X] T061k [P] [REQUIRES: T021-T025] [BLOCKS: T062] Python test: `Should_LogWarning_When_BehaviorOrderDeviatesFromRecommended` in `python-django/tests/shell/cqrs/test_pipeline.py`
 
@@ -241,35 +241,35 @@
 ### Validation Behavior (5 tasks)
 - [X] T117 [P] C# ValidationBehavior in `csharp-dotnet/src/.../Behaviors/ValidationBehavior.cs` [REQUIRES: T093]
 - [X] T118 [P] Java ValidationBehavior in `java-spring/src/main/.../behaviors/ValidationBehavior.java` [REQUIRES: T095]
-- [ ] T119 [P] Go validationBehavior in `golang/architecture-shell-cqrs/behaviors/validation_behavior.go` [REQUIRES: T097]
+- [X] T119 [P] Go validationBehavior in `golang/architecture-shell-cqrs/behaviors/validation_behavior.go` [REQUIRES: T097]
 - [X] T120 [P] TypeScript ValidationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/ValidationBehavior.ts` [REQUIRES: T099]
 - [X] T121 [P] Python ValidationBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/validation_behavior.py` [REQUIRES: T101]
 
 ### Authorization Behavior (5 tasks)
 - [X] T122 [P] C# AuthorizationBehavior in `csharp-dotnet/src/.../Behaviors/AuthorizationBehavior.cs` [REQUIRES: T093]
 - [X] T123 [P] Java AuthorizationBehavior in `java-spring/src/main/.../behaviors/AuthorizationBehavior.java` [REQUIRES: T095]
-- [ ] T124 [P] Go authorizationBehavior in `golang/architecture-shell-cqrs/behaviors/authorization_behavior.go` [REQUIRES: T097]
+- [X] T124 [P] Go authorizationBehavior in `golang/architecture-shell-cqrs/behaviors/authorization_behavior.go` [REQUIRES: T097]
 - [X] T125 [P] TypeScript AuthorizationBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/AuthorizationBehavior.ts` [REQUIRES: T099]
 - [X] T126 [P] Python AuthorizationBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/authorization_behavior.py` [REQUIRES: T101]
 
 ### UnitOfWork Behavior (5 tasks)
 - [X] T127 [P] C# UnitOfWorkBehavior in `csharp-dotnet/src/.../Behaviors/UnitOfWorkBehavior.cs` [REQUIRES: T093, T112]
 - [X] T128 [P] Java UnitOfWorkBehavior in `java-spring/src/main/.../behaviors/UnitOfWorkBehavior.java` [REQUIRES: T095, T113]
-- [ ] T129 [P] Go unitOfWorkBehavior in `golang/architecture-shell-cqrs/behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
+- [X] T129 [P] Go unitOfWorkBehavior in `golang/architecture-shell-cqrs/behaviors/unitofwork_behavior.go` [REQUIRES: T097, T114]
 - [X] T130 [P] TypeScript UnitOfWorkBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/UnitOfWorkBehavior.ts` [REQUIRES: T099, T115]
 - [X] T131 [P] Python UnitOfWorkBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/unitofwork_behavior.py` [REQUIRES: T101, T116]
 
 ### Telemetry Behavior (5 tasks)
 - [X] T132 [P] C# TelemetryBehavior in `csharp-dotnet/src/.../Behaviors/TelemetryBehavior.cs` [REQUIRES: T093]
 - [X] T133 [P] Java TelemetryBehavior in `java-spring/src/main/.../behaviors/TelemetryBehavior.java` [REQUIRES: T095]
-- [ ] T134 [P] Go telemetryBehavior in `golang/architecture-shell-cqrs/behaviors/telemetry_behavior.go` [REQUIRES: T097]
+- [X] T134 [P] Go telemetryBehavior in `golang/architecture-shell-cqrs/behaviors/telemetry_behavior.go` [REQUIRES: T097]
 - [X] T135 [P] TypeScript TelemetryBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/TelemetryBehavior.ts` [REQUIRES: T099]
 - [X] T136 [P] Python TelemetryBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/telemetry_behavior.py` [REQUIRES: T101]
 
 ### Caching Behavior (5 tasks)
 - [X] T137 [P] C# CachingBehavior in `csharp-dotnet/src/.../Behaviors/CachingBehavior.cs` [REQUIRES: T093]
 - [X] T138 [P] Java CachingBehavior in `java-spring/src/main/.../behaviors/CachingBehavior.java` [REQUIRES: T095]
-- [ ] T139 [P] Go cachingBehavior in `golang/architecture-shell-cqrs/behaviors/caching_behavior.go` [REQUIRES: T097]
+- [X] T139 [P] Go cachingBehavior in `golang/architecture-shell-cqrs/behaviors/caching_behavior.go` [REQUIRES: T097]
 - [X] T140 [P] TypeScript CachingBehavior in `typescript-nodejs/architecture-shell-cqrs/src/behaviors/CachingBehavior.ts` [REQUIRES: T099]
 - [X] T141 [P] Python CachingBehavior in `python-django/architecture-shell-cqrs/src/architecture_shell_cqrs/concrete_behaviors/caching_behavior.py` [REQUIRES: T101]
 
@@ -280,7 +280,7 @@
 ### InMemory UnitOfWork (for testing) (5 tasks)
 - [X] T142 [P] C# InMemoryUnitOfWork in `csharp-dotnet/tests/.../InMemoryUnitOfWork.cs` [REQUIRES: T112]
 - [X] T143 [P] Java InMemoryUnitOfWork in `java-spring/src/test/.../InMemoryUnitOfWork.java` [REQUIRES: T113]
-- [ ] T144 [P] Go inMemoryUnitOfWork in `golang/architecture-shell-cqrs/tests/in_memory_unitofwork.go` [REQUIRES: T114]
+- [X] T144 [P] Go inMemoryUnitOfWork in `golang/architecture-shell-cqrs/tests/in_memory_unitofwork.go` [REQUIRES: T114]
 - [X] T145 [P] TypeScript InMemoryUnitOfWork in `typescript-nodejs/architecture-shell-cqrs/tests/InMemoryUnitOfWork.ts` [REQUIRES: T115]
 - [X] T146 [P] Python InMemoryUnitOfWork in `python-django/architecture-shell-cqrs/tests/in_memory_unitofwork.py` [REQUIRES: T116]
 
