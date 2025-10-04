@@ -82,12 +82,12 @@
 ### UT-001: Handler Registration Uniqueness (11 tests - multi-handler across all languages)
 - [X] T026 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_ZeroHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [X] T027 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_ZeroHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
-- [ ] T028 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_ZeroHandlersRegistered` in `golang/architecture-shell-cqrs/tests/mediator_test.go`
+- [X] T028 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_ZeroHandlersRegistered` in `golang/architecture-shell-cqrs/tests/mediator_test.go`
 - [X] T029 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_ZeroHandlersRegistered` in `typescript-nodejs/architecture-shell-cqrs/tests/mediator.test.ts`
 - [X] T030 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_ZeroHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
 - [X] T031 [P] [REQUIRES: T001-T025] C# test: `Should_ThrowException_When_MultipleHandlersRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
 - [X] T032 [P] [REQUIRES: T006-T010] Java test: `Should_ThrowException_When_MultipleHandlersRegistered` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java`
-- [ ] T033 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_MultipleHandlersRegistered` in `golang/architecture-shell-cqrs/tests/mediator_test.go`
+- [X] T033 [P] [REQUIRES: T011-T015] Go test: `Should_ThrowException_When_MultipleHandlersRegistered` in `golang/architecture-shell-cqrs/tests/mediator_test.go`
 - [X] T034 [P] [REQUIRES: T016-T020] TypeScript test: `Should_ThrowException_When_MultipleHandlersRegistered` in `typescript-nodejs/architecture-shell-cqrs/tests/mediator.test.ts`
 - [X] T035 [P] [REQUIRES: T021-T025] Python test: `Should_ThrowException_When_MultipleHandlersRegistered` in `python-django/tests/shell/cqrs/test_mediator.py`
 - [X] T036 [P] [REQUIRES: T001-T025] C# test: `Should_ResolveHandler_When_ExactlyOneHandlerRegistered` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs`
@@ -96,7 +96,7 @@
 **Purpose**: Validate FR-008 requirement that Mediator constructor/initialization detects ambiguous handler registration (multiple handlers for same request type) and throws before runtime per spec.md:L67 edge case. This enforces TDD by testing handler uniqueness validation BEFORE Mediator implementation (T093-T101).
 - [X] T036b [P] [REQUIRES: T001-T025] [BLOCKS: T093] C# test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `csharp-dotnet/tests/Architecture.Shell.Cqrs.Tests/MediatorTests.cs` - register 2+ handlers for same command type, verify Mediator constructor/build throws with handler names in error message
 - [X] T037b [P] [REQUIRES: T006-T010] [BLOCKS: T095] Java test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `java-spring/src/test/java/arch/shell/cqrs/MediatorTests.java` - register 2+ handlers for same command type, verify MediatorImpl constructor/build throws with handler names in error message
-- [ ] T038b [P] [REQUIRES: T011-T015] [BLOCKS: T097] Go test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `golang/architecture-shell-cqrs/tests/mediator_test.go` - register 2+ handlers for same command type, verify NewMediator panics with handler names in error message
+- [X] T038b [P] [REQUIRES: T011-T015] [BLOCKS: T097] Go test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `golang/architecture-shell-cqrs/tests/mediator_test.go` - register 2+ handlers for same command type, verify NewMediator panics with handler names in error message
 - [X] T039b [P] [REQUIRES: T016-T020] [BLOCKS: T099] TypeScript test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `typescript-nodejs/architecture-shell-cqrs/tests/mediator.test.ts` - register 2+ handlers for same command type, verify Mediator constructor throws with handler names in error message
 - [X] T040b [P] [REQUIRES: T021-T025] [BLOCKS: T101] Python test: `Should_ThrowException_When_ConstructorDetectsAmbiguousHandlers` in `python-django/tests/shell/cqrs/test_mediator.py` - register 2+ handlers for same command type, verify MediatorImpl.__init__ raises with handler names in error message
 
@@ -174,9 +174,9 @@
 - [X] T065 [P] [REQUIRES: T061] Java BaseRequest interface in `java-spring/src/main/java/arch/shell/cqrs/BaseRequest.java`
 - [X] T066 [P] [REQUIRES: T061] Java Command interface in `java-spring/src/main/java/arch/shell/cqrs/Command.java`
 - [X] T067 [P] [REQUIRES: T061] Java Query<TResult> interface in `java-spring/src/main/java/arch/shell/cqrs/Query.java`
-- [ ] T068 [P] [REQUIRES: T061] Go BaseRequest interface in `golang/architecture-shell-cqrs/base_request.go`
-- [ ] T069 [P] [REQUIRES: T061] Go Command interface in `golang/architecture-shell-cqrs/command.go`
-- [ ] T070 [P] [REQUIRES: T061] Go QueryOf[TResult] interface in `golang/architecture-shell-cqrs/query.go`
+- [X] T068 [P] [REQUIRES: T061] Go BaseRequest interface in `golang/architecture-shell-cqrs/base_request.go`
+- [X] T069 [P] [REQUIRES: T061] Go Command interface in `golang/architecture-shell-cqrs/command.go`
+- [X] T070 [P] [REQUIRES: T061] Go QueryOf[TResult] interface in `golang/architecture-shell-cqrs/query.go`
 - [X] T071 [P] [REQUIRES: T061] TypeScript BaseRequest interface in `typescript-nodejs/architecture-shell-cqrs/src/BaseRequest.ts`
 - [X] T072 [P] [REQUIRES: T061] TypeScript Command interface in `typescript-nodejs/architecture-shell-cqrs/src/Command.ts`
 - [X] T073 [P] [REQUIRES: T061] TypeScript Query<TResult> interface in `typescript-nodejs/architecture-shell-cqrs/src/Query.ts`
@@ -191,9 +191,9 @@
 - [X] T080 [P] [REQUIRES: T061] Java RequestHandler<TRequest, TResponse> in `java-spring/src/main/.../RequestHandler.java`
 - [X] T081 [P] [REQUIRES: T061] Java CommandHandler<TCommand] in `java-spring/src/main/.../CommandHandler.java`
 - [X] T082 [P] [REQUIRES: T061] Java QueryHandler<TQuery, TResult> in `java-spring/src/main/.../QueryHandler.java`
-- [ ] T083 [P] [REQUIRES: T061] Go RequestHandler[TRequest, TResponse] in `golang/architecture-shell-cqrs/request_handler.go`
-- [ ] T084 [P] [REQUIRES: T061] Go CommandHandler[TCommand] in `golang/architecture-shell-cqrs/command_handler.go`
-- [ ] T085 [P] [REQUIRES: T061] Go QueryHandler[TQuery, TResult] in `golang/architecture-shell-cqrs/query_handler.go`
+- [X] T083 [P] [REQUIRES: T061] Go RequestHandler[TRequest, TResponse] in `golang/architecture-shell-cqrs/request_handler.go`
+- [X] T084 [P] [REQUIRES: T061] Go CommandHandler[TCommand] in `golang/architecture-shell-cqrs/command_handler.go`
+- [X] T085 [P] [REQUIRES: T061] Go QueryHandler[TQuery, TResult] in `golang/architecture-shell-cqrs/query_handler.go`
 - [X] T086 [P] [REQUIRES: T061] TypeScript IRequestHandler<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IRequestHandler.ts`
 - [X] T087 [P] [REQUIRES: T061] TypeScript ICommandHandler<TCommand> in `typescript-nodejs/architecture-shell-cqrs/src/ICommandHandler.ts`
 - [X] T088 [P] [REQUIRES: T061] TypeScript IQueryHandler<TQuery, TResult> in `typescript-nodejs/architecture-shell-cqrs/src/IQueryHandler.ts`
@@ -206,8 +206,8 @@
 - [X] T093 C# Mediator implementation in `csharp-dotnet/src/.../Mediator.cs` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T036b]
 - [X] T094 [P] Java Mediator interface in `java-spring/src/main/.../Mediator.java`
 - [X] T095 Java MediatorImpl implementation in `java-spring/src/main/.../MediatorImpl.java` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T037b]
-- [ ] T096 [P] Go Mediator interface in `golang/architecture-shell-cqrs/mediator.go`
-- [ ] T097 Go mediatorImpl implementation in `golang/architecture-shell-cqrs/mediator_impl.go` with handler uniqueness validation in constructor (panics if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T038b]
+- [X] T096 [P] Go Mediator interface in `golang/architecture-shell-cqrs/mediator.go`
+- [X] T097 Go mediatorImpl implementation in `golang/architecture-shell-cqrs/mediator_impl.go` with handler uniqueness validation in constructor (panics if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T038b]
 - [X] T098 [P] TypeScript IMediator interface in `typescript-nodejs/architecture-shell-cqrs/src/IMediator.ts`
 - [X] T099 TypeScript Mediator implementation in `typescript-nodejs/architecture-shell-cqrs/src/Mediator.ts` with handler uniqueness validation in constructor (throws if zero or multiple handlers registered per request type) per FR-008 and spec.md:L64-67 edge cases [REQUIRES: T062-T091, T039b]
 - [X] T100 [P] Python Mediator protocol in `python-django/architecture/.../mediator.py`
@@ -218,8 +218,8 @@
 - [X] T103 [P] C# IBehaviorMatcher interface in `csharp-dotnet/src/.../IBehaviorMatcher.cs`
 - [X] T104 [P] Java PipelineBehavior<TRequest, TResponse> in `java-spring/src/main/.../PipelineBehavior.java`
 - [X] T105 [P] Java BehaviorMatcher interface in `java-spring/src/main/.../BehaviorMatcher.java`
-- [ ] T106 [P] Go PipelineBehavior[TRequest, TResponse] in `golang/architecture-shell-cqrs/pipeline_behavior.go`
-- [ ] T107 [P] Go BehaviorMatcher interface in `golang/architecture-shell-cqrs/behavior_matcher.go`
+- [X] T106 [P] Go PipelineBehavior[TRequest, TResponse] in `golang/architecture-shell-cqrs/pipeline_behavior.go`
+- [X] T107 [P] Go BehaviorMatcher interface in `golang/architecture-shell-cqrs/behavior_matcher.go`
 - [X] T108 [P] TypeScript IPipelineBehavior<TRequest, TResponse> in `typescript-nodejs/architecture-shell-cqrs/src/IPipelineBehavior.ts`
 - [X] T109 [P] TypeScript IBehaviorMatcher interface in `typescript-nodejs/architecture-shell-cqrs/src/IBehaviorMatcher.ts`
 - [X] T110 [P] Python PipelineBehavior[TRequest, TResponse] in `python-django/architecture/.../pipeline_behavior.py`
@@ -229,7 +229,7 @@
 **CRITICAL: These interfaces must exist BEFORE UnitOfWorkBehavior implementations (T122-T126)**
 - [X] T112 [P] C# IUnitOfWork interface in `csharp-dotnet/src/.../IUnitOfWork.cs`
 - [X] T113 [P] Java UnitOfWork interface in `java-spring/src/main/.../UnitOfWork.java`
-- [ ] T114 [P] Go UnitOfWork interface in `golang/architecture-shell-cqrs/unit_of_work.go`
+- [X] T114 [P] Go UnitOfWork interface in `golang/architecture-shell-cqrs/unit_of_work.go`
 - [X] T115 [P] TypeScript IUnitOfWork interface in `typescript-nodejs/architecture-shell-cqrs/src/IUnitOfWork.ts`
 - [X] T116 [P] Python UnitOfWork protocol in `python-django/architecture/.../unit_of_work.py`
 
