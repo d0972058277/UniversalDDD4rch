@@ -127,7 +127,7 @@ type ConditionalBehaviorForCommand struct {
 	onExecute func()
 }
 
-func (b *ConditionalBehaviorForCommand) Handle(ctx context.Context, request *MatcherTestCommand, next func() (struct{}, error)) (struct{}, error) {
+func (b *ConditionalBehaviorForCommand) Handle(ctx context.Context, request *MatcherTestCommand, next func() (interface{}, error)) (interface{}, error) {
 	if b.matcher.Matches(request) {
 		b.onExecute()
 	}
@@ -144,7 +144,7 @@ type ConditionalBehaviorForQuery struct {
 	onExecute func()
 }
 
-func (b *ConditionalBehaviorForQuery) Handle(ctx context.Context, request *MatcherTestQuery, next func() (string, error)) (string, error) {
+func (b *ConditionalBehaviorForQuery) Handle(ctx context.Context, request *MatcherTestQuery, next func() (interface{}, error)) (interface{}, error) {
 	if b.matcher.Matches(request) {
 		b.onExecute()
 	}

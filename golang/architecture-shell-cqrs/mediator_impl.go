@@ -202,6 +202,14 @@ func (m *mediatorImpl) Send(ctx context.Context, request BaseRequest) (interface
 				reflect.TypeOf((*func() (interface{}, error))(nil)).Elem(),
 				func(args []reflect.Value) []reflect.Value {
 					result, err := currentPipeline()
+					var resultValue reflect.Value
+					if result != nil {
+						resultValue = reflect.ValueOf(result)
+					} else {
+						// Return zero value for interface{} type
+						resultValue = reflect.Zero(reflect.TypeOf((*interface{})(nil)).Elem())
+					}
+
 					var errValue reflect.Value
 					if err != nil {
 						errValue = reflect.ValueOf(err)
@@ -209,7 +217,7 @@ func (m *mediatorImpl) Send(ctx context.Context, request BaseRequest) (interface
 						errValue = reflect.Zero(reflect.TypeOf((*error)(nil)).Elem())
 					}
 					return []reflect.Value{
-						reflect.ValueOf(result),
+						resultValue,
 						errValue,
 					}
 				},

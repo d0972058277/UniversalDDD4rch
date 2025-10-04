@@ -292,28 +292,28 @@
 ### IT-001: Command Execution Lifecycle (5 tests)
 - [X] T147 [P] C# test: `Should_CommitTransaction_When_CommandSucceeds` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` [REQUIRES: T093, T127, T142]
 - [X] T148 [P] Java test: `Should_CommitTransaction_When_CommandSucceeds` in `java-spring/src/test/.../CommandExecutionTests.java` [REQUIRES: T095, T128, T143]
-- [ ] T149 [P] Go test: `Should_CommitTransaction_When_CommandSucceeds` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` [REQUIRES: T097, T129, T144]
+- [X] T149 [P] Go test: `Should_CommitTransaction_When_CommandSucceeds` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` [REQUIRES: T097, T129, T144]
 - [X] T150 [P] TypeScript test: `Should_CommitTransaction_When_CommandSucceeds` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` [REQUIRES: T099, T130, T145]
 - [X] T151 [P] Python test: `Should_CommitTransaction_When_CommandSucceeds` in `python-django/tests/.../test_command_execution.py` [REQUIRES: T101, T131, T146]
 
 ### IT-002: Command Execution Rollback (5 tests)
 - [X] T152 [P] C# test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T147]
 - [X] T153 [P] Java test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T148]
-- [ ] T154 [P] Go test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T149]
+- [X] T154 [P] Go test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T149]
 - [X] T155 [P] TypeScript test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T150]
 - [X] T156 [P] Python test: `Should_RollbackTransaction_When_CommandThrowsException` [REQUIRES: T151]
 
 ### IT-003: Nested Command Transaction Reuse (5 tests)
 - [X] T157 [P] C# test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T147]
 - [X] T158 [P] Java test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T148]
-- [ ] T159 [P] Go test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T149]
+- [X] T159 [P] Go test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T149]
 - [X] T160 [P] TypeScript test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T150]
 - [X] T161 [P] Python test: `Should_ShareTransaction_When_NestedCommandCalled` [REQUIRES: T151]
 
 ### IT-004: Query Execution Without Transaction (5 tests)
 - [X] T162 [P] C# test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T093]
 - [X] T163 [P] Java test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T095]
-- [ ] T164 [P] Go test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T097]
+- [X] T164 [P] Go test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T097]
 - [X] T165 [P] TypeScript test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T099]
 - [X] T166 [P] Python test: `Should_SkipTransactionManagement_When_QueryExecutes` [REQUIRES: T101]
 
@@ -342,7 +342,7 @@
 **Purpose**: Validate BR-008 requirement that Result.Failure() triggers transaction commit (not rollback)
 - [X] T211 [P] C# test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008 [REQUIRES: T147]
 - [X] T212 [P] Java test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008 [REQUIRES: T148]
-- [ ] T213 [P] Go test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per CONTRACT_TESTS.md IT-008 [REQUIRES: T149]
+- [X] T213 [P] Go test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per CONTRACT_TESTS.md IT-008 [REQUIRES: T149]
 - [X] T214 [P] TypeScript test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008 [REQUIRES: T150]
 - [X] T215 [P] Python test: `Should_CommitTransaction_When_HandlerReturnsResultFailure` in `python-django/tests/.../test_command_execution.py` per CONTRACT_TESTS.md IT-008 [REQUIRES: T151]
 
@@ -350,7 +350,7 @@
 **Purpose**: Validate BR-008 requirement for void commands returning Result<Unit>.Failure() (extends IT-008 coverage)
 - [X] T211b [P] C# test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per CONTRACT_TESTS.md IT-008b [REQUIRES: T147]
 - [X] T212b [P] Java test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `java-spring/src/test/.../CommandExecutionTests.java` per CONTRACT_TESTS.md IT-008b [REQUIRES: T148]
-- [ ] T213b [P] Go test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per CONTRACT_TESTS.md IT-008b [REQUIRES: T149]
+- [X] T213b [P] Go test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per CONTRACT_TESTS.md IT-008b [REQUIRES: T149]
 - [X] T214b [P] TypeScript test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per CONTRACT_TESTS.md IT-008b [REQUIRES: T150]
 - [X] T215b [P] Python test: `Should_CommitTransaction_When_VoidCommandHandlerReturnsResultFailure` in `python-django/tests/.../test_command_execution.py` per CONTRACT_TESTS.md IT-008b [REQUIRES: T151]
 
@@ -366,7 +366,7 @@
 **Purpose**: Validate spec.md edge case "behavior throws exception" triggers transaction rollback (extends IT-002 beyond handler exceptions)
 - [X] T221 [P] C# test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `csharp-dotnet/tests/.../CommandExecutionTests.cs` per spec.md:L68-69 [REQUIRES: T147]
 - [X] T222 [P] Java test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `java-spring/src/test/.../CommandExecutionTests.java` per spec.md:L68-69 [REQUIRES: T148]
-- [ ] T223 [P] Go test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per spec.md:L68-69 [REQUIRES: T149]
+- [X] T223 [P] Go test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `golang/architecture-shell-cqrs/tests/command_execution_test.go` per spec.md:L68-69 [REQUIRES: T149]
 - [X] T224 [P] TypeScript test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `typescript-nodejs/architecture-shell-cqrs/tests/commandExecution.test.ts` per spec.md:L68-69 [REQUIRES: T150]
 - [X] T225 [P] Python test: `Should_RollbackTransaction_When_BehaviorThrowsException` in `python-django/tests/.../test_command_execution.py` per spec.md:L68-69 [REQUIRES: T151]
 
