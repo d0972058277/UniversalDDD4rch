@@ -3,14 +3,14 @@ package integration
 import (
 	"testing"
 
-	"github.com/universalddd/architecture-core/examples/quickstart"
+	"github.com/universalddd/architecture-core/examples"
 )
 
 // TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges
 func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *testing.T) {
 	t.Run("Should_IncrementVersion_When_StateModified", func(t *testing.T) {
 		// Given: A new order aggregate
-		order := quickstart.NewOrder("CUST-001", quickstart.NewMoney(100.00, "USD"))
+		order := examples.NewOrder("CUST-001", examples.NewMoney(100.00, "USD"))
 		initialVersion := order.GetVersion()
 
 		// When: Modifying aggregate state
@@ -29,7 +29,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_CollectDomainEvents_When_BusinessOperationsExecuted", func(t *testing.T) {
 		// Given: A new order aggregate
-		order := quickstart.NewOrder("CUST-002", quickstart.NewMoney(200.00, "USD"))
+		order := examples.NewOrder("CUST-002", examples.NewMoney(200.00, "USD"))
 
 		// When: Checking initial events
 		initialEvents := order.GetEvents()
@@ -52,7 +52,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_ClearEvents_When_EventsProcessed", func(t *testing.T) {
 		// Given: Aggregate with events
-		order := quickstart.NewOrder("CUST-003", quickstart.NewMoney(300.00, "USD"))
+		order := examples.NewOrder("CUST-003", examples.NewMoney(300.00, "USD"))
 		order.ConfirmOrder()
 
 		initialEventCount := len(order.GetEvents())
@@ -72,7 +72,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_MaintainEventOrder_When_MultipleOperations", func(t *testing.T) {
 		// Given: A new order aggregate
-		order := quickstart.NewOrder("CUST-004", quickstart.NewMoney(400.00, "USD"))
+		order := examples.NewOrder("CUST-004", examples.NewMoney(400.00, "USD"))
 
 		// When: Performing sequence of operations
 		order.ConfirmOrder()
@@ -97,7 +97,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_PreventInvalidStateTransitions_When_BusinessRulesViolated", func(t *testing.T) {
 		// Given: A new order aggregate
-		order := quickstart.NewOrder("CUST-005", quickstart.NewMoney(500.00, "USD"))
+		order := examples.NewOrder("CUST-005", examples.NewMoney(500.00, "USD"))
 
 		// When: Attempting invalid state transition (ship before confirm)
 		shipResult := order.ShipOrder()
@@ -116,7 +116,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_EnforceBusinessInvariants_When_AggregateModified", func(t *testing.T) {
 		// Given: Order with business constraints
-		order := quickstart.NewOrder("CUST-006", quickstart.NewMoney(600.00, "USD"))
+		order := examples.NewOrder("CUST-006", examples.NewMoney(600.00, "USD"))
 
 		// Confirm and ship the order
 		order.ConfirmOrder()
@@ -131,7 +131,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 		}
 
 		// And aggregate state should remain consistent
-		if order.GetStatus() != quickstart.Shipped {
+		if order.GetStatus() != examples.Shipped {
 			t.Error("Order status should remain Shipped after failed cancellation")
 		}
 	})
@@ -139,7 +139,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 	t.Run("Should_SupportEventMetadata_When_EventsGenerated", func(t *testing.T) {
 		// Given: Order with correlation context
 		correlationID := "correlation-123"
-		order := quickstart.NewOrderWithCorrelation("CUST-007", quickstart.NewMoney(700.00, "USD"), correlationID)
+		order := examples.NewOrderWithCorrelation("CUST-007", examples.NewMoney(700.00, "USD"), correlationID)
 
 		// When: Performing operations
 		order.ConfirmOrder()
@@ -165,7 +165,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_SupportEventCausation_When_EventsChained", func(t *testing.T) {
 		// Given: Order aggregate
-		order := quickstart.NewOrder("CUST-008", quickstart.NewMoney(800.00, "USD"))
+		order := examples.NewOrder("CUST-008", examples.NewMoney(800.00, "USD"))
 
 		// When: Performing chained operations
 		order.ConfirmOrder()
@@ -186,12 +186,12 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_HandleComplexBusinessWorkflows_When_MultipleSteps", func(t *testing.T) {
 		// Given: Order aggregate for complex workflow
-		order := quickstart.NewOrder("CUST-009", quickstart.NewMoney(900.00, "USD"))
+		order := examples.NewOrder("CUST-009", examples.NewMoney(900.00, "USD"))
 
 		// When: Executing full business workflow
 		steps := []struct {
 			operation    func() error
-			expectedStatus quickstart.OrderStatus
+			expectedStatus examples.OrderStatus
 			description  string
 		}{
 			{
@@ -202,7 +202,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 					}
 					return nil
 				},
-				expectedStatus: quickstart.Confirmed,
+				expectedStatus: examples.Confirmed,
 				description:    "confirm order",
 			},
 			{
@@ -213,7 +213,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 					}
 					return nil
 				},
-				expectedStatus: quickstart.Shipped,
+				expectedStatus: examples.Shipped,
 				description:    "ship order",
 			},
 			{
@@ -224,7 +224,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 					}
 					return nil
 				},
-				expectedStatus: quickstart.Delivered,
+				expectedStatus: examples.Delivered,
 				description:    "deliver order",
 			},
 		}
@@ -259,7 +259,7 @@ func TestAggregateScenarios_Should_ManageEventsAndVersion_When_StateChanges(t *t
 
 	t.Run("Should_MaintainConsistency_When_ConcurrentModifications", func(t *testing.T) {
 		// Given: Order aggregate
-		order := quickstart.NewOrder("CUST-010", quickstart.NewMoney(1000.00, "USD"))
+		order := examples.NewOrder("CUST-010", examples.NewMoney(1000.00, "USD"))
 
 		// When: Simulating concurrent modifications (in single thread for testing)
 		order.ConfirmOrder()

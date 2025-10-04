@@ -1,4 +1,4 @@
-package quickstart
+package examples
 
 import (
 	"context"
@@ -171,4 +171,22 @@ func (r *InMemoryOrderRepository) ExistsAsync(ctx context.Context, id OrderId) f
 		return functional.Fail[bool](functional.InfrastructureError("EXISTS_CHECK_FAILED", err.Error()))
 	}
 	return functional.Ok(exists)
+}
+
+// Add implements IRepository.Add (delegates to AddAsync)
+func (r *InMemoryOrderRepository) Add(ctx context.Context, order *Order) error {
+	result := r.AddAsync(ctx, order)
+	if result.IsFailure() {
+		return result.Error()
+	}
+	return nil
+}
+
+// Update implements IRepository.Update (delegates to UpdateAsync)
+func (r *InMemoryOrderRepository) Update(ctx context.Context, order *Order) error {
+	result := r.UpdateAsync(ctx, order)
+	if result.IsFailure() {
+		return result.Error()
+	}
+	return nil
 }

@@ -134,7 +134,8 @@
       "Bash(timeout 60 python -m pytest tests/test_performance.py::TestPerformance::test_should_measure_mediator_overhead_and_validate_transaction_ids -v -s)",
       "Bash(make test:*)",
       "Bash(make:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(echo \"Exit code: $?\")"
     ],
     "deny": [],
     "ask": []

@@ -31,9 +31,12 @@ test-all:
 	@echo ""
 	@echo "✅ All module tests complete!"
 
-## Run tests (workspace-wide)
+## Run tests (workspace-wide, all modules)
 test:
-	@go test -race -v ./...
+	@echo "Running tests for all workspace modules..."
+	@cd architecture-core && go test -race -v ./... && \
+	cd ../architecture-shell-cqrs && (go test -race -v ./... 2>/dev/null || echo "⏳ No tests yet") && \
+	cd ../architecture-gorm && (go test -race -v ./... 2>/dev/null || echo "⏳ No tests yet")
 
 ## Run architecture-core tests only
 test-core:

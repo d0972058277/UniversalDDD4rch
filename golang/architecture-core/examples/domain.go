@@ -1,9 +1,10 @@
 // Package quickstart provides example implementations of Architecture.Core concepts
-package quickstart
+package examples
 
 import (
 	"fmt"
 	"hash/fnv"
+	"sync/atomic"
 
 	"github.com/universalddd/architecture-core/domain"
 	"github.com/universalddd/architecture-core/functional"
@@ -564,9 +565,9 @@ var orderCounter int64 = 0
 
 // generateOrderID generates a simple order ID for examples
 func generateOrderID() string {
-	// Simple ID generation for example purposes - increment counter for uniqueness
-	orderCounter++
-	return fmt.Sprintf("ORDER-%d", orderCounter)
+	// Simple ID generation for example purposes - use atomic increment for thread-safety
+	id := atomic.AddInt64(&orderCounter, 1)
+	return fmt.Sprintf("ORDER-%d", id)
 }
 
 // Additional value objects for testing

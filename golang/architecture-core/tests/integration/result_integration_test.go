@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/universalddd/architecture-core/examples/quickstart"
+	"github.com/universalddd/architecture-core/examples"
 	"github.com/universalddd/architecture-core/functional"
 )
 
@@ -13,11 +13,11 @@ import (
 func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *testing.T) {
 	t.Run("Should_ChainSuccessfulOperations_When_AllSucceed", func(t *testing.T) {
 		// Given: Service operations that can succeed or fail
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-001"
-		amount := quickstart.NewMoney(100.00, "USD")
+		amount := examples.NewMoney(100.00, "USD")
 
 		// When: Performing operations sequentially and checking each step
 		createResult := service.CreateOrder(ctx, customerID, amount, "chain-001")
@@ -26,7 +26,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 
 		confirmResult := service.ConfirmOrder(ctx, orderID)
 		if confirmResult.IsFailure() {
@@ -45,18 +45,18 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		order := getResult.Value()
-		if order.GetStatus() != quickstart.Shipped {
+		if order.GetStatus() != examples.Shipped {
 			t.Error("Order should be in Shipped status")
 		}
 	})
 
 	t.Run("Should_StopOnFirstFailure_When_ChainedOperationFails", func(t *testing.T) {
 		// Given: Service operations where one will fail
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-002"
-		amount := quickstart.NewMoney(200.00, "USD")
+		amount := examples.NewMoney(200.00, "USD")
 
 		// When: Creating order but attempting to ship without confirming
 		createResult := service.CreateOrder(ctx, customerID, amount, "chain-002")
@@ -65,7 +65,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 
 		// Skip confirmation and try to ship directly (should fail)
 		shipResult := service.ShipOrder(ctx, orderID)
@@ -82,11 +82,11 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 
 	t.Run("Should_HandleConditionalOperations_When_MaybeUsed", func(t *testing.T) {
 		// Given: Service and operations that might not find data
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		// When: Trying to get non-existent order
-		nonExistentID := quickstart.NewOrderId("NON-EXISTENT")
+		nonExistentID := examples.NewOrderId("NON-EXISTENT")
 		maybeOrder := service.GetOrder(ctx, nonExistentID)
 
 		// Then: Should return None
@@ -95,13 +95,13 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		// When: Creating order and then retrieving it
-		createResult := service.CreateOrder(ctx, "CUST-003", quickstart.NewMoney(300.00, "USD"), "")
+		createResult := service.CreateOrder(ctx, "CUST-003", examples.NewMoney(300.00, "USD"), "")
 		if createResult.IsFailure() {
 			t.Fatalf("Order creation failed: %v", createResult.Error())
 		}
 
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 		maybeOrder = service.GetOrder(ctx, orderID)
 
 		// Then: Should return Some with the order
@@ -117,11 +117,11 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 
 	t.Run("Should_HandleErrorPropagation_When_ValidationFails", func(t *testing.T) {
 		// Given: Service and invalid data
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		// When: Creating order with invalid amount
-		invalidAmount := quickstart.NewMoney(-100.00, "USD")
+		invalidAmount := examples.NewMoney(-100.00, "USD")
 		result := service.CreateOrder(ctx, "CUST-004", invalidAmount, "")
 
 		// Then: Should fail with validation error
@@ -134,7 +134,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		// When: Creating order with empty customer ID
-		validAmount := quickstart.NewMoney(100.00, "USD")
+		validAmount := examples.NewMoney(100.00, "USD")
 		result = service.CreateOrder(ctx, "", validAmount, "")
 
 		// Then: Should fail with validation error
@@ -149,7 +149,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 
 	t.Run("Should_HandleConcurrentResults_When_MultipleOperations", func(t *testing.T) {
 		// Given: Service and concurrent operations
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		results := make(chan functional.Result[string], 5)
@@ -158,7 +158,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		for i := 0; i < 5; i++ {
 			go func(index int) {
 				customerID := "CUST-CONCURRENT-" + string(rune('A'+index))
-				amount := quickstart.NewMoney(100.00, "USD")
+				amount := examples.NewMoney(100.00, "USD")
 				result := service.CreateOrder(ctx, customerID, amount, "")
 				results <- result
 			}(i)
@@ -182,7 +182,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 
 	t.Run("Should_HandleTimeouts_When_ContextCancelled", func(t *testing.T) {
 		// Given: Service with cancelled context
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 		defer cancel()
 
@@ -190,7 +190,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		time.Sleep(2 * time.Millisecond)
 
 		// When: Trying to perform operation with cancelled context
-		result := service.CreateOrder(ctx, "CUST-TIMEOUT", quickstart.NewMoney(100.00, "USD"), "")
+		result := service.CreateOrder(ctx, "CUST-TIMEOUT", examples.NewMoney(100.00, "USD"), "")
 
 		// Then: Operations should still work (basic in-memory implementation doesn't check context timeout)
 		// This is more about testing that context is passed through properly
@@ -211,12 +211,12 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 
 	t.Run("Should_ComposeResultOperations_When_UsingFunctionalPatterns", func(t *testing.T) {
 		// Given: Service for functional composition testing
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		// When: Using functional patterns to process order data
 		customerID := "CUST-FUNCTIONAL"
-		amount := quickstart.NewMoney(500.00, "USD")
+		amount := examples.NewMoney(500.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "functional-test")
 
@@ -234,7 +234,7 @@ func TestResultIntegration_Should_ComposeOperations_When_ChainedTogether(t *test
 		}
 
 		// Create OrderId and get the order to verify it exists
-		typedOrderID := quickstart.NewOrderId(orderID)
+		typedOrderID := examples.NewOrderId(orderID)
 		maybeOrder := service.GetOrder(ctx, typedOrderID)
 
 		if maybeOrder.IsNone() {

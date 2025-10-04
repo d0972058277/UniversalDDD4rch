@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/universalddd/architecture-core/examples/quickstart"
+	"github.com/universalddd/architecture-core/examples"
 	"github.com/universalddd/architecture-core/functional"
 )
 
@@ -12,11 +12,11 @@ import (
 func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testing.T) {
 	t.Run("Should_CreateConfirmShipOrder_When_ValidWorkflow", func(t *testing.T) {
 		// Given: Order service and valid order data
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-001"
-		amount := quickstart.NewMoney(150.75, "USD")
+		amount := examples.NewMoney(150.75, "USD")
 		correlationID := "workflow-001"
 
 		// When: Creating order
@@ -28,7 +28,7 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		}
 
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 
 		// When: Confirming order
 		confirmResult := service.ConfirmOrder(ctx, orderID)
@@ -55,25 +55,25 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		}
 
 		order := getResult.Value()
-		if order.GetStatus() != quickstart.Shipped {
+		if order.GetStatus() != examples.Shipped {
 			t.Errorf("Expected order status Shipped, got %v", order.GetStatus())
 		}
 	})
 
 	t.Run("Should_PreventInvalidTransitions_When_WrongOrderStatus", func(t *testing.T) {
 		// Given: Order service and created order
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-002"
-		amount := quickstart.NewMoney(100.00, "USD")
+		amount := examples.NewMoney(100.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "")
 		if createResult.IsFailure() {
 			t.Fatalf("Setup failed: %v", createResult.Error())
 		}
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 
 		// When: Attempting to ship without confirming
 		shipResult := service.ShipOrder(ctx, orderID)
@@ -89,15 +89,15 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 	t.Run("Should_HandleCancellation_When_ValidState", func(t *testing.T) {
 		// Given: Confirmed order
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-003"
-		amount := quickstart.NewMoney(200.00, "USD")
+		amount := examples.NewMoney(200.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "")
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 		service.ConfirmOrder(ctx, orderID)
 
 		// When: Cancelling order
@@ -114,22 +114,22 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 			t.Fatal("Order should exist")
 		}
 		order := getResult.Value()
-		if order.GetStatus() != quickstart.Cancelled {
+		if order.GetStatus() != examples.Cancelled {
 			t.Errorf("Expected order status Cancelled, got %v", order.GetStatus())
 		}
 	})
 
 	t.Run("Should_PreventCancellation_When_AlreadyShipped", func(t *testing.T) {
 		// Given: Shipped order
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-004"
-		amount := quickstart.NewMoney(300.00, "USD")
+		amount := examples.NewMoney(300.00, "USD")
 
 		createResult := service.CreateOrder(ctx, customerID, amount, "")
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 		service.ConfirmOrder(ctx, orderID)
 		service.ShipOrder(ctx, orderID)
 
@@ -147,16 +147,16 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 	t.Run("Should_CollectDomainEvents_When_StateChanges", func(t *testing.T) {
 		// Given: Order service
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		customerID := "CUST-005"
-		amount := quickstart.NewMoney(400.00, "USD")
+		amount := examples.NewMoney(400.00, "USD")
 
 		// When: Executing full workflow
 		createResult := service.CreateOrder(ctx, customerID, amount, "correlation-123")
 		orderIDString := createResult.Value()
-		orderID := quickstart.NewOrderId(orderIDString)
+		orderID := examples.NewOrderId(orderIDString)
 
 		// Get order and check events after creation
 		getResult := service.GetOrder(ctx, orderID)
@@ -199,7 +199,7 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 	t.Run("Should_HandleConcurrentOperations_When_MultipleRequests", func(t *testing.T) {
 		// Given: Order service and multiple goroutines
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		// When: Creating multiple orders concurrently
@@ -208,7 +208,7 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		for i := 0; i < 5; i++ {
 			go func(index int) {
 				customerID := "CUST-CONCURRENT-" + string(rune('A'+index))
-				amount := quickstart.NewMoney(100.00, "USD")
+				amount := examples.NewMoney(100.00, "USD")
 				result := service.CreateOrder(ctx, customerID, amount, "")
 				results <- result
 			}(i)
@@ -232,11 +232,11 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 
 	t.Run("Should_ValidateBusinessRules_When_InvalidData", func(t *testing.T) {
 		// Given: Order service
-		service := quickstart.NewOrderService()
+		service := examples.NewOrderService()
 		ctx := context.Background()
 
 		// When: Creating order with invalid amount
-		invalidAmount := quickstart.NewMoney(-100.00, "USD")
+		invalidAmount := examples.NewMoney(-100.00, "USD")
 		result := service.CreateOrder(ctx, "CUST-006", invalidAmount, "")
 
 		// Then: Should fail with validation error
@@ -248,7 +248,7 @@ func TestOrderWorkflow_Should_HandleFullLifecycle_When_ValidOperations(t *testin
 		}
 
 		// When: Creating order with empty customer ID
-		validAmount := quickstart.NewMoney(100.00, "USD")
+		validAmount := examples.NewMoney(100.00, "USD")
 		result = service.CreateOrder(ctx, "", validAmount, "")
 
 		// Then: Should fail with validation error

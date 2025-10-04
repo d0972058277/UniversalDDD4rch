@@ -1,4 +1,4 @@
-package quickstart
+package examples
 
 import (
 	"context"
@@ -42,10 +42,10 @@ func (s *OrderService) CreateOrder(ctx context.Context, customerID string, amoun
 		order = NewOrder(customerID, amount)
 	}
 
-	// Save to repository
-	err := s.repository.Save(ctx, order)
-	if err != nil {
-		return functional.Fail[string](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	// Add to repository
+	result := s.repository.AddAsync(ctx, order)
+	if result.IsFailure() {
+		return functional.Fail[string](result.Error())
 	}
 
 	return functional.OkWith(order.ID().String())
@@ -74,9 +74,9 @@ func (s *OrderService) ConfirmOrder(ctx context.Context, orderID OrderId) functi
 	}
 
 	// Update in repository
-	err := s.repository.Save(ctx, order)
-	if err != nil {
-		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	result := s.repository.UpdateAsync(ctx, order)
+	if result.IsFailure() {
+		return result
 	}
 	return functional.Ok[interface{}](nil)
 }
@@ -98,9 +98,9 @@ func (s *OrderService) ShipOrder(ctx context.Context, orderID OrderId) functiona
 	}
 
 	// Update in repository
-	err := s.repository.Save(ctx, order)
-	if err != nil {
-		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	result := s.repository.UpdateAsync(ctx, order)
+	if result.IsFailure() {
+		return result
 	}
 	return functional.Ok[interface{}](nil)
 }
@@ -122,9 +122,9 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderID OrderId) functio
 	}
 
 	// Update in repository
-	err := s.repository.Save(ctx, order)
-	if err != nil {
-		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	result := s.repository.UpdateAsync(ctx, order)
+	if result.IsFailure() {
+		return result
 	}
 	return functional.Ok[interface{}](nil)
 }
@@ -206,9 +206,9 @@ func (s *OrderService) ClearOrderEvents(ctx context.Context, orderID OrderId) fu
 	order := maybeOrder.Value()
 	order.ClearDomainEvents()
 
-	err := s.repository.Save(ctx, order)
-	if err != nil {
-		return functional.Fail[interface{}](functional.InfrastructureError("SAVE_FAILED", err.Error()))
+	result := s.repository.UpdateAsync(ctx, order)
+	if result.IsFailure() {
+		return result
 	}
 	return functional.Ok[interface{}](nil)
 }

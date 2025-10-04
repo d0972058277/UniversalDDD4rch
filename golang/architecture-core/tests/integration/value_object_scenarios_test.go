@@ -3,16 +3,16 @@ package integration
 import (
 	"testing"
 
-	"github.com/universalddd/architecture-core/examples/quickstart"
+	"github.com/universalddd/architecture-core/examples"
 )
 
 // TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used
 func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T) {
 	t.Run("Should_HandleMoneyOperations_When_ValidOperations", func(t *testing.T) {
 		// Given: Money value objects
-		price1 := quickstart.NewMoney(100.50, "USD")
-		price2 := quickstart.NewMoney(100.50, "USD")
-		price3 := quickstart.NewMoney(200.75, "EUR")
+		price1 := examples.NewMoney(100.50, "USD")
+		price2 := examples.NewMoney(100.50, "USD")
+		price3 := examples.NewMoney(200.75, "EUR")
 
 		// When: Comparing same values
 		// Then: Should be equal
@@ -42,14 +42,14 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_HandleMoneyArithmetic_When_SameCurrency", func(t *testing.T) {
 		// Given: Money objects with same currency
-		amount1 := quickstart.NewMoney(100.00, "USD")
-		amount2 := quickstart.NewMoney(50.00, "USD")
+		amount1 := examples.NewMoney(100.00, "USD")
+		amount2 := examples.NewMoney(50.00, "USD")
 
 		// When: Adding amounts
 		sum := amount1.Add(amount2)
 
 		// Then: Should create correct sum
-		expected := quickstart.NewMoney(150.00, "USD")
+		expected := examples.NewMoney(150.00, "USD")
 		if !sum.Equals(expected) {
 			t.Error("Money addition should work correctly")
 		}
@@ -58,7 +58,7 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 		difference := amount1.Subtract(amount2)
 
 		// Then: Should create correct difference
-		expectedDiff := quickstart.NewMoney(50.00, "USD")
+		expectedDiff := examples.NewMoney(50.00, "USD")
 		if !difference.Equals(expectedDiff) {
 			t.Error("Money subtraction should work correctly")
 		}
@@ -66,8 +66,8 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_PreventInvalidOperations_When_DifferentCurrencies", func(t *testing.T) {
 		// Given: Money objects with different currencies
-		usdAmount := quickstart.NewMoney(100.00, "USD")
-		eurAmount := quickstart.NewMoney(100.00, "EUR")
+		usdAmount := examples.NewMoney(100.00, "USD")
+		eurAmount := examples.NewMoney(100.00, "EUR")
 
 		// When: Attempting to add different currencies
 		// Then: Should handle appropriately (implementation specific)
@@ -86,9 +86,9 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_HandleAddressValueObject_When_ComplexEquality", func(t *testing.T) {
 		// Given: Address value objects with multiple fields
-		address1 := quickstart.NewAddress("123 Main St", "Anytown", "12345", "USA")
-		address2 := quickstart.NewAddress("123 Main St", "Anytown", "12345", "USA")
-		address3 := quickstart.NewAddress("456 Oak Ave", "Anytown", "12345", "USA")
+		address1 := examples.NewAddress("123 Main St", "Anytown", "12345", "USA")
+		address2 := examples.NewAddress("123 Main St", "Anytown", "12345", "USA")
+		address3 := examples.NewAddress("456 Oak Ave", "Anytown", "12345", "USA")
 
 		// When: Comparing identical addresses
 		// Then: Should be equal
@@ -118,9 +118,9 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 		tags2 := []string{"electronics", "mobile", "smartphone"}
 		tags3 := []string{"electronics", "mobile", "tablet"}
 
-		product1 := quickstart.NewProductTags("PROD-001", tags1)
-		product2 := quickstart.NewProductTags("PROD-001", tags2)
-		product3 := quickstart.NewProductTags("PROD-001", tags3)
+		product1 := examples.NewProductTags("PROD-001", tags1)
+		product2 := examples.NewProductTags("PROD-001", tags2)
+		product3 := examples.NewProductTags("PROD-001", tags3)
 
 		// When: Comparing with same collections
 		// Then: Should be equal
@@ -137,9 +137,9 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_HandleNullValues_When_ComponentsAreNil", func(t *testing.T) {
 		// Given: Value objects with nil components
-		contact1 := quickstart.NewContactInfo("john@example.com", nil) // No phone
-		contact2 := quickstart.NewContactInfo("john@example.com", nil) // No phone
-		contact3 := quickstart.NewContactInfo("john@example.com", quickstart.NewPhoneNumber("123-456-7890"))
+		contact1 := examples.NewContactInfo("john@example.com", nil) // No phone
+		contact2 := examples.NewContactInfo("john@example.com", nil) // No phone
+		contact3 := examples.NewContactInfo("john@example.com", examples.NewPhoneNumber("123-456-7890"))
 
 		// When: Comparing objects with nil components
 		// Then: Should handle nil properly
@@ -158,7 +158,7 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 		// Given: A money value object
 		originalAmount := 100.00
 		originalCurrency := "USD"
-		money := quickstart.NewMoney(originalAmount, originalCurrency)
+		money := examples.NewMoney(originalAmount, originalCurrency)
 
 		// When: Getting values multiple times
 		amount1 := money.GetAmount()
@@ -177,9 +177,9 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_SupportValueSemantics_When_UsedInMaps", func(t *testing.T) {
 		// Given: A map using value objects as keys
-		priceMap := make(map[quickstart.Money]string)
-		price1 := quickstart.NewMoney(100.00, "USD")
-		price2 := quickstart.NewMoney(100.00, "USD") // Same value, different instance
+		priceMap := make(map[examples.Money]string)
+		price1 := examples.NewMoney(100.00, "USD")
+		price2 := examples.NewMoney(100.00, "USD") // Same value, different instance
 
 		// When: Using value objects as map keys
 		priceMap[price1] = "product-1"
@@ -192,13 +192,13 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_HandleComplexComparisons_When_NestedValueObjects", func(t *testing.T) {
 		// Given: Value objects containing other value objects
-		price1 := quickstart.NewMoney(100.00, "USD")
-		price2 := quickstart.NewMoney(100.00, "USD")
-		price3 := quickstart.NewMoney(150.00, "USD")
+		price1 := examples.NewMoney(100.00, "USD")
+		price2 := examples.NewMoney(100.00, "USD")
+		price3 := examples.NewMoney(150.00, "USD")
 
-		orderItem1 := quickstart.NewOrderItem("ITEM-001", 2, price1)
-		orderItem2 := quickstart.NewOrderItem("ITEM-001", 2, price2)
-		orderItem3 := quickstart.NewOrderItem("ITEM-001", 2, price3)
+		orderItem1 := examples.NewOrderItem("ITEM-001", 2, price1)
+		orderItem2 := examples.NewOrderItem("ITEM-001", 2, price2)
+		orderItem3 := examples.NewOrderItem("ITEM-001", 2, price3)
 
 		// When: Comparing nested value objects
 		// Then: Should compare all nested components
@@ -213,10 +213,10 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 
 	t.Run("Should_ProvideStableHashCodes_When_UsedInSets", func(t *testing.T) {
 		// Given: A set (map) of value objects
-		moneySet := make(map[quickstart.Money]bool)
-		money1 := quickstart.NewMoney(100.00, "USD")
-		money2 := quickstart.NewMoney(100.00, "USD")
-		money3 := quickstart.NewMoney(200.00, "USD")
+		moneySet := make(map[examples.Money]bool)
+		money1 := examples.NewMoney(100.00, "USD")
+		money2 := examples.NewMoney(100.00, "USD")
+		money3 := examples.NewMoney(200.00, "USD")
 
 		// When: Adding to set
 		moneySet[money1] = true
@@ -229,7 +229,7 @@ func TestValueObjectScenarios_Should_HandleRealWorldUsage_When_Used(t *testing.T
 		}
 
 		// And should be able to check membership with equivalent instances
-		if !moneySet[quickstart.NewMoney(100.00, "USD")] {
+		if !moneySet[examples.NewMoney(100.00, "USD")] {
 			t.Error("Should find equivalent money object in set")
 		}
 	})

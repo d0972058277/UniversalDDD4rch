@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/universalddd/architecture-core/examples/quickstart"
+	"github.com/universalddd/architecture-core/examples"
 	"github.com/universalddd/architecture-core/functional"
 )
 
@@ -13,10 +13,10 @@ import (
 func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T) {
 	t.Run("Should_AddAndRetrieve_When_ValidAggregate", func(t *testing.T) {
 		// Given: Repository and aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order := quickstart.NewOrder("CUST-001", quickstart.NewMoney(100.00, "USD"))
+		order := examples.NewOrder("CUST-001", examples.NewMoney(100.00, "USD"))
 		orderID := order.GetID()
 
 		// When: Adding aggregate
@@ -43,10 +43,10 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_UpdateAggregate_When_ModificationsExist", func(t *testing.T) {
 		// Given: Repository with existing aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order := quickstart.NewOrder("CUST-002", quickstart.NewMoney(200.00, "USD"))
+		order := examples.NewOrder("CUST-002", examples.NewMoney(200.00, "USD"))
 		orderID := order.GetID()
 
 		repo.AddAsync(ctx, order)
@@ -65,17 +65,17 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		updatedOrder := getResult.Value()
 
 		// Then: Should reflect changes
-		if updatedOrder.GetStatus() != quickstart.Confirmed {
+		if updatedOrder.GetStatus() != examples.Confirmed {
 			t.Error("Updated order should have Confirmed status")
 		}
 	})
 
 	t.Run("Should_DeleteAggregate_When_IDProvided", func(t *testing.T) {
 		// Given: Repository with existing aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order := quickstart.NewOrder("CUST-003", quickstart.NewMoney(300.00, "USD"))
+		order := examples.NewOrder("CUST-003", examples.NewMoney(300.00, "USD"))
 		orderID := order.GetID()
 
 		repo.AddAsync(ctx, order)
@@ -99,10 +99,10 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_CheckExistence_When_AggregateExistsOrNot", func(t *testing.T) {
 		// Given: Repository with one aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order := quickstart.NewOrder("CUST-004", quickstart.NewMoney(400.00, "USD"))
+		order := examples.NewOrder("CUST-004", examples.NewMoney(400.00, "USD"))
 		orderID := order.GetID()
 
 		repo.AddAsync(ctx, order)
@@ -116,7 +116,7 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		}
 
 		// When: Checking existence of non-existent aggregate
-		nonExistentID := quickstart.NewOrderId("NON-EXISTENT")
+		nonExistentID := examples.NewOrderId("NON-EXISTENT")
 		notExistsResult := repo.ExistsAsync(ctx, nonExistentID)
 
 		// Then: Should return false
@@ -127,7 +127,7 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_HandleConcurrentOperations_When_MultipleClients", func(t *testing.T) {
 		// Given: Repository and multiple goroutines
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
 		// When: Performing concurrent adds
@@ -136,7 +136,7 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		for i := 0; i < 10; i++ {
 			go func(index int) {
 				customerID := "CUST-CONCURRENT-" + string(rune('A'+index))
-				order := quickstart.NewOrder(customerID, quickstart.NewMoney(100.00, "USD"))
+				order := examples.NewOrder(customerID, examples.NewMoney(100.00, "USD"))
 				result := repo.AddAsync(ctx, order)
 				results <- result
 			}(i)
@@ -160,11 +160,11 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_RespectCancellation_When_ContextCancelled", func(t *testing.T) {
 		// Given: Repository and cancelled context
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel() // Cancel immediately
 
-		order := quickstart.NewOrder("CUST-005", quickstart.NewMoney(500.00, "USD"))
+		order := examples.NewOrder("CUST-005", examples.NewMoney(500.00, "USD"))
 
 		// When: Performing operation with cancelled context
 		result := repo.AddAsync(ctx, order)
@@ -181,11 +181,11 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_RespectTimeout_When_ContextHasTimeout", func(t *testing.T) {
 		// Given: Repository and context with timeout
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 		defer cancel()
 
-		order := quickstart.NewOrder("CUST-006", quickstart.NewMoney(600.00, "USD"))
+		order := examples.NewOrder("CUST-006", examples.NewMoney(600.00, "USD"))
 
 		// When: Performing operation with timeout context
 		// Add slight delay to potentially trigger timeout
@@ -203,11 +203,11 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_PreventDuplicates_When_SameIDAdded", func(t *testing.T) {
 		// Given: Repository with existing aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order1 := quickstart.NewOrderWithID("DUPLICATE-ID", "CUST-007", quickstart.NewMoney(700.00, "USD"))
-		order2 := quickstart.NewOrderWithID("DUPLICATE-ID", "CUST-008", quickstart.NewMoney(800.00, "USD"))
+		order1 := examples.NewOrderWithID("DUPLICATE-ID", "CUST-007", examples.NewMoney(700.00, "USD"))
+		order2 := examples.NewOrderWithID("DUPLICATE-ID", "CUST-008", examples.NewMoney(800.00, "USD"))
 
 		repo.AddAsync(ctx, order1)
 
@@ -227,16 +227,16 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_HandleLargeOperations_When_ManyAggregates", func(t *testing.T) {
 		// Given: Repository and many aggregates
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
 		const numOrders = 1000
-		orderIDs := make([]quickstart.OrderId, numOrders)
+		orderIDs := make([]examples.OrderId, numOrders)
 
 		// When: Adding many aggregates
 		for i := 0; i < numOrders; i++ {
 			customerID := "BULK-CUST-" + string(rune('A'+(i%26)))
-			order := quickstart.NewOrder(customerID, quickstart.NewMoney(float64(i+1), "USD"))
+			order := examples.NewOrder(customerID, examples.NewMoney(float64(i+1), "USD"))
 			orderIDs[i] = order.GetID()
 
 			result := repo.AddAsync(ctx, order)
@@ -261,10 +261,10 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_HandleOptimisticConcurrency_When_VersionConflicts", func(t *testing.T) {
 		// Given: Repository with versioned aggregate
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
-		order := quickstart.NewOrder("CUST-009", quickstart.NewMoney(900.00, "USD"))
+		order := examples.NewOrder("CUST-009", examples.NewMoney(900.00, "USD"))
 		orderID := order.GetID()
 
 		repo.AddAsync(ctx, order)
@@ -303,12 +303,12 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 
 	t.Run("Should_SupportCustomQueries_When_RepositoryExtended", func(t *testing.T) {
 		// Given: Extended repository with custom query methods
-		repo := quickstart.NewInMemoryOrderRepository()
+		repo := examples.NewInMemoryOrderRepository()
 		ctx := context.Background()
 
 		// Add orders with different statuses
-		pendingOrder := quickstart.NewOrder("CUST-010", quickstart.NewMoney(100.00, "USD"))
-		confirmedOrder := quickstart.NewOrder("CUST-011", quickstart.NewMoney(200.00, "USD"))
+		pendingOrder := examples.NewOrder("CUST-010", examples.NewMoney(100.00, "USD"))
+		confirmedOrder := examples.NewOrder("CUST-011", examples.NewMoney(200.00, "USD"))
 
 		// Add the pending order
 		addResult1 := repo.AddAsync(ctx, pendingOrder)
@@ -338,8 +338,8 @@ func TestRepositoryScenarios_Should_HandleCRUDOperations_When_Used(t *testing.T)
 		t.Logf("Confirmed order status: %v", confirmedOrder.GetStatus())
 
 		// When: Querying by status (if supported)
-		pendingResult := repo.GetOrdersByStatusAsync(ctx, quickstart.Pending)
-		confirmedResult := repo.GetOrdersByStatusAsync(ctx, quickstart.Confirmed)
+		pendingResult := repo.GetOrdersByStatusAsync(ctx, examples.Pending)
+		confirmedResult := repo.GetOrdersByStatusAsync(ctx, examples.Confirmed)
 
 		// Then: Should return appropriate orders
 		if pendingResult.IsSuccess() {
